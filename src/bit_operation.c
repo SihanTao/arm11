@@ -1,4 +1,4 @@
-#include "bit_opearion.h"
+#include "bit_operation.h"
 #include <stdio.h>
 #include <stdint.h>
 

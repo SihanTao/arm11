@@ -5,7 +5,7 @@
  * Author: Sihan Tao
  */
 
-#ifndefine BITOPERATION_H
+#ifndef BITOPERATION_H
 #define BITOPERATION_H
 
 #include <stdint.h>
