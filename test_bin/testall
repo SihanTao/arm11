@@ -1,0 +1,8 @@
+#! /usr/bin/python3
+
+import os
+import subprocess
+
+test_files = [subprocess.run(f"./{test}")
+              for test in list(os.walk("."))[0][2]
+              if ".test" in test]

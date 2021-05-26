@@ -7,7 +7,7 @@
 int global_test_num_counter = 0;
 int global_pass_counter = 0;
 
-static void summarise_test();
+static void summarise_test(void);
 
 void test_true(bool target)
 {
@@ -43,21 +43,21 @@ void add_test(char const *test_name)
   global_pass_counter = 0;
 }
 
-void end_test()
+void end_test(void)
 {
   summarise_test();
 }
 
-static void summarise_test()
+static void summarise_test(void)
 {
-  char *msg = "\033[0;31m FAIL \033[0m"; // color : red
+  char msg[] = "\033[0;31m FAIL \033[0m"; // color : red
 
   if (global_test_num_counter != 0)
   {
 
     if (global_pass_counter == global_test_num_counter)
     {
-      msg = "\033[0;32m PASS \033[0m"; // color : green
+      strcpy(msg, "\033[0;32m PASS \033[0m"); // color : green
     }
 
     printf("[%s] Passed : %d Total : %d. \n", msg,

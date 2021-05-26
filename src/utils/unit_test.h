@@ -14,6 +14,6 @@ extern void test_true(bool target);
 extern void test_false(bool target);
 extern void test_eq(void const *got, void const *expect, size_t size);
 extern void add_test(char const *test_name);
-extern void end_test();
+extern void end_test(void);
 
 #endif // C_UNIT_TEST

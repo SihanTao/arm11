@@ -2,7 +2,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
-#include "file_loader.h";
+#include "file_loader.h"
 
 static void sendian_handle(char *buffer)
 {
