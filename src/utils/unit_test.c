@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -18,7 +19,7 @@ void test_true(bool target)
   }
   else
   {
-    printf("[\033[0;31m FAIL \033[0m] test failed : %d \n",
+    printf("[\033[0;31m FAIL \033[0m] The %dth test in this block failed. \n",
            global_test_num_counter);
   }
 }
@@ -36,7 +37,7 @@ void test_eq(void const *got, void const *expect, size_t size)
 void add_test(char const *test_name)
 {
   summarise_test();
-  printf("%s /n", test_name);
+  printf("Now testing : %s \n", test_name);
 
   global_test_num_counter = 0;
   global_pass_counter = 0;
@@ -59,7 +60,7 @@ static void summarise_test()
       msg = "\033[0;32m PASS \033[0m"; // color : green
     }
 
-    printf("[%s]Test passed : %d/ %d. \n", msg,
+    printf("[%s] Passed : %d Total : %d. \n", msg,
            global_pass_counter, global_test_num_counter);
     printf("---------------------------------\n\n");
   }

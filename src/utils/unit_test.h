@@ -1,5 +1,5 @@
 #ifndef C_UNIT_TEST
-#define U_UNIT_TEST
+#define C_UNIT_TEST
 
 #include <stdlib.h>
 
