@@ -13,15 +13,14 @@ int main(void)
 
         /* Use i to define the content of union */
         test_int(ins.u.i, 0x1234abcd);
-        printf("First byte == 0x12");
         test_int(ins.u.bf.byte1, 0x12);
-        printf("1st byte == 0x12");
+        printf("1st byte == 0x12\n");
         test_int(ins.u.bf.byte2, 0x34);
-        printf("2nd byte == 0x34");
+        printf("2nd byte == 0x34\n");
         test_int(ins.u.bf.byte3, 0xAB);
-        printf("3rd byte == 0xAB");
+        printf("3rd byte == 0xAB\n");
         test_int(ins.u.bf.byte4, 0xCD);
-        printf("4th byte == 0xCD");
+        printf("4th byte == 0xCD\n");
 
         /* Use bit-field to change u.i */
         ins.u.bf.byte1 = 0x40;

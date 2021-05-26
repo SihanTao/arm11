@@ -2,6 +2,7 @@
 #define C_UNIT_TEST
 
 #include <stdlib.h>
+#include <stdbool.h> 
 
 extern int global_test_num_counter;
 extern int global_pass_counter;
