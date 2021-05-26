@@ -8,10 +8,13 @@ CFLAGS += -Wall -Wextra -Wpedantic \
 OBJ = ../../obj
 TEST_BIN = ../../test_bin
 
-all: test_test_utils.test
+all: test_test_utils.test instruction_processor_test.test
 	cd $(TEST_BIN) ; python3 testall
 
 test_test_utils.test: test_test_utils.o
+	$(CC) -o $(TEST_BIN)/$@ $(OBJ)/$< $(OBJ)/unit_test.o
+
+instruction_processor_test.test: instruction_processor_test.o
 	$(CC) -o $(TEST_BIN)/$@ $(OBJ)/$< $(OBJ)/unit_test.o
 
 # %.test: %.o

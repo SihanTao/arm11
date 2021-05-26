@@ -9,6 +9,31 @@ int global_pass_counter = 0;
 
 static void summarise_test(void);
 
+void test_int(int got, int expect)
+{
+  test_true(got == expect);
+}
+
+void test_double(double got, double expect)
+{
+  test_true(got == expect);
+}
+
+void test_char(char got, char expect)
+{
+  test_true(got == expect);
+}
+
+void test_float(float got, float expect)
+{
+  test_true(got == expect);
+}
+
+void test_long(long got, long expect)
+{
+  test_true(got == expect);
+}
+
 void test_true(bool target)
 {
   global_test_num_counter += 1;

@@ -10,6 +10,11 @@ extern int global_pass_counter;
 
 #define VERBOSE false;
 
+extern void test_int(int got, int expect);
+extern void test_double(double got, double expect);
+extern void test_char(char got, char expect);
+extern void test_float(float got, float expect);
+extern void test_long(long got, long expect);
 extern void test_true(bool target);
 extern void test_false(bool target);
 extern void test_eq(void const *got, void const *expect, size_t size);
