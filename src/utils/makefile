@@ -7,7 +7,8 @@ CFLAGS += -Wall -Wextra -Wpedantic \
 
 OBJ = ../../obj
 
-all: file_loader.o unit_test.o
+all: file_loader.o unit_test.o bit_operation.o\
+     
 
 %.o: %.c
 	$(CC) $(CFLAGS) -o $(OBJ)/$@ -c $<
