@@ -1,5 +1,6 @@
 #include <stdbool.h>
-#include "unit_test.h"
+#include <string.h>
+#include "../utils/unit_test.h"
 
 int main(void)
 {
@@ -13,10 +14,12 @@ int main(void)
 
   add_test("test_test2");
   {
-    char *hello = "hello";
-    char *hello2 = malloc(sizeof "hello");
+    char hello[] = "hello";
+    char *hello2 = malloc(sizeof hello);
+    strcpy(hello2, hello);
 
-    test_eq("hello", "hello", sizeof hello);
+    test_eq("hello", hello, sizeof hello);
+    test_eq(hello2, hello, sizeof hello);
     test_eq("hello_world", "hello", sizeof hello);
   }
 
@@ -32,7 +35,7 @@ int main(void)
     struct My_struct expect_struct = {13, 1232341, 'a'};
     struct My_struct target_struct2 = {13, 1232341, 'a'};
 
-    // test_eq(&target_struct, &expect_struct, sizeof expect_struct);
+    test_eq(&target_struct, &expect_struct, sizeof expect_struct);
     test_eq(&target_struct2, &expect_struct, sizeof expect_struct);
   }
 
