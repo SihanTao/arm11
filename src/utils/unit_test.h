@@ -13,7 +13,7 @@ extern void test_double_v(double got, double expect, char const * msg);
 extern void test_char_v(char got, char expect, char const * msg);
 extern void test_float_v(float got, float expect, char const * msg);
 extern void test_long_v(long got, long expect, char const * msg);
-extern void test_true_v(bool target, char const * msg);;
+extern void test_true_v(bool target, char const * msg);
 extern void test_false_v(bool target, char const * msg);
 extern void test_eq_v(void const *got, void const *expect, size_t size, char const * msg);
 
