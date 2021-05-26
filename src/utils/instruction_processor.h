@@ -24,7 +24,7 @@ typedef struct
     unsigned int byte2: 8;
     unsigned int byte3: 8;
     unsigned int byte4: 8;
-} byteRep_t;
+} bitfield;
 
 /*
  * the definition of the structure
@@ -37,7 +37,7 @@ typedef struct
     union 
     {
         uint32_t i;
-        byteRep_t bt;
+        bitfield bf;
     } u;
 } instruction_t;
 
