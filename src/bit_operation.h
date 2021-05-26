@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#define INT_BIT_LENGTH 32
+
 /*
  * Print the bit representation 
  * of given uint32_t integer
