@@ -34,4 +34,4 @@ assemble
 *.vrb
 *.nav
 *.toc
-
+.vscode
