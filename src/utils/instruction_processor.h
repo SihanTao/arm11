@@ -48,7 +48,7 @@ typedef struct
 typedef struct arm11
 {
     instruction_t* instructions;
-    int registers[NUM_REG];
+    uint32_t registers[NUM_REG];
 } arm11_t;
 
 instruction_t* fetch(arm11_t *arm);
