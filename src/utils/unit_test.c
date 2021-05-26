@@ -9,6 +9,54 @@ int global_pass_counter = 0;
 
 static void summarise_test(void);
 
+void test_int_v(int got, int expect, char const *msg)
+{
+  test_int(got, expect);
+  printf("%s \n", msg);
+}
+
+void test_double_v(double got, double expect, char const *msg)
+{
+  test_double(got, expect);
+  printf("%s \n", msg);
+}
+
+void test_char_v(char got, char expect, char const *msg)
+{
+  test_char(got, expect);
+  printf("%s \n", msg);
+}
+
+void test_float_v(float got, float expect, char const *msg)
+{
+  test_float(got, expect);
+  printf("%s \n", msg);
+}
+
+void test_long_v(long got, long expect, char const *msg)
+{
+  test_float(got, expect);
+  printf("%s \n", msg);
+}
+
+void test_true_v(bool target, char const *msg)
+{
+  test_true(target);
+  printf("%s \n", msg);
+}
+
+void test_false_v(bool target, char const *msg)
+{
+  test_false(target);
+  printf("%s \n", msg);
+}
+
+void test_eq_v(void const *got, void const *expect, size_t size, char const *msg)
+{
+  test_eq(got, expect, size);
+  printf("%s \n", msg);
+}
+
 void test_int(int got, int expect)
 {
   test_true(got == expect);
