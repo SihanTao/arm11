@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
 #include "unit_test.h"
 
 int global_test_num_counter = 0;
@@ -19,7 +18,7 @@ void test_true(bool target)
   }
   else
   {
-    printf("[\033[0;31m ERR \033[0m] test failed : %d \n",
+    printf("[\033[0;31m FAIL \033[0m] test failed : %d \n",
            global_test_num_counter);
   }
 }
@@ -29,9 +28,9 @@ void test_false(bool target)
   test_true(!target);
 }
 
-void test_eq(void const *target, void const *answer, size_t size)
+void test_eq(void const *got, void const *expect, size_t size)
 {
-  test_true(memcmp(target, answer, size));
+  test_true(memcmp(got, expect, size) == 0);
 }
 
 void add_test(char const *test_name)
@@ -50,14 +49,14 @@ void end_test()
 
 static void summarise_test()
 {
-  char *msg = "\033[0;31m ERR \033[0m"; // color : red
+  char *msg = "\033[0;31m FAIL \033[0m"; // color : red
 
   if (global_test_num_counter != 0)
   {
 
     if (global_pass_counter == global_test_num_counter)
     {
-      msg = "\033[0;32m  OK \033[0m"; // color : green
+      msg = "\033[0;32m PASS \033[0m"; // color : green
     }
 
     printf("[%s]Test passed : %d/ %d. \n", msg,
