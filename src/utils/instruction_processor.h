@@ -20,10 +20,10 @@ enum instruction_kind
 //the struct of byte representation in memory
 typedef struct 
 {
-    unsigned int byte1: 8;
-    unsigned int byte2: 8;
-    unsigned int byte3: 8;
     unsigned int byte4: 8;
+    unsigned int byte3: 8;
+    unsigned int byte2: 8;
+    unsigned int byte1: 8;
 } bitfield;
 
 /*
@@ -53,6 +53,9 @@ typedef struct arm11
 
 instruction_t* fetch(arm11_t *arm);
 void decode(instruction_t* instruction);
+// functions needed in decode
+void test_instruction_cond(instruction_t* instruction);
+void find_type(instruction_t* instruction);
 /* TODO: execute instructions */
 
 #endif
