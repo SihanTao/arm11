@@ -1,12 +1,15 @@
-# ifndef FILE_LOADER
-# define FILE_LOADER
+#ifndef FILE_LOADER
+#define FILE_LOADER
 
-# define WORD_LENGTH 4
+#define WORD_LENGTH 4
 
-typedef enum endian_mode {
-  big, small
+typedef enum endian_mode
+{
+  big,
+  small
 } endian_mode;
 
-extern void read_file_to_mem(char const * file_name, char * write_to, endian_mode mode);
+extern void read_file_to_mem(char const *file_name,
+                             char *write_to, endian_mode mode);
 
-# endif //FILE_LOADER
+#endif //FILE_LOADER

@@ -21,7 +21,6 @@ void read_file_to_mem(char const *file_name, char *write_to, endian_mode mode)
   int position = 0;
   char buffer[WORD_LENGTH];
   FILE *file_handler = fopen(file_name, "rb");
-  char temp;
 
   while (fread(buffer, WORD_LENGTH, 1, file_handler))
   {
