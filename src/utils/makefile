@@ -1,13 +1,17 @@
 CC = gcc
-CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -pedantic
+CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -pedantic #-Werror
 CFLAGS += -Wall -Wextra -Wpedantic \
           -Wformat=2 -Wno-unused-parameter -Wshadow \
           -Wwrite-strings -Wstrict-prototypes -Wold-style-definition \
           -Wredundant-decls -Wnested-externs -Wmissing-include-dirs
 
-OBJ = ../../obj
+DIR_SRC = .
+DIR_OBJ = ../../obj
 
-all: file_loader.o unit_test.o
+SRC = $(wildcard $(DIR_SRC)/*.c)
+OBJ = $(patsubst %.c,${DIR_OBJ}/%.o,$(notdir ${SRC}))
 
-%.o: %.c
-	$(CC) $(CFLAGS) -o $(OBJ)/$@ -c $<
+all: $(OBJ)
+
+${DIR_OBJ}/%.o:${DIR_SRC}/%.c
+	$(CC) $(CFLAGS) -c  $< -o $@
