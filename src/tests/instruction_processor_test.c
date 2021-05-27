@@ -55,5 +55,23 @@ int main(void)
         test_int_v(ins.u.data_process.operand2, 0b1, "Cond == 1110");
     }
     end_test();
+
+    add_test("test mul in union");
+    {
+
+    }
+    end_test();
+
+    add_test("test trans in union");
+    {
+
+    }
+    end_test;
+
+    add_test("test branch in union");
+    {
+
+    }
+    end_test();
     return 0;
 }
