@@ -23,5 +23,12 @@ int main(void)
         test_int_v(ins.u.i, 0x4034abcd, "1st byte == 0x40, other unchanged");
     }
     end_test();
+
+    add_test("test_getcond:");
+    {
+        instruction_t ins = {.tag = 0, .u.i = 0x1234ABCD}; // cond = 0001
+        test_int_v(getcond(&ins), 0x1, "Cond == 0001");
+    }
+    end_test();
     return 0;
 }

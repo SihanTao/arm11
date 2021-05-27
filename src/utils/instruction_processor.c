@@ -17,8 +17,15 @@ void decode(instruction_t* instruction)
 
 void test_instruction_cond(instruction_t* instruction)
 {
-    
+    getcond(instruction);
     return;
+}
+
+int getcond(instruction_t* instruction)
+{
+    int cond;
+    cond = instruction->u.i & 0xF000;
+    return cond;
 }
 
 void find_type(instruction_t* instruction)
