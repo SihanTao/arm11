@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -pedantic #-Werror
 CFLAGS += -Wall -Wextra -Wpedantic \
           -Wformat=2 -Wno-unused-parameter -Wshadow \
           -Wwrite-strings -Wstrict-prototypes -Wold-style-definition \
@@ -7,24 +7,32 @@ CFLAGS += -Wall -Wextra -Wpedantic \
 
 .SUFFIXES: .c .o
 
-.PHONY: all clean
+.PHONY: all clean test mkfolders compile_all
 
-BIN = ./bin
-TEST = ./src/tests
-UTIL = ./src/utils
-OBJ = ./obj
-TEST_BIN = ./test_bin
+DIR_BIN = ./bin
+DIR_OBJ = ./obj
+DIR_TEST_BIN = ./test_bin
+DIR_TEST = ./src/tests
+DIR_UTIL = ./src/utils
 
-test: compile_utils
-	cd $(TEST); make
+test: compile_all
+	cd $(DIR_TEST); make
 
-compile_utils:
-	cd $(UTIL); make
+clean:
+	rm -f $(DIR_BIN)/*.bin
+	rm -f $(DIR_TEST_BIN)/*.test
+	rm -f $(DIR_OBJ)/*.o
 
-clean_test_bin:
-	rm -f $(TEST_BIN)/*.test
+compile_all: mkfolders
+	cd $(DIR_UTIL); make
 
-clean_obj:
-	rm -f $(OBJ)/*.o
+mkfolders: bin obj test_bin
 
-clean: clean_test_bin clean_obj
+bin:
+	mkdir bin
+
+obj:
+	mkdir obj
+
+test_bin:
+	mkdir test_bin
