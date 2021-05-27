@@ -24,7 +24,7 @@ void test_instruction_cond(instruction_t* instruction)
 int getcond(instruction_t* instruction)
 {
     int cond;
-    cond = instruction->u.i & 0xF000;
+    cond = (instruction->u.i >> 28) & 0x000000007;
     return cond;
 }
 

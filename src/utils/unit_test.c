@@ -12,7 +12,7 @@ static void summarise_test(void);
 void test_int_v(int got, int expect, char const *msg)
 {
   test_int(got, expect);
-  printf("%s \n", msg);
+  printf("%s got = %d, expect = %d\n", msg, got, expect);
 }
 
 void test_double_v(double got, double expect, char const *msg)

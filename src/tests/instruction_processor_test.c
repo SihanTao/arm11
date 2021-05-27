@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "../utils/unit_test.h"
 #include "../utils/instruction_processor.h"
+#include "../utils/bit_operation.h"
 
 int main(void)
 {
