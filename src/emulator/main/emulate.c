@@ -6,6 +6,7 @@
 #include "../utils/file_loader.h"
 #include "../decode/decode.h"
 #include "../execute/execute.h"
+#include "../utils/read_word.h"
 
 static bitfield fetch(size_t pc, byte *memory);
 static ArmState init_state(char const *file_name);
@@ -21,31 +22,37 @@ int main(int argc, char **argv)
   ArmState states = init_state(file_name);
   Pipeline next = init_pipeline();
   Pipeline current = init_pipeline();
-
+  Pipeline temp;
   if (states == NULL || next == NULL || current == NULL)
   {
     return EXIT_FAILURE;
+    // OS will collect resources
   }
 
+  // the first two cycles
   next->fetched = fetch(states->pc, states->memory);
   FLASH_CYCLE;
   next->fetched = fetch(states->pc, states->memory);
   next->decoded = decode(current->fetched);
   FLASH_CYCLE;
 
+  // pipeline loop
   while (true)
   {
     next->fetched = fetch(states->pc, states->memory);
     next->decoded = decode(current->fetched);
     if (execute(current->fetched, states))
     {
-      free_state(states);
-      free_pipeline(next);
-      free_pipeline(current);
-      return EXIT_SUCCESS;
+      break;
     }
     FLASH_CYCLE;
   }
+
+  // collect resources;
+  free_state(states);
+  free_pipeline(next);
+  free_pipeline(current);
+  return EXIT_SUCCESS;
 }
 
 ArmState init_state(char const *file_name)
@@ -98,4 +105,9 @@ Pipeline init_pipeline(void)
 void free_pipeline(Pipeline pipeline)
 {
   free(pipeline);
+}
+
+bitfield fetch(size_t pc, byte *memory)
+{
+  return read_word(pc, memory);
 }

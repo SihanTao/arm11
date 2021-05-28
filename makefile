@@ -12,11 +12,15 @@ CFLAGS += -Wall -Wextra -Wpedantic \
 DIR_BIN = ./bin
 DIR_OBJ = ./obj
 DIR_TEST_BIN = ./test_bin
-DIR_TEST = ./src/tests
-DIR_UTIL = ./src/utils
+DIR_EM_MAIN = ./src/emulator/main
+DIR_EM_DECODE = ./src/emulator/decode
+DIR_EM_UTILS = ./src/emulator/utils
+DIR_EM_EXECUTE = ./src/emulator/execute
+DIR_EM_TESTS = ./src/emulator/tests
+DIR_EM_UTILS = ./src/emulator/utils
 
 test: compile_all
-	cd $(DIR_TEST); make
+	cd $(DIR_EM_TESTS); make
 
 clean:
 	rm -f $(DIR_BIN)/*.bin
@@ -24,7 +28,10 @@ clean:
 	rm -f $(DIR_OBJ)/*.o
 
 compile_all: mkfolders
-	cd $(DIR_UTIL); make
+	cd $(DIR_EM_UTILS); make
+	cd $(DIR_EM_DECODE); make
+	cd $(DIR_EM_EXECUTE); make
+	cd $(DIR_EM_MAIN); make
 
 mkfolders: bin obj test_bin
 
