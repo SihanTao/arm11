@@ -6,9 +6,9 @@
 #define NUM_REG 16
 
 /* Include the four instruction kind
- * with an undefined type  
+ * with an undefined type
  */
-enum instruction_kind 
+enum instruction_kind
 {
     UNDEFINED,
     DATA_PROCESS,
@@ -18,7 +18,7 @@ enum instruction_kind
 };
 
 //the struct of byte representation in memory
-typedef struct 
+typedef struct
 {
     unsigned int byte4: 8;
     unsigned int byte3: 8;
@@ -34,7 +34,7 @@ typedef struct
 typedef struct
 {
     enum instruction_kind tag;
-    union 
+    union
     {
         uint32_t i;
         bitfield bf;
@@ -42,7 +42,7 @@ typedef struct
 } instruction_t;
 
 /*
- * The definition of structure for 
+ * The definition of structure for
  * the ARM machine
  */
 typedef struct arm11
