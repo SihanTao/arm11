@@ -1,5 +1,5 @@
 #define NUM_REG 16
-
+#include <stdbool.h>
 /* Include the four instruction kind
  * with an undefined type
  */
@@ -89,5 +89,4 @@ typedef struct arm_state_struct{
 } arm_state_struct;
 
 typedef char byte;
-
 typedef arm_state_struct * ArmState;
