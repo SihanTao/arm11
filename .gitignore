@@ -35,4 +35,4 @@ assemble
 *.nav
 *.toc
 .vscode
-*.ssssssssh
+.DS_Store
