@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "instruction_processor.h"
 #include "bit_operation.h"
+#include "types_and_macros.h"
 
 /*
  * Decode the instruction: 
