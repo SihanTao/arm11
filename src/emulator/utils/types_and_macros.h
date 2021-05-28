@@ -78,6 +78,8 @@ typedef struct
     } u;
 } instruction_t;
 
+typedef char byte;
+
 typedef struct arm_state_struct{
   size_t pc;
   bitfield * reg;
@@ -88,5 +90,4 @@ typedef struct arm_state_struct{
   bool flagV;
 } arm_state_struct;
 
-typedef char byte;
 typedef arm_state_struct * ArmState;
