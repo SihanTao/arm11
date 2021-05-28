@@ -38,6 +38,48 @@ typedef struct
     {
         uint32_t i;
         bitfield bf;
+        struct 
+        {
+            unsigned int operand2: 12;
+            unsigned int Rd: 4;
+            unsigned int Rn: 4;
+            unsigned int S: 1;
+            unsigned int OpCode: 4;
+            unsigned int I: 1;
+            unsigned int: 2; // not used: 00
+            unsigned int cond: 4;
+        } data_process;
+        struct 
+        {
+            unsigned int Rm: 4;
+            unsigned int : 4; // not used:1001
+            unsigned int Rs: 4;
+            unsigned int Rn: 4;
+            unsigned int Rd: 4;
+            unsigned int S: 1;
+            unsigned int A: 1;
+            unsigned int: 6; // not used:0000
+            unsigned int cond: 4;
+        } mul;
+        struct
+        {
+            unsigned int offset: 12;
+            unsigned int Rd: 4;
+            unsigned int Rn: 4;
+            unsigned int L: 1;
+            unsigned int : 2; // not used 00
+            unsigned int U: 1;
+            unsigned int P: 1;
+            unsigned int I: 1;
+            unsigned int : 2; // not used 01
+            unsigned int cond: 4;
+        } trans;
+        struct
+        {
+            unsigned int offset: 24;
+            unsigned int: 4; // not used 1010
+            unsigned int cond: 4;
+        } branch;       
     } u;
 } instruction_t;
 
