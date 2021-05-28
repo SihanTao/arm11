@@ -6,8 +6,8 @@ CFLAGS += -Wall -Wextra -Wpedantic \
           -Wredundant-decls -Wnested-externs -Wmissing-include-dirs
 
 DIR_SRC = .
-DIR_OBJ = ../../obj
-DIR_TEST_BIN = ../../test_bin
+DIR_OBJ = ../../../obj
+DIR_TEST_BIN = ../../../test_bin
 
 SRC = $(wildcard $(DIR_SRC)/*.c)
 OBJ = $(patsubst %.c,${DIR_OBJ}/%.o,$(notdir ${SRC}))
