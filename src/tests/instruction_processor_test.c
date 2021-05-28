@@ -139,7 +139,11 @@ int main(void)
         p = ldr01;
         find_type(p);
 	    print_bit(p->u.i);
-        test_int_v(p->tag, TRANS, "ldr r0,=0x02 == TRANS");
+        /* Note here the instruction ldr r0,=0x02 works as mov r0, =0x42
+         * I realise it after reading the example on page 15.
+         * This confused me a lot when testing
+         */
+        test_int_v(p->tag, DATA_PROCESS, "ldr r0,=0x02 == DATA_PROCESS");
         p++;
         find_type(p);
 	    print_bit(p->u.i);
@@ -147,7 +151,7 @@ int main(void)
         p++;
         find_type(p);
 	    print_bit(p->u.i);
-        test_int_v(p->tag, TRANS, "cmp r2,r0 == TRANS");
+        test_int_v(p->tag, DATA_PROCESS, "cmp r2,r0 == DATA_PROCESS");
     }
     end_test();
     return 0;
