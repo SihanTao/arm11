@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "file_loader.h"
 
-static void sendian_handle(char *buffer)
+static void convert_endian(char *buffer)
 {
   char temp;
   temp = buffer[0];
@@ -24,12 +24,13 @@ void read_file_to_mem(char const *file_name, char *write_to, endian_mode mode)
 
   while (fread(buffer, WORD_LENGTH, 1, file_handler))
   {
-    if (mode == small)
+    if (mode == big)
     {
-      sendian_handle(buffer);
+      convert_endian(buffer);
     }
     memcpy(write_to + position, buffer, WORD_LENGTH);
     position += 4;
   }
   assert(EOF != fgetc(file_handler));
+  // should get an error if doesn't match word length
 }
