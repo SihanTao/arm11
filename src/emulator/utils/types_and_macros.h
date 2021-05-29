@@ -1,8 +1,15 @@
 #ifndef TYPES_AND_MACROS
 #define TYPES_AND_MACROS
 
-#define NUM_REG 16
 #include <stdbool.h>
+#include <stdint.h>
+
+typedef char byte;
+
+#define MAX_MEMORY_ADDRESS 65536
+
+#define NUM_OF_REG 12
+
 /* Include the four instruction kind
  * with an undefined type
  */
@@ -81,8 +88,10 @@ typedef struct
     } u;
 } instruction_t;
 
-typedef char byte;
 
+/*
+ * The struct used to hold all states in this program
+ */
 typedef struct arm_state_struct{
   size_t pc;
   bitfield * reg;
@@ -95,4 +104,4 @@ typedef struct arm_state_struct{
 
 typedef arm_state_struct * ArmState;
 
-#endif #TYPES_AND_MACROS
+#endif //TYPES_AND_MACROS

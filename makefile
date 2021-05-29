@@ -19,6 +19,7 @@ DIR_EM_EXECUTE = ./src/emulator/execute
 DIR_EM_TESTS = ./src/emulator/tests
 DIR_EM_UTILS = ./src/emulator/utils
 
+# I don't know why but if don't make clean, some file will not recompile
 test: compile_all
 	cd $(DIR_EM_TESTS); make
 

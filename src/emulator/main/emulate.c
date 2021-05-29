@@ -1,12 +1,10 @@
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include "../utils/types_and_macros.h"
 #include "../utils/file_loader.h"
+#include "../utils/read_word.h"
 #include "emulate.h"
 #include "../decode/decode.h"
 #include "../execute/execute.h"
-#include "../utils/read_word.h"
 
 static bitfield fetch(size_t pc, byte *memory);
 static ArmState init_state(char const *file_name);
@@ -28,7 +26,7 @@ int main(int argc, char **argv)
     // OS will collect resources
   }
 
-  // the first two cycles
+  // skip the first two cycles
   next->fetched = fetch(states->pc, states->memory);
   FLASH_CYCLE;
   next->fetched = fetch(states->pc, states->memory);
@@ -40,7 +38,7 @@ int main(int argc, char **argv)
   {
     next->fetched = fetch(states->pc, states->memory);
     next->decoded = decode(current->fetched);
-    if (execute(current->fetched, states))
+    if (execute(current->decoded, states))
     {
       break;
     }
@@ -62,8 +60,8 @@ ArmState init_state(char const *file_name)
     return NULL;
   }
 
-  result->reg = calloc(12, sizeof(bitfield));
-  result->memory = calloc(65536, sizeof(byte));
+  result->reg = calloc(NUM_OF_REG, sizeof(bitfield));
+  result->memory = calloc(MAX_MEMORY_ADDRESS, sizeof(byte));
   if (result->reg == NULL || result->memory == NULL)
   {
     return NULL;
@@ -90,6 +88,11 @@ void free_state(ArmState state)
 Pipeline init_pipeline(void)
 {
   Pipeline result = malloc(sizeof(pipeline_state_struct));
+  if (result == NULL)
+  {
+    return NULL;
+  }
+
   result->fetched.byte1 = 0;
   result->fetched.byte2 = 0;
   result->fetched.byte3 = 0;
