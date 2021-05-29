@@ -7,9 +7,9 @@ int main(void)
   add_test("test_test1");
   {
     test_true(true);
-    test_true(false);
+    // test_true(false);
     test_false(false);
-    test_false(true);
+    // test_false(true);
   }
 
   add_test("test_test2");
@@ -19,7 +19,7 @@ int main(void)
     strcpy(hello2, hello);
 
     test_eq("hello", hello, sizeof hello);
-    test_eq(hello2, hello, sizeof hello);
+    // test_eq(hello2, hello, sizeof hello);
     test_eq("hello_world", "hello", sizeof hello);
   }
 
@@ -35,9 +35,9 @@ int main(void)
     struct My_struct expect_struct = {13, 1232341, 'a'};
     struct My_struct target_struct2 = {13, 1232341, 'a'};
 
-    test_eq(&target_struct, &expect_struct, sizeof expect_struct);
+    // test_eq(&target_struct, &expect_struct, sizeof expect_struct);
     test_eq(&target_struct2, &expect_struct, sizeof expect_struct);
   }
 
-  end_test();
+  end_all_tests();
 }

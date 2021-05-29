@@ -116,7 +116,7 @@ void add_test(char const *test_name)
   global_pass_counter = 0;
 }
 
-void end_test(void)
+void end_all_tests(void)
 {
   summarise_test();
 }

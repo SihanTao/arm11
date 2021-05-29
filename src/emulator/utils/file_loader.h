@@ -6,7 +6,7 @@
 typedef enum endian_mode
 {
   big,
-  small
+  little
 } endian_mode;
 
 extern void read_file_to_mem(char const *file_name,

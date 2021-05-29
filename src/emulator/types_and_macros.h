@@ -1,3 +1,7 @@
+#ifndef TYPES_AND_MACROS
+#define TYPES_AND_MACROS
+
+typedef char byte;
 
 //the struct of byte representation in memory
 typedef struct
@@ -18,19 +22,7 @@ typedef struct arm_state_struct{
   bool flagV;
 } arm_state_struct;
 
-typedef char byte;
-
 typedef arm_state_struct * ArmState;
-
-typedef struct
-{
-    enum instruction_kind tag;
-    union
-    {
-        uint32_t i;
-        bitfield bf;
-    } u;
-} instruction_t;
 
 enum instruction_kind
 {
@@ -40,3 +32,15 @@ enum instruction_kind
     TRANS,
     BRANCH
 };
+
+typedef struct
+{
+    enum instruction_kind tag;
+    union
+    {
+        int i;
+        bitfield bf;
+    } u;
+} instruction_t;
+
+#endif //TYPES_AND_MACROS

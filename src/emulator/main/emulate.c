@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "emulate.h"
 #include "../types_and_macros.h"
 #include "../utils/file_loader.h"
+#include "emulate.h"
 #include "../decode/decode.h"
 #include "../execute/execute.h"
 #include "../utils/read_word.h"
@@ -11,9 +11,8 @@
 static bitfield fetch(size_t pc, byte *memory);
 static ArmState init_state(char const *file_name);
 static void free_state(ArmState states);
-static Pipeline init_pipeline();
+static Pipeline init_pipeline(void);
 static void free_pipeline(Pipeline pipeline);
-static swap(void *a, void *b);
 
 int main(int argc, char **argv)
 {
@@ -76,7 +75,7 @@ ArmState init_state(char const *file_name)
   result->flagC = false;
   result->flagV = false;
 
-  read_file_to_mem(file_name, result->memory, LITTLE_ENDIAN);
+  read_file_to_mem(file_name, result->memory, little);
 
   return result;
 }
