@@ -1,12 +1,32 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "types_and_macros.h"
 #include "execute.h"
 
 bool execute(instruction_t* decode, ArmState armstate)
 {
-    if ()
+    if (test_instruction_cond(decode, armstate)))
     {
-        /* code */
+        switch ( decode->tag )
+        {
+        case DATA_PROCESS:
+            execute_DP(decode, armstate);
+            break;
+        case MUL:
+            execute_MUL(decode, armstate);
+            break;
+        case TRANS:
+            execute_SDT(decode, armstate);
+            break;
+        case BRANCH:
+            execute_BRANCH(decode, armstate);
+            break;
+        case ZERO:
+            execute_ZERO(decode, armstate);
+        case UNDEFINED:
+        default:
+            return EXIT_FAILURE;
+        }
     }
     
 }
