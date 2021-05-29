@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "decode.h"
 #include "../utils/types_and_macros.h"
 #include "../utils/tools.h"
 
