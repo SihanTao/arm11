@@ -1,12 +1,12 @@
 #include <stdio.h>
-#include <stdint.h>
+#include "../utils/types_and_macros.h"
 #include "instruction_processor.h"
 #include "bit_operation.h"
 
 /*
- * Decode the instruction: 
+ * Decode the instruction:
  * First test condition, then find the type
- * of the instruction. 
+ * of the instruction.
  */
 // void decode(instruction_t* instruction)
 // {
@@ -57,7 +57,7 @@ void find_type(instruction_t* instruction)
     } else if (get_k_bit(n, 4) && get_k_bit(n, 7))
     {
         instruction->tag = MUL;
-    } else 
+    } else
     {
         instruction->tag = DATA_PROCESS;
     }

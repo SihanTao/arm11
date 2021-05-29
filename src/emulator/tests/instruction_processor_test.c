@@ -31,14 +31,12 @@ int main(void)
         test_int_v(ins.u.bf.byte4, 0b00000001, "4th byte == 0xCD");
 
     }
-    end_test();
 
     add_test("test_getcond:");
     {
         instruction_t ins = {.tag = 0, .u.i = 0x1234ABCD}; // cond = 0001
         test_int_v(getcond(&ins), 0x1, "Cond == 0001");
     }
-    end_test();
 
     add_test("test data process in union");
     {
@@ -54,25 +52,21 @@ int main(void)
         test_int_v(ins.u.data_process.Rd, 0b0000, "Cond == 1110");
         test_int_v(ins.u.data_process.operand2, 0b1, "Cond == 1110");
     }
-    end_test();
 
     add_test("test mul in union");
     {
 
     }
-    end_test();
 
     add_test("test trans in union");
     {
 
     }
-    end_test();
 
     add_test("test branch in union");
     {
 
     }
-    end_test();
 
     add_test("Find the type of instructions:");
     {
@@ -106,13 +100,13 @@ int main(void)
 
         /* add01
          * mov r1,#1
-         * add r2,r1,#2 
+         * add r2,r1,#2
          */
         instruction_t add01[] = {{0, {0xe3a01001}}, {0, {0xe2812002}}};
         find_type(&add01[0]);
 	    print_bit(add01[0].u.i);
         test_int_v(add01[0].tag, DATA_PROCESS, "mov r1,#1 == DATA_PROCESS");
-        
+
         find_type(&add01[1]);
 	    print_bit(add01[1].u.i);
         test_int_v(add01[1].tag, DATA_PROCESS, "add r2,r1,#2 == DATA_PROCESS");
@@ -153,6 +147,7 @@ int main(void)
 	    print_bit(p->u.i);
         test_int_v(p->tag, DATA_PROCESS, "cmp r2,r0 == DATA_PROCESS");
     }
-    end_test();
+
+    end_all_tests();
     return 0;
 }

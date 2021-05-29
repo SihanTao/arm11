@@ -19,8 +19,11 @@ all: $(TEST)
 $(DIR_TEST_BIN)/unit_test_test.test: $(DIR_OBJ)/unit_test_test.o
 	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o
 
-$(DIR_TEST_BIN)/instruction_processor_test.test: $(DIR_OBJ)/instruction_processor_test.o 
-	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o $(DIR_OBJ)/instruction_processor.o
+$(DIR_TEST_BIN)/instruction_processor_test.test: $(DIR_OBJ)/instruction_processor_test.o
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o $(DIR_OBJ)/instruction_processor.o $(DIR_OBJ)/bit_operation.o
+
+$(DIR_TEST_BIN)/file_loader_test.test: $(DIR_OBJ)/file_loader_test.o
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o $(DIR_OBJ)/file_loader.o
 
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.c
 	$(CC) $(CFLAGS) -c  $< -o $@

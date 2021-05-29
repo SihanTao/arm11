@@ -1,5 +1,15 @@
-#define NUM_REG 16
+#ifndef TYPES_AND_MACROS
+#define TYPES_AND_MACROS
+
 #include <stdbool.h>
+#include <stdint.h>
+
+typedef char byte;
+
+#define MAX_MEMORY_ADDRESS 65536
+
+#define NUM_OF_REG 12
+
 /* Include the four instruction kind
  * with an undefined type
  */
@@ -34,7 +44,7 @@ typedef struct
     {
         uint32_t i;
         bitfield bf;
-        struct 
+        struct
         {
             unsigned int operand2: 12;
             unsigned int Rd: 4;
@@ -45,7 +55,7 @@ typedef struct
             unsigned int: 2; // not used: 00
             unsigned int cond: 4;
         } data_process;
-        struct 
+        struct
         {
             unsigned int Rm: 4;
             unsigned int : 4; // not used:1001
@@ -75,12 +85,14 @@ typedef struct
             unsigned int offset: 24;
             unsigned int: 4; // not used 1010
             unsigned int cond: 4;
-        } branch;       
+        } branch;
     } u;
 } instruction_t;
 
-typedef char byte;
 
+/*
+ * The struct used to hold all states in this program
+ */
 typedef struct arm_state_struct{
   size_t pc;
   bitfield * reg;
@@ -92,3 +104,5 @@ typedef struct arm_state_struct{
 } arm_state_struct;
 
 typedef arm_state_struct * ArmState;
+
+#endif //TYPES_AND_MACROS

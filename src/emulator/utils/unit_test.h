@@ -2,7 +2,7 @@
 #define C_UNIT_TEST
 
 #include <stdlib.h>
-#include <stdbool.h> 
+#include <stdbool.h>
 
 extern int global_test_num_counter;
 extern int global_pass_counter;
@@ -27,6 +27,6 @@ extern void test_true(bool target);
 extern void test_false(bool target);
 extern void test_eq(void const *got, void const *expect, size_t size);
 extern void add_test(char const *test_name);
-extern void end_test(void);
+extern void end_all_tests(void);
 
 #endif // C_UNIT_TEST
