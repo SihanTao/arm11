@@ -55,31 +55,31 @@ void execute_MUL(instruction_t* decode, ArmState armstate)
     }
 }
 
-void execute_DP(instruction_t* decoded, ArmState armstate)
+void execute_DP(instruction_t* decode, ArmState armstate)
 {
     uint32_t result;
 
     //if I is set, it means that OP2 is an immediate value.
-    if (decoded->u.data_process.I)
+    if (decode->u.data_process.I)
     {
-        int rotation_amount = 2 * get_k_bit(decoded->u.data_process.operand2, 4);
-        uint32_t extented = get_k_bit(decoded->u.data_process.operand2, 8);
+        int rotation_amount = 2 * get_k_bit(decode->u.data_process.operand2, 4);
+        uint32_t extented = get_k_bit(decode->u.data_process.operand2, 8);
         //then do the rotation.
     } else //OP2 is a register.
       {
-          int shift = get_k_bit(decoded->u.data_process.operand2, 4);
-          uint32_t rm = get_k_bit(decoded->u.data_process.operand2, 4);
+          int shift = get_k_bit(decode->u.data_process.operand2, 4);
+          uint32_t rm = get_k_bit(decode->u.data_process.operand2, 4);
           
-          switch (decoded->u.data_process.operand2)//take the shift type.
+          switch (decode->u.data_process.operand2)//take the shift type.
           {
               case 00:
               {
-                  decoded->u.data_process.operand2 = rm >> shift;
+                  decode->u.data_process.operand2 = rm >> shift;
                   break;
               }
               case 01:
               {
-                  decoded->u.data_process.operand2 = rm << shift;
+                  decode->u.data_process.operand2 = rm << shift;
                   break;
               }
               case 10:
@@ -94,11 +94,11 @@ void execute_DP(instruction_t* decoded, ArmState armstate)
       }
     
     //compute the result
-    uint32_t Rn = bitfield_to_uint32(armstate->reg[decoded->u.data_process.Rn]);
-    uint32_t operand2 = bitfield_to_uint32(armstate->reg[decoded->u.data_process.operand2]);
-    if (decoded->u.data_process.OpCode)
+    uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.data_process.Rn]);
+    uint32_t operand2 = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2]);
+    if (decode->u.data_process.OpCode)
     {
-        switch (decoded->u.data_process.OpCode)
+        switch (decode->u.data_process.OpCode)
         {
             case AND: result = (Rn && operand2);
             case EOR: result = (Rn ^ operand2);
@@ -114,15 +114,30 @@ void execute_DP(instruction_t* decoded, ArmState armstate)
     }
 
     //save the result.
-    armstate->reg[decoded->u.data_process.Rd] = uint32_to_bitfield(result);
+    armstate->reg[decode->u.data_process.Rd] = uint32_to_bitfield(result);
     
     //if S is set then CPSR should be update.
-    if (decoded->u.data_process.S)
+    if (decode->u.data_process.S)
     {
         armstate->flagN = get_k_bit(result, 31);
         if (result == 0) {armstate->flagZ = 0;}
         //changes with FlagC.
     }
+}
+
+//helper function for branch.
+uint32_t sign_extend_24_32(uint32_t n) 
+{
+    const int bits = 24;
+    uint32_t m = 1u << (bits - 1);
+    return (n ^ m) - m;
+}
+
+void execute_BRANCH(instruction_t* decode, ArmState armstate)
+{
+    uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.branch.offset]);
+    offset << 2;
+    armstate->pc += sign_extend_24_32(offset);
 }
 
 bool test_instruction_cond(instruction_t* instruction, ArmState armstate)
