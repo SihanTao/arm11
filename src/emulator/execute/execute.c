@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "types_and_macros.h"
+#include "../utils/types_and_macros.h"
 #include "execute.h"
 
 bool execute(instruction_t* decode, ArmState armstate)
 {
-    if (test_instruction_cond(decode, armstate)))
+    if (test_instruction_cond(decode, armstate))
     {
         switch ( decode->tag )
         {
@@ -28,7 +28,7 @@ bool execute(instruction_t* decode, ArmState armstate)
             return EXIT_FAILURE;
         }
     }
-    
+
 }
 
 bool test_instruction_cond(instruction_t* instruction, ArmState armstate)

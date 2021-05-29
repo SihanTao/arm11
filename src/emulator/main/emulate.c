@@ -38,7 +38,7 @@ int main(int argc, char **argv)
   {
     next->fetched = fetch(states->pc, states->memory);
     next->decoded = decode(current->fetched);
-    if (execute(current->decoded, states))
+  if (execute(&current->decoded, states))
     {
       break;
     }
