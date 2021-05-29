@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "../types_and_macros.h"
+#include "../utils/types_and_macros.h"
 #include "../utils/file_loader.h"
 #include "emulate.h"
 #include "../decode/decode.h"

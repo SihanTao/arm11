@@ -1,3 +1,6 @@
+#ifndef TYPES_AND_MACROS
+#define TYPES_AND_MACROS
+
 #define NUM_REG 16
 #include <stdbool.h>
 /* Include the four instruction kind
@@ -33,7 +36,7 @@ typedef struct
     {
         uint32_t i;
         bitfield bf;
-        struct 
+        struct
         {
             unsigned int operand2: 12;
             unsigned int Rd: 4;
@@ -44,7 +47,7 @@ typedef struct
             unsigned int: 2; // not used: 00
             unsigned int cond: 4;
         } data_process;
-        struct 
+        struct
         {
             unsigned int Rm: 4;
             unsigned int : 4; // not used:1001
@@ -74,7 +77,7 @@ typedef struct
             unsigned int offset: 24;
             unsigned int: 4; // not used 1010
             unsigned int cond: 4;
-        } branch;       
+        } branch;
     } u;
 } instruction_t;
 
@@ -91,3 +94,5 @@ typedef struct arm_state_struct{
 } arm_state_struct;
 
 typedef arm_state_struct * ArmState;
+
+#endif #TYPES_AND_MACROS
