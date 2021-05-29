@@ -37,32 +37,44 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.data_process.Rn]);
     uint32_t operand2 = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2]);
 
+
+    // If the I bit is set, then Operand2 is an immediate constant, otherwise it is a shifted register.
+    if (decode->u.data_process.I)
+    {
+
+    } else {
+
+    }
+
     // Type of Opcode
     if (decode->u.data_process.OpCode)
     {
         switch (decode->u.data_process.OpCode)
         {
-            case AND: return (Rn && operand2);
-            case EOR: return (Rn ^ operand2);
-            case SUB: return (Rn - operand2);
-            case RSB: return (operand2 - Rn);
-            case ADD: return (Rn + operand2);
+            case AND: result = (Rn && operand2);
+            case EOR: result = (Rn ^ operand2);
+            case SUB: result = (Rn - operand2);
+            case RSB: result = (operand2 - Rn);
+            case ADD: result = (Rn + operand2);
             case TST: (Rn && operand2);
             case TEQ: (Rn ^ operand2);
             case CMP: (Rn - operand2);
-            case ORR: return (Rn || operand2);
-            case MOV: return (operand2);
+            case ORR: result = (Rn || operand2);
+            case MOV: result = (operand2);
             default:
                 break;
         }
     }
     
-
     // If the S bit is set, we need to update the CPSR
-    if (decode->u.mul.S)
+    if (decode->u.data_process.S)
     {
-        armstate->flagN = get_k_bit(result, 31);
+        switch (decode->u.data_process.OpCode)
+        {
+            
+        }
         armstate->flagZ = (!result) ? 1 : 0;
+        armstate->flagN = get_k_bit(result, 31);
     }
 }
 
