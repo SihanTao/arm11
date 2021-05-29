@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../utils/types_and_macros.h"
+#include "../utils/bit_operation.h"
 #include "execute.h"
 
 bool execute(instruction_t* decode, ArmState armstate)
@@ -28,7 +29,30 @@ bool execute(instruction_t* decode, ArmState armstate)
             return EXIT_FAILURE;
         }
     }
+}
 
+
+void execute_MUL(instruction_t* decoded, ArmState armstate)
+{
+    uint32_t result;
+
+    result = armstate->reg[decoded->u.mul.Rm] * armstate->reg[decoded->u.mul.Rs];
+    
+    // the accumulate bit is set
+    if (decoded->u.mul.A)
+    {
+        result += armstate->reg[decoded->u.mul.Rn];
+    }
+    // Save the result
+    armstate->reg[decoded->u.mul.Rd] = result;
+    
+    // If the S bit is set, we need to update the CPSR
+    if (decoded->u.mul.S)
+    {
+        armstate->flagN = get_k_bit(result, 31));
+        armstate->flagZ = (!result) ? 1 : 0;
+    }
+    
 }
 
 bool test_instruction_cond(instruction_t* instruction, ArmState armstate)
