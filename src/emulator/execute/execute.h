@@ -7,6 +7,11 @@ void execute_DP(instruction_t* decode, Armstate armstate);
 void execute_MUL(instruction_t* decode, Armstate armstate);
 void execute_SDT(instruction_t* decode, Armstate armstate);
 void execute_BRANCH(instruction_t* decode, Armstate armstate);
+bool test_instruction_cond(instruction_t* instruction, ArmState armstate);
+
+enum {
+    EQ = 0, NE, GE = 0b1010, LT, GT, LE, AL
+};
 
 #define EXIT true;
 #define CONTINUE false;
