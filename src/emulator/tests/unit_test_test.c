@@ -19,8 +19,8 @@ int main(void)
     strcpy(hello2, hello);
 
     test_eq("hello", hello, sizeof hello);
-    // test_eq(hello2, hello, sizeof hello);
-    test_eq("hello_world", "hello", sizeof hello);
+    test_eq(hello2, hello, sizeof hello);
+    // test_eq("hello_world", "hello", sizeof hello);
   }
 
   add_test("success_test");
