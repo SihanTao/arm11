@@ -30,3 +30,11 @@ uint32_t bitfield_to_uint32(bitfield bf)
     instruction_t temp = init_instruction(bf);
     return temp.u.i;
 }
+
+bitfield uint32_to_bitfield(uint32_t i)
+{
+   instruction_t temp;
+   temp.tag = UNDEFINED;
+   temp.u.i = i;
+   return temp.u.bf;
+}

@@ -26,5 +26,6 @@ int get_k_bit(uint32_t i, int k);
 
 instruction_t init_instruction(bitfield fetched);
 uint32_t bitfield_to_uint32(bitfield b);
+bitfield uint32_to_bitfield(uint32_t i);
 
 #endif

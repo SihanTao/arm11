@@ -8,5 +8,15 @@ int main(void)
         bitfield b = {.byte1 = 0x12, .byte2 = 0x34, .byte3 = 0x56, .byte4 = 0x78};
         test_int_v(bitfield_to_uint32(b), 0x12345678, "bitfield == 0x12345678");
     }
+
+    add_test("Test uint32_t_to_bitfield:");
+    {
+        uint32_t i = 0x12345678;
+        bitfield bf = uint32_to_bitfield(i);
+        test_int_v(bf.byte1, 0x12, "bf.byte1 == 0x12");
+        test_int_v(bf.byte2, 0x34, "bf.byte2 == 0x34");
+        test_int_v(bf.byte3, 0x56, "bf.byte3 == 0x56");
+        test_int_v(bf.byte4, 0x78, "bf.byte4 == 0x78");
+    }
     end_all_tests();
 }
