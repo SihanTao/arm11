@@ -9,7 +9,8 @@ enum instruction_kind
     DATA_PROCESS,
     MUL,
     TRANS,
-    BRANCH
+    BRANCH,
+    ZERO
 };
 
 //the struct of byte representation in memory
