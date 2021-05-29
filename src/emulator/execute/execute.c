@@ -100,16 +100,16 @@ void execute_DP(instruction_t* decoded, ArmState armstate)
     {
         switch (decoded->u.data_process.OpCode)
         {
-            case 0000: result = (Rn && operand2);
-            case 0001: result = (Rn ^ operand2);
-            case 0010: result = (Rn - operand2);
-            case 0011: result = (operand2 - Rn);
-            case 0100: result = (Rn + operand2);
-            case 1000: (Rn && operand2);
-            case 1001: (Rn ^ operand2);
-            case 1010: (Rn - operand2);
-            case 1100: result = (Rn || operand2);
-            case 1101: result = (operand2);
+            case AND: result = (Rn && operand2);
+            case EOR: result = (Rn ^ operand2);
+            case SUB: result = (Rn - operand2);
+            case RSB: result = (operand2 - Rn);
+            case ADD: result = (Rn + operand2);
+            case TST: (Rn && operand2);
+            case TEQ: (Rn ^ operand2);
+            case CMP: (Rn - operand2);
+            case ORR: result = (Rn || operand2);
+            case MOV: result = (operand2);
         }
     }
 
