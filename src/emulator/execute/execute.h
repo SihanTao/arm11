@@ -16,6 +16,9 @@ enum {
     EQ = 0, NE, GE = 0b1010, LT, GT, LE, AL
 };
 
+enum {
+    AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV
+};
 #define EXIT true;
 #define CONTINUE false;
 

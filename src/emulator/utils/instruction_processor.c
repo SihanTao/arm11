@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "../utils/types_and_macros.h"
 #include "instruction_processor.h"
-#include "bit_operation.h"
+#include "tools.h"
 
 /*
  * Decode the instruction:

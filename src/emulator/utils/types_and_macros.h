@@ -90,7 +90,6 @@ typedef struct
     } u;
 } instruction_t;
 
-
 /*
  * The struct used to hold all states in this program
  */
