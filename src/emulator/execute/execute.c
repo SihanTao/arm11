@@ -30,54 +30,6 @@ bool execute(instruction_t* decode, ArmState armstate)
     }
 }
 
-void execute_DP(instruction_t* decode, ArmState armstate)
-{
-    uint32_t result;
-
-    uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.data_process.Rn]);
-    uint32_t operand2 = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2]);
-
-
-    // If the I bit is set, then Operand2 is an immediate constant, otherwise it is a shifted register.
-    if (decode->u.data_process.I)
-    {
-
-    } else {
-
-    }
-
-    // Type of Opcode
-    if (decode->u.data_process.OpCode)
-    {
-        switch (decode->u.data_process.OpCode)
-        {
-            case AND: result = (Rn && operand2);
-            case EOR: result = (Rn ^ operand2);
-            case SUB: result = (Rn - operand2);
-            case RSB: result = (operand2 - Rn);
-            case ADD: result = (Rn + operand2);
-            case TST: (Rn && operand2);
-            case TEQ: (Rn ^ operand2);
-            case CMP: (Rn - operand2);
-            case ORR: result = (Rn || operand2);
-            case MOV: result = (operand2);
-            default:
-                break;
-        }
-    }
-    
-    // If the S bit is set, we need to update the CPSR
-    if (decode->u.data_process.S)
-    {
-        switch (decode->u.data_process.OpCode)
-        {
-            
-        }
-        armstate->flagZ = (!result) ? 1 : 0;
-        armstate->flagN = get_k_bit(result, 31);
-    }
-}
-
 void execute_MUL(instruction_t* decode, ArmState armstate)
 {
     uint32_t result;
@@ -103,9 +55,74 @@ void execute_MUL(instruction_t* decode, ArmState armstate)
     }
 }
 
-void execute_BRANCH(instruction_t* decode, ArmState armstate)
+void execute_DP(instruction_t* decoded, ArmState armstate)
 {
+    uint32_t result;
+
+    //if I is set, it means that OP2 is an immediate value.
+    if (decoded->u.data_process.I)
+    {
+        int rotation_amount = 2 * get_k_bit(decoded->u.data_process.operand2, 4);
+        uint32_t extented = get_k_bit(decoded->u.data_process.operand2, 8);
+        //then do the rotation.
+    } else //OP2 is a register.
+      {
+          int shift = get_k_bit(decoded->u.data_process.operand2, 4);
+          uint32_t rm = get_k_bit(decoded->u.data_process.operand2, 4);
+          
+          switch (decoded->u.data_process.operand2)//take the shift type.
+          {
+              case 00:
+              {
+                  decoded->u.data_process.operand2 = rm >> shift;
+                  break;
+              }
+              case 01:
+              {
+                  decoded->u.data_process.operand2 = rm << shift;
+                  break;
+              }
+              case 10:
+              {
+                  //two's complement opration.
+              }
+              case 11:
+              {
+                  //rotate.
+              }
+          }
+      }
     
+    //compute the result
+    uint32_t Rn = bitfield_to_uint32(armstate->reg[decoded->u.data_process.Rn]);
+    uint32_t operand2 = bitfield_to_uint32(armstate->reg[decoded->u.data_process.operand2]);
+    if (decoded->u.data_process.OpCode)
+    {
+        switch (decoded->u.data_process.OpCode)
+        {
+            case 0000: result = (Rn && operand2);
+            case 0001: result = (Rn ^ operand2);
+            case 0010: result = (Rn - operand2);
+            case 0011: result = (operand2 - Rn);
+            case 0100: result = (Rn + operand2);
+            case 1000: (Rn && operand2);
+            case 1001: (Rn ^ operand2);
+            case 1010: (Rn - operand2);
+            case 1100: result = (Rn || operand2);
+            case 1101: result = (operand2);
+        }
+    }
+
+    //save the result.
+    armstate->reg[decoded->u.data_process.Rd] = uint32_to_bitfield(result);
+    
+    //if S is set then CPSR should be update.
+    if (decoded->u.data_process.S)
+    {
+        armstate->flagN = get_k_bit(result, 31);
+        if (result == 0) {armstate->flagZ = 0;}
+        //changes with FlagC.
+    }
 }
 
 bool test_instruction_cond(instruction_t* instruction, ArmState armstate)
