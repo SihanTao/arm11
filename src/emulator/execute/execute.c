@@ -168,14 +168,6 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
     armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(result);
 }
 
-//helper function for branch.
-//uint32_t sign_extend_24_32(uint32_t n) 
-//{
-//    const int bits = 24;
-//    uint32_t m = 1u << (bits - 1);
-//    return (n ^ m) - m;
-//}
-
 void execute_BRANCH(instruction_t* decode, ArmState armstate)
 {
     uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.branch.offset]);
