@@ -58,7 +58,8 @@ void execute_MUL(instruction_t* decode, ArmState armstate)
 void execute_DP(instruction_t* decode, ArmState armstate)
 {
     uint32_t result;
-
+    int Change_FlagC = 0;
+    
     //if I is set, it means that OP2 is an immediate value.
     if (decode->u.data_process.I)
     {
@@ -69,36 +70,46 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     
     } else //OP2 is a register.
       {
-          int shift = decode->u.data_process.operand2.Register.Shift.Integer;
+          
+          int shift_val = decode->u.data_process.operand2.Register.Shift.Integer;
           uint32_t rm = decode->u.data_process.operand2.Register.Rm;
           
           switch (decode->u.data_process.operand2.Register.Shift.ShiftT)
           {
               case 00:
               {
-                  decode->u.data_process.operand2.op2 = rm >> shift;
+                  decode->u.data_process.operand2.op2 = rm >> shift_val;
+                  Change_FlagC = get_k_bit(rm, 31);
                   break;
               }
               case 01:
               {
-                  decode->u.data_process.operand2.op2 = rm << shift;
+                  decode->u.data_process.operand2.op2 = rm << shift_val;
+                  Change_FlagC = get_k_bit(rm, 0);
                   break;
               }
               case 10:
               {
-                  uint32_t after_shrift = rm << shift;
+                  uint32_t after_shift = rm << shift_val;
                   int sign_bit = get_k_bit(rm, 31);
                   uint32_t mask = 0;
                   int i;
-                  for (i==31; i>=32-shift; i--)
+                  for (i==31; i>=32-shift_val; i--)
                   {
                       mask =+ sign_bit ^ i;
                   }
-                  decode->u.data_process.operand2.op2 = after_shrift | mask;
+                  decode->u.data_process.operand2.op2 = after_shift | mask;
+                  break;
               }
               case 11:
               {
-                  //rotate.
+                  int i;
+                  int af_rot_val = 0;
+                  for (i==0; i<shift_val; i++)
+                  {
+                      af_rot_val =+ get_k_bit(rm, i) ^ (31-i);
+                  }
+                  decode->u.data_process.operand2.op2 = af_rot_val + rm << shift_val;
               }
           }
       }
@@ -120,6 +131,8 @@ void execute_DP(instruction_t* decode, ArmState armstate)
             case CMP: (Rn - operand2);//result not written 
             case ORR: result = (Rn || operand2);
             case MOV: result = (operand2);
+            default:
+                break;
         }
     }
 
@@ -131,7 +144,7 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     {
         armstate->flagN = get_k_bit(result, 31);
         if (result == 0) {armstate->flagZ = 0;}
-        //changes with FlagC.
+        armstate->flagC = Change_FlagC;
     }
 }
 
