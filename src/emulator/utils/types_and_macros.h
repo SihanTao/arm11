@@ -90,7 +90,28 @@ typedef struct
         } mul;
         struct
         {
-            unsigned int offset: 12;
+            union // the union is used to present different cases of Offset.
+            {
+                struct // struct1 is the case when Offset is a register.
+                {
+                    unsigned int Integer: 5;
+                    unsigned int ShiftT: 2;
+                    unsigned int: 1; // not used: 0.
+                }Register;
+                
+                struct // struct2 is the case when Offset is an immediate offset.
+                {
+                    struct
+                    {
+                        unsigned int Rotate: 4;
+                        unsigned int Imm: 8;
+
+                    }Shift;
+                    unsigned int Rm: 4;
+                }Io;
+
+                unsigned int offset_value: 12; //this is used to do operations on offset.
+            }offset;
             unsigned int Rd: 4;
             unsigned int Rn: 4;
             unsigned int L: 1;
