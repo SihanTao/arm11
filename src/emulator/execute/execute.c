@@ -60,17 +60,23 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     uint32_t result;
     int Change_FlagC = 0;
     
-    //if I is set, it means that OP2 is an immediate value.
-    if (decode->u.data_process.I)
+    if (decode->u.data_process.I) // OP2 is an immediate value.
     {
         
         int rotation_amount = 2 * decode->u.data_process.operand2.Iv.Rotate;
-        uint32_t extented_Imm = decode->u.data_process.operand2.Iv.Imm;
-        //then do the rotation.
+        uint32_t Imm = decode->u.data_process.operand2.Iv.Imm;
+        int i;
+        int af_rot_val = 0;
+        for (i==0; i<rotation_amount; i++)
+        {
+            af_rot_val =+ get_k_bit(Imm, i) ^ (31-i);
+        }
+        decode->u.data_process.operand2.op2 = af_rot_val + Imm << rotation_amount;
+        Change_FlagC = get_k_bit(Imm, rotation_amount-1);
     
-    } else //OP2 is a register.
+    } 
+      else //OP2 is a register.
       {
-          
           int shift_val = decode->u.data_process.operand2.Register.Shift.Integer;
           uint32_t rm = decode->u.data_process.operand2.Register.Rm;
           
@@ -79,13 +85,13 @@ void execute_DP(instruction_t* decode, ArmState armstate)
               case 00:
               {
                   decode->u.data_process.operand2.op2 = rm >> shift_val;
-                  Change_FlagC = get_k_bit(rm, 31);
+                  Change_FlagC = get_k_bit(rm, 32-shift_val);
                   break;
               }
               case 01:
               {
                   decode->u.data_process.operand2.op2 = rm << shift_val;
-                  Change_FlagC = get_k_bit(rm, 0);
+                  Change_FlagC = get_k_bit(rm, shift_val-1);
                   break;
               }
               case 10:
@@ -99,6 +105,7 @@ void execute_DP(instruction_t* decode, ArmState armstate)
                       mask =+ sign_bit ^ i;
                   }
                   decode->u.data_process.operand2.op2 = after_shift | mask;
+                  Change_FlagC = get_k_bit(rm, shift_val-1);
                   break;
               }
               case 11:
@@ -110,7 +117,11 @@ void execute_DP(instruction_t* decode, ArmState armstate)
                       af_rot_val =+ get_k_bit(rm, i) ^ (31-i);
                   }
                   decode->u.data_process.operand2.op2 = af_rot_val + rm << shift_val;
+                  Change_FlagC = get_k_bit(rm, shift_val-1);
+                  break;
               }
+              default:
+                break;
           }
       }
     
