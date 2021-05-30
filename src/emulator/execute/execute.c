@@ -81,19 +81,19 @@ void execute_DP(instruction_t* decode, ArmState armstate)
           
           switch (bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Register.Shift.ShiftT]))
           {
-              case 00:
+              case 00: //logical left 
               {
                   armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(rm >> shift_val);
                   Change_FlagC = get_k_bit(rm, 32-shift_val);
                   break;
               }
-              case 01:
+              case 01: //logical right
               {
                   armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(rm << shift_val);
                   Change_FlagC = get_k_bit(rm, shift_val-1);
                   break;
               }
-              case 10:
+              case 10: //arithmetic right
               {
                   uint32_t after_shift = rm << shift_val;
                   int sign_bit = get_k_bit(rm, 31);
@@ -106,7 +106,7 @@ void execute_DP(instruction_t* decode, ArmState armstate)
                   Change_FlagC = get_k_bit(rm, shift_val-1);
                   break;
               }
-              case 11:
+              case 11: //rotate right
               {
                   int af_rot_val = 0;
                   for (int i=0; i<shift_val; i++)
@@ -164,19 +164,19 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
         int shift_val = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Register.Shift.Integer]);
         uint32_t rm = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Register.Rm]);
           
-        switch (bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Register.Shift.ShiftT]))
+        switch (bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Register.Shift.ShiftT]))
         {
-            case 00:
+            case 00: //logical left
             {
                 armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(rm >> shift_val);
                 break;
             }
-            case 01:
+            case 01: //logical right
             {
                 armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(rm << shift_val);
                 break;
             }
-            case 10:
+            case 10: //arithmetic right
             {
                 uint32_t after_shift = rm << shift_val;
                 int sign_bit = get_k_bit(rm, 31);
@@ -188,7 +188,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
                 armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(after_shift | mask); 
                 break;
             }
-            case 11:
+            case 11: //rotate right
             {
                 int af_rot_val = 0;
                 for (int i=0; i<shift_val; i++)
