@@ -62,24 +62,24 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     //if I is set, it means that OP2 is an immediate value.
     if (decode->u.data_process.I)
     {
-        int rotation_amount = 2 * get_k_bit(decode->u.data_process.operand2, 4);
-        uint32_t extented = get_k_bit(decode->u.data_process.operand2, 8);
+        int rotation_amount = 2 * decode->u.data_process.operand2.Iv.Rotate;
+        uint32_t extented_Imm = decode->u.data_process.operand2.Iv.Imm;
         //then do the rotation.
     } else //OP2 is a register.
       {
-          int shift = get_k_bit(decode->u.data_process.operand2, 4);
-          uint32_t rm = get_k_bit(decode->u.data_process.operand2, 4);
+          int shift = decode->u.data_process.operand2.Register.Shift.Integer;
+          uint32_t rm = decode->u.data_process.operand2.Register.Rm;
           
-          switch (decode->u.data_process.operand2)//take the shift type.
+          switch (decode->u.data_process.operand2.Register.Shift.ShiftT)//take the shift type.
           {
               case 00:
               {
-                  decode->u.data_process.operand2 = rm >> shift;
+                  decode->u.data_process.operand2.op2 = rm >> shift;
                   break;
               }
               case 01:
               {
-                  decode->u.data_process.operand2 = rm << shift;
+                  decode->u.data_process.operand2.op2 = rm << shift;
                   break;
               }
               case 10:
@@ -95,7 +95,7 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     
     //compute the result
     uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.data_process.Rn]);
-    uint32_t operand2 = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2]);
+    uint32_t operand2 = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.op2]);
     if (decode->u.data_process.OpCode)
     {
         switch (decode->u.data_process.OpCode)
@@ -105,9 +105,9 @@ void execute_DP(instruction_t* decode, ArmState armstate)
             case SUB: result = (Rn - operand2);
             case RSB: result = (operand2 - Rn);
             case ADD: result = (Rn + operand2);
-            case TST: (Rn && operand2);
-            case TEQ: (Rn ^ operand2);
-            case CMP: (Rn - operand2);
+            case TST: (Rn && operand2);//result not written
+            case TEQ: (Rn ^ operand2);//result not written
+            case CMP: (Rn - operand2);//result not written 
             case ORR: result = (Rn || operand2);
             case MOV: result = (operand2);
         }

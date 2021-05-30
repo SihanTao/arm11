@@ -47,7 +47,27 @@ typedef struct
         bitfield bf;
         struct
         {
-            unsigned int operand2: 12;
+            union // the union is used to present different cases of Op2.
+            {
+                struct // struct1 is the case when Op2 is an immediate value.
+                {
+                    unsigned int Rotate: 4;
+                    unsigned int Imm: 8;
+                }Iv;
+                
+                struct // struct2 is the case when Op2 is a register.
+                {
+                    struct
+                    {
+                        unsigned int Integer: 5;
+                        unsigned int ShiftT: 2;
+                        unsigned int: 1; // not used: 0.
+                    }Shift;
+                    unsigned int Rm: 4;
+                }Register;
+                
+                unsigned int op2: 12; //this is used to do operations on Op2.
+            }operand2;
             unsigned int Rd: 4;
             unsigned int Rn: 4;
             unsigned int S: 1;
