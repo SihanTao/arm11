@@ -62,15 +62,17 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     //if I is set, it means that OP2 is an immediate value.
     if (decode->u.data_process.I)
     {
+        
         int rotation_amount = 2 * decode->u.data_process.operand2.Iv.Rotate;
         uint32_t extented_Imm = decode->u.data_process.operand2.Iv.Imm;
         //then do the rotation.
+    
     } else //OP2 is a register.
       {
           int shift = decode->u.data_process.operand2.Register.Shift.Integer;
           uint32_t rm = decode->u.data_process.operand2.Register.Rm;
           
-          switch (decode->u.data_process.operand2.Register.Shift.ShiftT)//take the shift type.
+          switch (decode->u.data_process.operand2.Register.Shift.ShiftT)
           {
               case 00:
               {
@@ -84,7 +86,15 @@ void execute_DP(instruction_t* decode, ArmState armstate)
               }
               case 10:
               {
-                  //two's complement opration.
+                  uint32_t after_shrift = rm << shift;
+                  int sign_bit = get_k_bit(rm, 31);
+                  uint32_t mask = 0;
+                  int i;
+                  for (i==31; i>=32-shift; i--)
+                  {
+                      mask =+ sign_bit ^ i;
+                  }
+                  decode->u.data_process.operand2.op2 = after_shrift | mask;
               }
               case 11:
               {
