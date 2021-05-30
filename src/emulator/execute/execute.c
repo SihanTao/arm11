@@ -58,39 +58,39 @@ void execute_MUL(instruction_t* decode, ArmState armstate)
 void execute_DP(instruction_t* decode, ArmState armstate)
 {
     uint32_t result;
-    int Change_FlagC = 0;
+    
+    int Change_FlagC = 0; // the carry out bit need to be store in FlagC.
     
     if (decode->u.data_process.I) // OP2 is an immediate value.
     {
         
-        int rotation_amount = 2 * decode->u.data_process.operand2.Iv.Rotate;
-        uint32_t Imm = decode->u.data_process.operand2.Iv.Imm;
-        int i;
+        int rotation_amount = 2 * bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Iv.Rotate]);
+        uint32_t Imm = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Iv.Imm]);
         int af_rot_val = 0;
-        for (i==0; i<rotation_amount; i++)
+        for (int i=0; i<rotation_amount; i++)
         {
             af_rot_val =+ get_k_bit(Imm, i) ^ (31-i);
         }
-        decode->u.data_process.operand2.op2 = af_rot_val + Imm << rotation_amount;
+        armstate->reg[decode->u.data_process.operand2.Iv.Imm] = uint32_to_bitfield(af_rot_val + (Imm << rotation_amount));
         Change_FlagC = get_k_bit(Imm, rotation_amount-1);
     
     } 
       else //OP2 is a register.
       {
-          int shift_val = decode->u.data_process.operand2.Register.Shift.Integer;
-          uint32_t rm = decode->u.data_process.operand2.Register.Rm;
+          int shift_val = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Register.Shift.Integer]);
+          uint32_t rm = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Register.Rm]);
           
-          switch (decode->u.data_process.operand2.Register.Shift.ShiftT)
+          switch (bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Register.Shift.ShiftT]))
           {
               case 00:
               {
-                  decode->u.data_process.operand2.op2 = rm >> shift_val;
+                  armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(rm >> shift_val);
                   Change_FlagC = get_k_bit(rm, 32-shift_val);
                   break;
               }
               case 01:
               {
-                  decode->u.data_process.operand2.op2 = rm << shift_val;
+                  armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(rm << shift_val);
                   Change_FlagC = get_k_bit(rm, shift_val-1);
                   break;
               }
@@ -99,24 +99,22 @@ void execute_DP(instruction_t* decode, ArmState armstate)
                   uint32_t after_shift = rm << shift_val;
                   int sign_bit = get_k_bit(rm, 31);
                   uint32_t mask = 0;
-                  int i;
-                  for (i==31; i>=32-shift_val; i--)
+                  for (int i=31; i>=32-shift_val; i--)
                   {
                       mask =+ sign_bit ^ i;
                   }
-                  decode->u.data_process.operand2.op2 = after_shift | mask;
+                  armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(after_shift | mask);
                   Change_FlagC = get_k_bit(rm, shift_val-1);
                   break;
               }
               case 11:
               {
-                  int i;
                   int af_rot_val = 0;
-                  for (i==0; i<shift_val; i++)
+                  for (int i=0; i<shift_val; i++)
                   {
                       af_rot_val =+ get_k_bit(rm, i) ^ (31-i);
                   }
-                  decode->u.data_process.operand2.op2 = af_rot_val + rm << shift_val;
+                  armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(af_rot_val + (rm << shift_val));
                   Change_FlagC = get_k_bit(rm, shift_val-1);
                   break;
               }
@@ -128,23 +126,20 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     //compute the result
     uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.data_process.Rn]);
     uint32_t operand2 = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.op2]);
-    if (decode->u.data_process.OpCode)
+    switch (decode->u.data_process.OpCode)
     {
-        switch (decode->u.data_process.OpCode)
-        {
-            case AND: result = (Rn && operand2);
-            case EOR: result = (Rn ^ operand2);
-            case SUB: result = (Rn - operand2);
-            case RSB: result = (operand2 - Rn);
-            case ADD: result = (Rn + operand2);
-            case TST: (Rn && operand2);//result not written
-            case TEQ: (Rn ^ operand2);//result not written
-            case CMP: (Rn - operand2);//result not written 
-            case ORR: result = (Rn || operand2);
-            case MOV: result = (operand2);
-            default:
-                break;
-        }
+        case AND: result = (Rn && operand2);
+        case EOR: result = (Rn ^ operand2);
+        case SUB: result = (Rn - operand2);
+        case RSB: result = (operand2 - Rn);
+        case ADD: result = (Rn + operand2);
+        case TST: (Rn && operand2);//result not written
+        case TEQ: (Rn ^ operand2);//result not written
+        case CMP: (Rn - operand2);//result not written 
+        case ORR: result = (Rn || operand2);
+        case MOV: result = (operand2);
+        default:
+            break;
     }
 
     //save the result.
@@ -154,7 +149,7 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     if (decode->u.data_process.S)
     {
         armstate->flagN = get_k_bit(result, 31);
-        if (result == 0) {armstate->flagZ = 0;}
+        armstate->flagZ = (!result) ? 1 : 0;
         armstate->flagC = Change_FlagC;
     }
 }
