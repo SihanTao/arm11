@@ -65,7 +65,6 @@ typedef struct
                     }Shift;
                     unsigned int Rm: 4;
                 }Register;
-                
                 unsigned int op2: 12; //this is used to do operations on Op2.
             }operand2;
             unsigned int Rd: 4;
@@ -94,32 +93,30 @@ typedef struct
             {
                 struct // struct1 is the case when Offset is a register.
                 {
-                    unsigned int Integer: 5;
-                    unsigned int ShiftT: 2;
-                    unsigned int: 1; // not used: 0.
-                }Register;
-                
-                struct // struct2 is the case when Offset is an immediate offset.
-                {
                     struct
                     {
-                        unsigned int Rotate: 4;
-                        unsigned int Imm: 8;
-
+                        unsigned int Integer: 5;
+                        unsigned int ShiftT: 2;
+                        unsigned int: 1; // not used: 0.
                     }Shift;
                     unsigned int Rm: 4;
-                }Io;
+                }Register;
 
+                struct // struct2 is the case when Offset is an immediate offset.
+                {
+                    unsigned int Rotate: 4;
+                    unsigned int Imm: 8;
+                }Io;
                 unsigned int offset_value: 12; //this is used to do operations on offset.
             }offset;
             unsigned int Rd: 4;
             unsigned int Rn: 4;
             unsigned int L: 1;
-            unsigned int : 2; // not used 00
+            unsigned int: 2; // not used 00
             unsigned int U: 1;
             unsigned int P: 1;
             unsigned int I: 1;
-            unsigned int : 2; // not used 01
+            unsigned int: 2; // not used 01
             unsigned int cond: 4;
         } trans;
         struct

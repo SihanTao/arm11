@@ -158,7 +158,6 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
     uint32_t result;
 
     uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.trans.Rn]);
-    uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.trans.offset]);
 
     if (decode->u.trans.I) // offset is a register.
     {
