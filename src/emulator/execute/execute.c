@@ -140,18 +140,20 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
 }
 
 //helper function for branch.
-uint32_t sign_extend_24_32(uint32_t n) 
-{
-    const int bits = 24;
-    uint32_t m = 1u << (bits - 1);
-    return (n ^ m) - m;
-}
+//uint32_t sign_extend_24_32(uint32_t n) 
+//{
+//    const int bits = 24;
+//    uint32_t m = 1u << (bits - 1);
+//    return (n ^ m) - m;
+//}
 
 void execute_BRANCH(instruction_t* decode, ArmState armstate)
 {
     uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.branch.offset]);
     offset << 2;
-    armstate->pc += sign_extend_24_32(offset);
+
+    uint32_t extented = get_k_bit(decode->u.branch.offset, 24);
+    armstate->pc += extented;
 }
 
 bool test_instruction_cond(instruction_t* instruction, ArmState armstate)
