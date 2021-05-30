@@ -179,10 +179,23 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
 void execute_BRANCH(instruction_t* decode, ArmState armstate)
 {
     uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.branch.offset]);
-    offset << 2;
+    int sign_bit = get_k_bit(offset, 24);
+    offset <<= 2;
 
-    uint32_t extented = get_k_bit(decode->u.branch.offset, 24);
-    armstate->pc += extented;
+    if (sign_bit == 0)
+    {
+        uint32_t mask = ~(2 ^ 25 + 2 ^ 26);
+        uint32_t extended = offset & mask;
+        armstate->pc += extended;
+    } else {
+        uint32_t mask = 0;
+        for (int i=31; i>24; i--)
+        {
+            mask += 2 ^ i;
+        }
+        uint32_t extended = offset | mask;
+        armstate->pc += extended;
+    }
 }
 
 bool test_instruction_cond(instruction_t* instruction, ArmState armstate)
