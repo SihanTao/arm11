@@ -125,6 +125,20 @@ void execute_DP(instruction_t* decode, ArmState armstate)
     }
 }
 
+void execute_SDT(instruction_t* decode, ArmState armstate)
+{
+    uint32_t result;
+
+    uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.trans.Rn]);
+    uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.trans.offset]);
+
+    //if U is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
+    Rn = (decode->u.trans.U) ? offset + Rn : Rn - offset;
+
+    //save the result.
+    armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(result);
+}
+
 //helper function for branch.
 uint32_t sign_extend_24_32(uint32_t n) 
 {
