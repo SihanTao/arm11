@@ -8,6 +8,7 @@ typedef struct pipeline_state_struct {
 
 typedef pipeline_state_struct * Pipeline;
 
+// refresh pipeline state, pc++
 # define FLASH_CYCLE temp = current; current = next; next = temp; states->pc++;
 
 /*

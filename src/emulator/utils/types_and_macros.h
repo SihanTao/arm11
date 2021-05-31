@@ -2,9 +2,8 @@
 #define TYPES_AND_MACROS
 
 /*
- * In order to minisize redundant code, include some std libs here.
+ * In order to minisize redundant code, include some std-libs here.
  */
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -51,7 +50,6 @@ typedef struct
  * the definition of the structure
  * for instrctions
  */
-
 typedef struct
 {
     enum instruction_kind tag;
@@ -116,12 +114,14 @@ typedef struct
                     unsigned int Rm: 4;
                 }Register;
 
-                struct // struct2 is the case when Offset is an immediate offset.
+               // struct2 is the case when Offset is an immediate offset.
+                struct
                 {
                     unsigned int Rotate: 4;
                     unsigned int Imm: 8;
                 }Io;
-                unsigned int offset_value: 12; //this is used to do operations on offset.
+                unsigned int offset_value: 12;
+                //this is used to do operations on offset.
             }offset;
             unsigned int Rd: 4;
             unsigned int Rn: 4;

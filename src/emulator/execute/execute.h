@@ -21,7 +21,7 @@ enum {
 enum {
     load, store
 };
-#define EXIT true;
-#define CONTINUE false;
+#define EXIT true
+#define CONTINUE false
 
 #endif // EXECUTE

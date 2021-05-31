@@ -44,7 +44,8 @@ int get_k_bit(uint32_t i, int k)
   return (i & (1 << k)) >> k;
 }
 
-// TODO : should this be defined here? I think it is probably better to make this as a static function in decode.
+// TODO : should this be defined here?
+// I think it is probably better to make this as a static function in decode.
 instruction_t init_instruction(bitfield fetched)
 {
   instruction_t init;
