@@ -1,14 +1,27 @@
 #ifndef TYPES_AND_MACROS
 #define TYPES_AND_MACROS
 
+/*
+ * In order to minisize redundant code, include some std-libs here.
+ */
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 typedef char byte;
 
+// default target machine endian is small;
+#define TARGET_MACHINE_ENDIAN small;
+typedef enum endian_mode
+{
+  big,
+  little
+} endian_mode;
+
+// res-pi has 64k of memory, thus max address is 65536
 #define MAX_MEMORY_ADDRESS 65536
 
+// 12 general purpose registers
 #define NUM_OF_REG 12
 
 /* Include the four instruction kind
@@ -37,7 +50,6 @@ typedef struct
  * the definition of the structure
  * for instrctions
  */
-
 typedef struct
 {
     enum instruction_kind tag;
@@ -47,7 +59,26 @@ typedef struct
         bitfield bf;
         struct
         {
-            unsigned int operand2: 12;
+            union // the union is used to present different cases of Op2.
+            {
+                struct // struct1 is the case when Op2 is an immediate value.
+                {
+                    unsigned int Rotate: 4;
+                    unsigned int Imm: 8;
+                }Iv;
+
+                struct // struct2 is the case when Op2 is a register.
+                {
+                    struct
+                    {
+                        unsigned int Integer: 5;
+                        unsigned int ShiftT: 2;
+                        unsigned int: 1; // not used: 0.
+                    }Shift;
+                    unsigned int Rm: 4;
+                }Register;
+                unsigned int op2: 12; //this is used to do operations on Op2.
+            }operand2;
             unsigned int Rd: 4;
             unsigned int Rn: 4;
             unsigned int S: 1;
@@ -70,15 +101,36 @@ typedef struct
         } mul;
         struct
         {
-            unsigned int offset: 12;
+            union // the union is used to present different cases of Offset.
+            {
+                struct // struct1 is the case when Offset is a register.
+                {
+                    struct
+                    {
+                        unsigned int Integer: 5;
+                        unsigned int ShiftT: 2;
+                        unsigned int: 1; // not used: 0.
+                    }Shift;
+                    unsigned int Rm: 4;
+                }Register;
+
+               // struct2 is the case when Offset is an immediate offset.
+                struct
+                {
+                    unsigned int Rotate: 4;
+                    unsigned int Imm: 8;
+                }Io;
+                unsigned int offset_value: 12;
+                //this is used to do operations on offset.
+            }offset;
             unsigned int Rd: 4;
             unsigned int Rn: 4;
             unsigned int L: 1;
-            unsigned int : 2; // not used 00
+            unsigned int: 2; // not used 00
             unsigned int U: 1;
             unsigned int P: 1;
             unsigned int I: 1;
-            unsigned int : 2; // not used 01
+            unsigned int: 2; // not used 01
             unsigned int cond: 4;
         } trans;
         struct

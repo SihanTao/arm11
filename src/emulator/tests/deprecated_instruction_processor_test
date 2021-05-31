@@ -1,9 +1,10 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include "../utils/unit_test.h"
+#include "../utils/types_and_macros.h"
 #include "../utils/instruction_processor.h"
+<<<<<<< HEAD:src/emulator/tests/instruction_processor_test.c
 #include "../utils/tools.h"
+=======
+>>>>>>> 88a53c71499eef83c44a64630bb17d79f3882a9c:src/emulator/tests/deprecated_instruction_processor_test
 
 int main(void)
 {

@@ -1,4 +1,6 @@
-#include "decode.h"
+#include "../utils/types_and_macros.h"
+#include "../utils/tools.h"
+#include "../decode/decode.h"
 #include "../utils/unit_test.h"
 
 int main(void)
@@ -107,7 +109,7 @@ int main(void)
         test_int_v(res[0].tag, DATA_PROCESS, "res[0]");
         test_int_v(res[1].tag, BRANCH, "res[0]");
         test_int_v(res[2].tag, DATA_PROCESS, "res[0]");
-        test_int_v(res[3].tag, DATA_PROCESS, "res[0]");       
+        test_int_v(res[3].tag, DATA_PROCESS, "res[0]");
     }
 
     end_all_tests();
