@@ -1,7 +1,8 @@
-#include "tools.h"
-#include "unit_test.h"
+#include "../utils/types_and_macros.h"
+#include "../utils/tools.h"
+#include "../utils/unit_test.h"
 
-int main(void) 
+int main(void)
 {
     add_test("Test bitfield_to_uint32_t:");
     {
