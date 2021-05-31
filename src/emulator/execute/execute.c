@@ -233,7 +233,6 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
         
     }
     
-
     //save the result.
     armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(result);
 }
