@@ -174,7 +174,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
                 armstate->reg[decode->u.trans.offset.offset_value] = uint32_to_bitfield(rm << shift_val);
                 break;
             }
-            case 10: //arithmetic right
+            case 02: //arithmetic right
             {
                 uint32_t after_shift = rm << shift_val;
                 int sign_bit = get_k_bit(rm, 31);
@@ -186,7 +186,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
                 armstate->reg[decode->u.trans.offset.offset_value] = uint32_to_bitfield(after_shift | mask); 
                 break;
             }
-            case 11: //rotate right
+            case 03: //rotate right
             {
                 int af_rot_val = 0;
                 for (int i=0; i<shift_val; i++)
@@ -232,8 +232,8 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
         switch (decode->u.trans.P)
         {
             case load:
-            uint32_t result =  bitfield_to_uint32(
-                armstate->reg[decode->u.trans.Rn] + armstate->reg[decode->u.trans.offset.offset_value]);
+            result =  bitfield_to_uint32(armstate->reg[decode->u.trans.Rn]) 
+            + bitfield_to_uint32(armstate->reg[decode->u.trans.offset.offset_value]);
 
             case store:
             armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(newRn);
@@ -248,7 +248,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
         switch (decode->u.trans.P)
         {
             case load:
-            uint32_t result = Rn;
+            result = Rn;
 
             case store:
             armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(Rn);
