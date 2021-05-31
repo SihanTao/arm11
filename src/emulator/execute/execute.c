@@ -2,8 +2,8 @@
 #include <math.h>
 
 #include "../utils/types_and_macros.h"
-
 #include "../utils/tools.h"
+
 #include "execute.h"
 
 
@@ -43,26 +43,29 @@ bool execute(instruction_t* decode, ArmState armstate)
 
 void execute_MUL(instruction_t* decode, ArmState armstate)
 {
-    uint32_t result;
+    // pre: PC is not used as operand or desination register
+    //      Rd will not be the same as Rm
+    uint32_t result = 0;
+    bitfield * reg = armstate->reg;
 
-    uint32_t Rm = bitfield_to_uint32(armstate->reg[decode->u.mul.Rm]);
-    uint32_t Rs = bitfield_to_uint32(armstate->reg[decode->u.mul.Rs]);
-    result = Rm * Rs;
+    bitfield Rm = reg[decode->u.mul.Rm];
+    bitfield Rs = reg[decode->u.mul.Rs];
+    result = bitfield_to_uint32(Rm) * bitfield_to_uint32(Rs);
 
     // the accumulate bit is set
     if (decode->u.mul.A)
     {
-        uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.mul.Rn]);
-        result += Rn;
+        bitfield Rn = reg[decode->u.mul.Rn];
+        result += bitfield_to_uint32(Rn);
     }
     // Save the result
-    armstate->reg[decode->u.mul.Rd] = uint32_to_bitfield(result);
+    reg[decode->u.mul.Rd] = uint32_to_bitfield(result);
 
     // If the S bit is set, we need to update the CPSR
     if (decode->u.mul.S)
     {
         armstate->flagN = get_k_bit(result, 31);
-        armstate->flagZ = (!result) ? 1 : 0;
+        armstate->flagZ = result == 0;
     }
 }
 
@@ -225,7 +228,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
 
     uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.trans.Rn]);
     uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.offset_value]);
-    
+
     //if U is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
     Rn = (decode->u.trans.U) ? Rn + offset: Rn - offset;
 
@@ -246,9 +249,11 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
             case load:
             result =  bitfield_to_uint32(armstate->reg[decode->u.trans.Rn])
             + bitfield_to_uint32(armstate->reg[decode->u.trans.offset.offset_value]);
+            break;
 
             case store:
             armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(newRn);
+            break;
 
             default:
             break;
@@ -261,9 +266,11 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
         {
             case load:
             result = Rn;
+            break;
 
             case store:
             armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(Rn);
+            break;
 
             default:
             break;
