@@ -18,6 +18,13 @@ enum {
     AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV
 };
 
+enum data_processing_shift_type{
+  LOGICAL_LEFT = 0b00,
+  LOGICAL_RIGHT = 0b01,
+  ARITH_RIGHT = 0b10,
+  ROTATE_RIGHT = 0b11
+};
+
 enum {
     load, store
 };

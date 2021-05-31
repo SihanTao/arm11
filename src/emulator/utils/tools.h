@@ -22,13 +22,13 @@ extern void print_bit(uint32_t i);
  * Return the kth bit of a
  * given integer
  */
-extern int get_k_bit(uint32_t i, int k);
+extern int get_bit(uint32_t i, int k);
 
 extern void convert_endian_ptr(char * buffer);
 extern bitfield convert_endian(bitfield word);
 extern instruction_t init_instruction(bitfield fetched);
-extern uint32_t bitfield_to_uint32(bitfield b);
-extern bitfield uint32_to_bitfield(uint32_t i);
+extern uint32_t to_int(bitfield b);
+extern bitfield to_bf(uint32_t i);
 extern bitfield read_word(size_t position, byte * memory);
 
 
