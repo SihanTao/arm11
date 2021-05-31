@@ -1,8 +1,11 @@
 #include <stdlib.h>
+
 #include "../utils/types_and_macros.h"
-#include "../utils/file_loader.h"
-#include "../utils/read_word.h"
+#include "../utils/tools.h"
+
 #include "emulate.h"
+
+#include "../utils/file_loader.h"
 #include "../decode/decode.h"
 #include "../execute/execute.h"
 

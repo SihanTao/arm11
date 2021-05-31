@@ -1,14 +1,28 @@
 #ifndef TYPES_AND_MACROS
 #define TYPES_AND_MACROS
 
+/*
+ * In order to minisize redundant code, include some std libs here.
+ */
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 typedef char byte;
 
+// default target machine endian is small;
+#define TARGET_MACHINE_ENDIAN small;
+typedef enum endian_mode
+{
+  big,
+  little
+} endian_mode;
+
+// res-pi has 64k of memory, thus max address is 65536
 #define MAX_MEMORY_ADDRESS 65536
 
+// 12 general purpose registers
 #define NUM_OF_REG 12
 
 /* Include the four instruction kind
@@ -54,7 +68,7 @@ typedef struct
                     unsigned int Rotate: 4;
                     unsigned int Imm: 8;
                 }Iv;
-                
+
                 struct // struct2 is the case when Op2 is a register.
                 {
                     struct

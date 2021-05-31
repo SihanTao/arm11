@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "../utils/types_and_macros.h"
 #include "instruction_processor.h"
-#include "tools.h"
+#include "../utils/tools.h"
 
 /*
  * Decode the instruction:
@@ -21,7 +21,8 @@ bool test_instruction_cond(instruction_t* instruction, ArmState armstate)
     bool Z = armstate->flagZ;
     bool C = armstate->flagC;
     bool V = armstate->flagV;
-    switch (instruction->u.data_process.cond) // cond is at the same position in all cases
+    switch (instruction->u.data_process.cond)
+    // cond is at the same position in all cases
     {
     case EQ: return (N);
     case NE: return (!N);

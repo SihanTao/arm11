@@ -3,11 +3,6 @@
 
 #define WORD_LENGTH 4
 
-typedef enum endian_mode
-{
-  big,
-  little
-} endian_mode;
 
 extern void read_file_to_mem(char const *file_name,
                              void *write_to, endian_mode mode);
