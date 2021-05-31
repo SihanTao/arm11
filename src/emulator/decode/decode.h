@@ -1,8 +1,6 @@
 #ifndef DECODE
 #define DECODE
 
-#include "../utils/tools.h"
-
 // decode will not receive NULL values!
 /* decode will initialize an instruction
  * then return an instruction_t with tag
