@@ -1,6 +1,5 @@
 #include <string.h>
-#include <stdio.h>
-#include <assert.h>
+
 #include "../utils/types_and_macros.h"
 #include "../utils/file_loader.h"
 #include "../utils/unit_test.h"
