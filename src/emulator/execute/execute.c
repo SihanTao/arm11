@@ -157,8 +157,6 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
 {
     uint32_t result;
 
-    uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.trans.Rn]);
-
     if (decode->u.trans.I) // offset is a register.
     {
         int shift_val = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Register.Shift.Integer]);
@@ -214,27 +212,52 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
         armstate->reg[decode->u.trans.offset.Io.Imm] = uint32_to_bitfield(af_rot_val + (Imm << rotation_amount));
     }
 
-       
-    if (decode->u.trans.P) //pre-indexing, the offset is added/subtracted to the base register before transferring the data.
-    {
-
-    } else //(post-indexing, the offset is added/subtracted to the base register after transferring.
-    {
-
-    }
-    
+    uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.trans.Rn]);   
     uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.offset_value]);
     //if U is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
-    Rn = (decode->u.trans.U) ? offset + Rn : Rn - offset;
+    Rn = (decode->u.trans.U) ? Rn + offset: Rn - offset;
 
     //If L is set, the word is loaded from memory, otherwise the word is stored into memory.
     if (decode->u.trans.L)
     {
-        
+        result = Rn;
+    } else {
+        armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(Rn);
     }
-    
-    //save the result.
-    armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(result);
+
+    if (decode->u.trans.P) //pre-indexing, the offset is added/subtracted to the base register before transferring the data.
+    {
+        uint32_t newRn = (decode->u.trans.U) ? Rn + offset: Rn - offset;
+
+        switch (decode->u.trans.P)
+        {
+            case load:
+            uint32_t result =  bitfield_to_uint32(
+                armstate->reg[decode->u.trans.Rn] + armstate->reg[decode->u.trans.offset.offset_value]);
+
+            case store:
+            armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(newRn);
+
+            default:
+            break;
+        }
+        Rn = (decode->u.trans.U) ? Rn + offset: Rn - offset;
+        
+    } else //(post-indexing, the offset is added/subtracted to the base register after transferring.
+    {
+        switch (decode->u.trans.P)
+        {
+            case load:
+            uint32_t result = Rn;
+
+            case store:
+            armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(Rn);
+
+            default:
+            break;
+        }
+        Rn = (decode->u.trans.U) ? Rn + offset: Rn - offset;
+    }
 }
 
 void execute_BRANCH(instruction_t* decode, ArmState armstate)

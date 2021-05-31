@@ -19,6 +19,10 @@ enum {
 enum {
     AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV
 };
+
+enum {
+    load, store
+};
 #define EXIT true;
 #define CONTINUE false;
 
