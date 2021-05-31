@@ -1,8 +1,11 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include "../utils/types_and_macros.h"
 #include "../utils/tools.h"
 #include "execute.h"
 
+
+// TODO Here is an spelling error : decode -> decoded
+// I will solve this after fix all other problems --Tony
 bool execute(instruction_t* decode, ArmState armstate)
 {
     if (test_instruction_cond(decode, armstate))
@@ -23,9 +26,14 @@ bool execute(instruction_t* decode, ArmState armstate)
             break;
         case ZERO:
             execute_ZERO(decode, armstate);
+            // Intentionally no break here
         case UNDEFINED:
+            // should handle raise an exception or something, I will try to figure out
+            // Intentionally no break here
         default:
             return EXIT_FAILURE;
+            // TODO: This is problematic!
+            // This program should return either #EXIT or #CONTINUE
         }
     }
 }
@@ -37,7 +45,7 @@ void execute_MUL(instruction_t* decode, ArmState armstate)
     uint32_t Rm = bitfield_to_uint32(armstate->reg[decode->u.mul.Rm]);
     uint32_t Rs = bitfield_to_uint32(armstate->reg[decode->u.mul.Rs]);
     result = Rm * Rs;
-    
+
     // the accumulate bit is set
     if (decode->u.mul.A)
     {
@@ -46,7 +54,7 @@ void execute_MUL(instruction_t* decode, ArmState armstate)
     }
     // Save the result
     armstate->reg[decode->u.mul.Rd] = uint32_to_bitfield(result);
-    
+
     // If the S bit is set, we need to update the CPSR
     if (decode->u.mul.S)
     {
@@ -58,12 +66,12 @@ void execute_MUL(instruction_t* decode, ArmState armstate)
 void execute_DP(instruction_t* decode, ArmState armstate)
 {
     uint32_t result;
-    
+
     int Change_FlagC = 0; // the carry out bit need to be store in FlagC.
-    
+
     if (decode->u.data_process.I) // OP2 is an immediate value.
     {
-        
+
         int rotation_amount = 2 * bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Iv.Rotate]);
         uint32_t Imm = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Iv.Imm]);
         int af_rot_val = 0;
@@ -73,15 +81,15 @@ void execute_DP(instruction_t* decode, ArmState armstate)
         }
         armstate->reg[decode->u.data_process.operand2.Iv.Imm] = uint32_to_bitfield(af_rot_val + (Imm << rotation_amount));
         Change_FlagC = get_k_bit(Imm, rotation_amount-1);
-    
+
     } else //OP2 is a register.
       {
           int shift_val = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Register.Shift.Integer]);
           uint32_t rm = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Register.Rm]);
-          
+
           switch (bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Register.Shift.ShiftT]))
           {
-              case 0: //logical left 
+              case 0: //logical left
               {
                   armstate->reg[decode->u.data_process.operand2.op2] = uint32_to_bitfield(rm >> shift_val);
                   Change_FlagC = get_k_bit(rm, 32-shift_val);
@@ -121,7 +129,7 @@ void execute_DP(instruction_t* decode, ArmState armstate)
                 break;
           }
       }
-    
+
     //compute the result
     uint32_t Rn = bitfield_to_uint32(armstate->reg[decode->u.data_process.Rn]);
     uint32_t operand2 = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.op2]);
@@ -134,7 +142,7 @@ void execute_DP(instruction_t* decode, ArmState armstate)
         case ADD: result = (Rn + operand2);
         case TST: (Rn && operand2);//result not written
         case TEQ: (Rn ^ operand2);//result not written
-        case CMP: (Rn - operand2);//result not written 
+        case CMP: (Rn - operand2);//result not written
         case ORR: result = (Rn || operand2);
         case MOV: result = (operand2);
         default:
@@ -143,7 +151,7 @@ void execute_DP(instruction_t* decode, ArmState armstate)
 
     //save the result.
     armstate->reg[decode->u.data_process.Rd] = uint32_to_bitfield(result);
-    
+
     //if S is set then CPSR should be update.
     if (decode->u.data_process.S)
     {
@@ -163,7 +171,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
     {
         int shift_val = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Register.Shift.Integer]);
         uint32_t rm = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Register.Rm]);
-          
+
         switch (bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Register.Shift.ShiftT]))
         {
             case 00: //logical left
@@ -185,7 +193,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
                 {
                     mask =+ sign_bit ^ i;
                 }
-                armstate->reg[decode->u.trans.offset.offset_value] = uint32_to_bitfield(after_shift | mask); 
+                armstate->reg[decode->u.trans.offset.offset_value] = uint32_to_bitfield(after_shift | mask);
                 break;
             }
             case 11: //rotate right
@@ -201,7 +209,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
             default:
             break;
         }
-    
+
     } else //Offset is an immediate offset.
     {
         int rotation_amount = 2 * bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Io.Rotate]);
@@ -214,7 +222,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
         armstate->reg[decode->u.trans.offset.Io.Imm] = uint32_to_bitfield(af_rot_val + (Imm << rotation_amount));
     }
 
-       
+
     if (decode->u.trans.P) //pre-indexing, the offset is added/subtracted to the base register before transferring the data.
     {
 
@@ -222,7 +230,7 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
     {
 
     }
-    
+
     uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.offset_value]);
     //if U is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
     Rn = (decode->u.trans.U) ? offset + Rn : Rn - offset;
@@ -230,9 +238,9 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
     //If L is set, the word is loaded from memory, otherwise the word is stored into memory.
     if (decode->u.trans.L)
     {
-        
+
     }
-    
+
     //save the result.
     armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(result);
 }

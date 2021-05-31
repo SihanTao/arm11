@@ -1,8 +1,6 @@
 #ifndef EXECUTE
 #define EXECUTE
 
-#include "../utils/types_and_macros.h"
-
 // // execute will not receive NULL value;
 extern bool execute(instruction_t* decode, ArmState armstate);
 extern void execute_DP(instruction_t* decode, ArmState armstate);
