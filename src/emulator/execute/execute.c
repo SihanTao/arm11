@@ -202,22 +202,37 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
             break;
         }
     
-    } else //OP2 is an immediate offset.
-      {
-          //change opposite to dp.
-          int rotation_amount = 2 * bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Iv.Rotate]);
-          uint32_t Imm = bitfield_to_uint32(armstate->reg[decode->u.data_process.operand2.Iv.Imm]);
-          int af_rot_val = 0;
-          for (int i=0; i<rotation_amount; i++)
-          {
-              af_rot_val =+ get_k_bit(Imm, i) ^ (31-i);
-          }
-          armstate->reg[decode->u.data_process.operand2.Iv.Imm] = uint32_to_bitfield(af_rot_val + (Imm << rotation_amount));
-      }
+    } else //Offset is an immediate offset.
+    {
+        int rotation_amount = 2 * bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Io.Rotate]);
+        uint32_t Imm = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.Io.Imm]);
+        int af_rot_val = 0;
+        for (int i=0; i<rotation_amount; i++)
+        {
+           af_rot_val =+ get_k_bit(Imm, i) ^ (31-i);
+        }
+        armstate->reg[decode->u.trans.offset.Io.Imm] = uint32_to_bitfield(af_rot_val + (Imm << rotation_amount));
+    }
+
+       
+    if (decode->u.trans.P) //pre-indexing, the offset is added/subtracted to the base register before transferring the data.
+    {
+
+    } else //(post-indexing, the offset is added/subtracted to the base register after transferring.
+    {
+
+    }
     
     uint32_t offset = bitfield_to_uint32(armstate->reg[decode->u.trans.offset.offset_value]);
     //if U is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
     Rn = (decode->u.trans.U) ? offset + Rn : Rn - offset;
+
+    //If L is set, the word is loaded from memory, otherwise the word is stored into memory.
+    if (decode->u.trans.L)
+    {
+        
+    }
+    
 
     //save the result.
     armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(result);
