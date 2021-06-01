@@ -246,9 +246,11 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
             case load:
             result =  bitfield_to_uint32(armstate->reg[decode->u.trans.Rn])
             + bitfield_to_uint32(armstate->reg[decode->u.trans.offset.offset_value]);
+            break;
 
             case store:
             armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(newRn);
+            break;
 
             default:
             break;
@@ -261,9 +263,11 @@ void execute_SDT(instruction_t* decode, ArmState armstate)
         {
             case load:
             result = Rn;
+            break;
 
             case store:
             armstate->reg[decode->u.trans.Rd] = uint32_to_bitfield(Rn);
+            break;
 
             default:
             break;
