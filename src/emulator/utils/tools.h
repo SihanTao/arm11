@@ -29,7 +29,7 @@ extern bitfield convert_endian(bitfield word);
 extern instruction_t init_instruction(bitfield fetched);
 extern uint32_t to_int(bitfield b);
 extern bitfield to_bf(uint32_t i);
-extern bitfield read_word(size_t position, byte * memory);
+extern bitfield peek(size_t position, byte * memory);
 
 
 #endif

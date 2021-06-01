@@ -10,12 +10,12 @@
 
 typedef char byte;
 
-// default target machine endian is small;
-#define TARGET_MACHINE_ENDIAN small;
+// default target machine endian is littel
+#define TARGET_MACHINE_ENDIAN LITTLE
 typedef enum endian_mode
 {
-  big,
-  little
+  BIG,
+  LITTLE
 } endian_mode;
 
 // res-pi has 64k of memory, thus max address is 65536
@@ -40,7 +40,7 @@ enum instruction_kind
 };
 
 //the struct of byte representation in memory
-typedef struct
+typedef struct bitfield
 {
   unsigned int byte4 : 8;
   unsigned int byte3 : 8;
@@ -48,7 +48,7 @@ typedef struct
   unsigned int byte1 : 8;
 } bitfield;
 
-typedef struct data_process
+typedef struct data_process_t
 {
   /*** begin operand 2 ***/
   // the union is used to present different cases of Op2.
@@ -83,9 +83,9 @@ typedef struct data_process
   unsigned int I : 1;
   unsigned int : 2; // not used: 00
   unsigned int cond : 4;
-} data_process;
+} data_process_t;
 
-typedef struct mul
+typedef struct mul_t
 {
   unsigned int Rm : 4;
   unsigned int : 4; // not used:1001
@@ -96,10 +96,9 @@ typedef struct mul
   unsigned int A : 1;
   unsigned int : 6; // not used:0000
   unsigned int cond : 4;
-} mul;
+} mul_t;
 
-
-typedef struct trans
+typedef struct trans_t
 {
   /*** begin offset ***/
   // the union is used to present different cases of Offset.
@@ -136,16 +135,14 @@ typedef struct trans
   unsigned int I : 1;
   unsigned int : 2; // not used 01
   unsigned int cond : 4;
-} trans;
+} trans_t;
 
-typedef struct branch
+typedef struct branch_t
 {
   unsigned int offset : 24;
   unsigned int : 4; // not used 1010
   unsigned int cond : 4;
-} branch;
-
-
+} branch_t;
 
 /*
  * the definition of the structure
@@ -157,11 +154,12 @@ typedef struct
   union
   {
     uint32_t i;
+     // I wanted to remove this i, since it will brake protability
     bitfield bf;
-    data_process data_process;
-    mul mul;
-    trans trans;
-    branch branch;
+    data_process_t data_process;
+    mul_t mul;
+    trans_t trans;
+    branch_t branch;
   } u;
 } instruction_t;
 
@@ -171,8 +169,8 @@ typedef struct
 typedef struct arm_state_struct
 {
   size_t pc;
-  bitfield *reg;
-  byte *memory;
+  bitfield *reg; // use bitfield to avoid
+  byte *memory;  // In order to make it byte addressable
   bool flagN;
   bool flagZ;
   bool flagC;

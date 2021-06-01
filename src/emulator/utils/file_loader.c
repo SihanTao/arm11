@@ -23,7 +23,7 @@ void read_file_to_mem(char const *file_name, void *write_to, endian_mode mode)
 
   while (fread(buffer, WORD_LENGTH, 1, file_handler))
   {
-    if (mode == big)
+    if (mode == BIG)
     {
       convert_endian_ptr(buffer);
     }

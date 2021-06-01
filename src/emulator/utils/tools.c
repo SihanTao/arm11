@@ -17,7 +17,7 @@ void convert_endian_ptr(char *buffer)
   buffer[2] = temp;
 }
 
-// TODO: Haven't tested convert_endian
+
 bitfield convert_endian(bitfield word)
 {
   byte temp;
@@ -39,12 +39,14 @@ void print_bit(uint32_t i)
   printf("\n");
 }
 
+// TODO : make it work with bf instead of uint32
+// portability!!!!
 int get_bit(uint32_t i, int k)
 {
   return (i & (1 << k)) >> k;
 }
 
-// TODO : should this be defined here?
+// TODO :
 // I think it is probably better to make this as a static function in decode.
 instruction_t init_instruction(bitfield fetched)
 {
@@ -54,22 +56,28 @@ instruction_t init_instruction(bitfield fetched)
   return init;
 }
 
-// TODO : perform some conditional big-endian convertion before return
+// It can perform some conditional big-endian convertion before return
 uint32_t to_int(bitfield bf)
 {
-  instruction_t temp = init_instruction(bf);
-  return temp.u.i;
+  if (TARGET_MACHINE_ENDIAN == BIG)
+  {
+    bf = convert_endian(bf);
+  }
+  uint32_t * result = (uint32_t *) &bf;
+  return *result;
 }
 
 bitfield to_bf(uint32_t i)
 {
-  instruction_t temp;
-  temp.tag = UNDEFINED;
-  temp.u.i = i;
-  return temp.u.bf;
+  bitfield * result = (bitfield *) &i;
+  if (TARGET_MACHINE_ENDIAN == BIG)
+  {
+    *result = convert_endian(*result);
+  }
+  return *result;
 }
 
-bitfield read_word(size_t position, byte * memory)
+bitfield peek(size_t position, byte * memory)
 {
   bitfield result;
   memcpy(&result, memory + position, sizeof(bitfield));
