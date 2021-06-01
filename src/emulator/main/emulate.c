@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "../utils/types_and_macros.h"
 #include "../utils/tools.h"

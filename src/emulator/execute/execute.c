@@ -82,7 +82,7 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
     {
       af_rot_val += pow(get_bit(Imm, i), (31 - i));
     }
-    uint32_t af_rot_val = rotate(rotation_amount, Imm);
+    // uint32_t af_rot_val = rotate(rotation_amount, Imm);
     // TODO : I don't think this will work, since Imm has length 8
     reg[data_ins.operand2.Iv.Imm] = to_bf(af_rot_val + (Imm << rotation_amount));
     Change_FlagC = get_bit(Imm, rotation_amount - 1);

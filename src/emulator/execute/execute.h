@@ -28,13 +28,11 @@ enum data_processing_shift_type{
 enum {
     LOAD, STORE
 };
-#define EXIT true
-#define CONTINUE false
 
 enum {
   CONTINUE = 0,
   EXIT = 1,
   ERROR = 2
-}
+};
 
 #endif // EXECUTE
