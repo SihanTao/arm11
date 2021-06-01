@@ -8,54 +8,50 @@
 
 // TODO Here is an spelling error : decode -> decoded
 // I will solve this after fix all other problems --Tony
-bool execute(instruction_t *decoded, ArmState armstate)
+bool execute(instruction_t *decoded, ArmState arm_state)
 {
-  if (test_instruction_cond(decoded, armstate))
+  if (test_instruction_cond(decoded, arm_state))
   {
     switch (decoded->tag)
     {
     case DATA_PROCESS:
-      execute_DP(decoded, armstate);
+      execute_DP(decoded, arm_state);
       break;
     case MUL:
-      execute_MUL(decoded, armstate);
+      execute_MUL(decoded, arm_state);
       break;
     case TRANS:
-      execute_SDT(decoded, armstate);
+      execute_SDT(decoded, arm_state);
       break;
     case BRANCH:
-      execute_BRANCH(decoded, armstate);
+      execute_BRANCH(decoded, arm_state);
       break;
     case ZERO:
-      execute_ZERO(decoded, armstate);
-      // Intentionally no break here
+      return EXIT;
     case UNDEFINED:
-      // should handle raise an exception or something, I will try to figure out
-      // Intentionally no break here
+      return ERROR;
     default:
-      return EXIT_FAILURE;
-      // TODO: This is problematic!
-      // This program should return either #EXIT or #CONTINUE
+      return ERROR;
     }
   }
+  return CONTINUE;
 }
 
-void execute_MUL(instruction_t *decoded, ArmState armstate)
+void execute_MUL(instruction_t *decoded, ArmState arm_state)
 {
   // pre: PC is not used as operand or desination register
   //      Rd will not be the same as Rm
-  bitfield *reg = armstate->reg;
-  mul mul_ins = decoded->u.mul;
-  bitfield Rm = reg[mul_ins.Rm];
-  bitfield Rs = reg[mul_ins.Rs];
-  bitfield Rn = reg[mul_ins.Rn];
-
-  uint32_t result = to_int(Rm) * to_int(Rs);
+  bitfield *reg = arm_state->reg;
+  mul_t mul_ins = decoded->u.mul;
+  uint32_t Rm = to_int(reg[mul_ins.Rm]);
+  uint32_t Rs = to_int(reg[mul_ins.Rs]);
+  uint32_t Rn = to_int(reg[mul_ins.Rn]);
+  uint32_t result = Rm * Rs;
 
   // the accumulate bit is set
   if (mul_ins.A)
   {
-    result += to_int(Rn);
+    result += Rn;
   }
   // Save the result
   reg[mul_ins.Rd] = to_bf(result);
@@ -63,29 +59,32 @@ void execute_MUL(instruction_t *decoded, ArmState armstate)
   // If the S bit is set, we need to update the CPSR
   if (mul_ins.S)
   {
-    armstate->flagN = get_bit(result, 31);
-    armstate->flagZ = result == 0;
+    arm_state->flagN = get_bit(result, 31);
+    arm_state->flagZ = result == 0;
   }
 }
 
-void execute_DP(instruction_t *decoded, ArmState armstate)
+void execute_DP(instruction_t *decoded, ArmState arm_state)
 {
   uint32_t result;
 
-  int Change_FlagC = 0; // the carry out bit need to be store in FlagC.
-  data_process data_ins = decoded->u.data_process;
-  bitfield * reg = armstate->reg;
+  bool Change_FlagC = false; // the carry out bit need to be store in FlagC.
+  data_process_t data_ins = decoded->u.data_process;
+  bitfield *reg = arm_state->reg;
 
   if (data_ins.I) // OP2 is an immediate value.
   {
     int rotation_amount = 2 * to_int(reg[data_ins.operand2.Iv.Rotate]);
     uint32_t Imm = to_int(reg[data_ins.operand2.Iv.Imm]);
     // TODO : extract this as a separate function.
+    /*
     int af_rot_val = 0;
     for (int i = 0; i < rotation_amount; i++)
     {
       af_rot_val += pow(get_bit(Imm, i), (31 - i));
     }
+    */
+    uint32_t af_rot_val = rotate(rotation_amount, Imm);
     // TODO : I don't think this will work, since Imm has length 8
     reg[data_ins.operand2.Iv.Imm] = to_bf(af_rot_val + (Imm << rotation_amount));
     Change_FlagC = get_bit(Imm, rotation_amount - 1);
@@ -173,9 +172,9 @@ void execute_DP(instruction_t *decoded, ArmState armstate)
   //if S is set then CPSR should be update.
   if (data_ins.S)
   {
-    armstate->flagN = get_bit(result, 31);
-    armstate->flagZ = (!result) ? 1 : 0;
-    armstate->flagC = Change_FlagC;
+    arm_state->flagN = get_bit(result, 31);
+    arm_state->flagZ = (!result) ? 1 : 0;
+    arm_state->flagC = Change_FlagC;
   }
 }
 
@@ -183,11 +182,11 @@ void execute_DP_Im(void);
 
 void execute_DP_NIm(void);
 
-void execute_SDT(instruction_t *decoded, ArmState armstate)
+void execute_SDT(instruction_t *decoded, ArmState arm_state)
 {
   uint32_t result;
-  trans trans_ins = decoded->u.trans;
-  bitfield * reg = armstate->reg;
+  trans_t trans_ins = decoded->u.trans;
+  bitfield *reg = arm_state->reg;
 
   if (trans_ins.I) // offset is a register.
   {
@@ -298,9 +297,9 @@ void execute_SDT(instruction_t *decoded, ArmState armstate)
   }
 }
 
-void execute_BRANCH(instruction_t *decoded, ArmState armstate)
+void execute_BRANCH(instruction_t *decoded, ArmState arm_state)
 {
-  uint32_t offset = to_int(armstate->reg[decoded->u.branch.offset]);
+  uint32_t offset = to_int(arm_state->reg[decoded->u.branch.offset]);
   int sign_bit = get_bit(offset, 24);
   uint32_t mask = 0;
   uint32_t extended = 0;
@@ -325,15 +324,15 @@ void execute_BRANCH(instruction_t *decoded, ArmState armstate)
     }
     extended = offset | mask;
   }
-  armstate->pc += extended;
+  arm_state->pc += extended;
 }
 
-bool test_instruction_cond(instruction_t *instruction, ArmState armstate)
+bool test_instruction_cond(instruction_t *instruction, ArmState arm_state)
 {
-  bool N = armstate->flagN;
-  bool Z = armstate->flagZ;
-  bool C = armstate->flagC;
-  bool V = armstate->flagV;
+  bool N = arm_state->flagN;
+  bool Z = arm_state->flagZ;
+  bool C = arm_state->flagC;
+  bool V = arm_state->flagV;
   switch (instruction->u.data_process.cond) // cond is at the same position in all cases
   {
   case EQ:
