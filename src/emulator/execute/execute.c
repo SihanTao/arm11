@@ -77,13 +77,11 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
     int rotation_amount = 2 * to_int(reg[data_ins.operand2.Iv.Rotate]);
     uint32_t Imm = to_int(reg[data_ins.operand2.Iv.Imm]);
     // TODO : extract this as a separate function.
-    /*
     int af_rot_val = 0;
     for (int i = 0; i < rotation_amount; i++)
     {
       af_rot_val += pow(get_bit(Imm, i), (31 - i));
     }
-    */
     uint32_t af_rot_val = rotate(rotation_amount, Imm);
     // TODO : I don't think this will work, since Imm has length 8
     reg[data_ins.operand2.Iv.Imm] = to_bf(af_rot_val + (Imm << rotation_amount));
@@ -265,11 +263,11 @@ void execute_SDT(instruction_t *decoded, ArmState arm_state)
 
     switch (trans_ins.P)
     {
-    case load:
+    case LOAD:
       result = to_int(reg[trans_ins.Rn]) + to_int(reg[trans_ins.offset.offset_value]);
       break;
 
-    case store:
+    case STORE:
       reg[trans_ins.Rd] = to_bf(newRn);
       break;
 
@@ -282,11 +280,11 @@ void execute_SDT(instruction_t *decoded, ArmState arm_state)
   {
     switch (trans_ins.P)
     {
-    case load:
+    case LOAD:
       result = Rn;
       break;
 
-    case store:
+    case STORE:
       reg[trans_ins.Rd] = to_bf(Rn);
       break;
 

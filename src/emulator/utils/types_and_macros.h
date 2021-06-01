@@ -19,10 +19,10 @@ typedef enum endian_mode
 } endian_mode;
 
 // res-pi has 64k of memory, thus max address is 65536
-#define MAX_MEMORY_ADDRESS 65536
+#define MAX_MEMORY_ADDRESS (65536)
 
 // 12 general purpose registers
-#define NUM_OF_REG 12
+#define NUM_OF_REG (12)
 
 /****************** instruction_t *********************/
 

@@ -26,7 +26,7 @@ enum data_processing_shift_type{
 };
 
 enum {
-    load, store
+    LOAD, STORE
 };
 #define EXIT true
 #define CONTINUE false

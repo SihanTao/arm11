@@ -39,8 +39,6 @@ void print_bit(uint32_t i)
   printf("\n");
 }
 
-// TODO : make it work with bf instead of uint32
-// TODO : this function is portable, I don't know do I need to change
 int get_bit(uint32_t i, int k)
 {
   return (i & (1 << k)) >> k;
