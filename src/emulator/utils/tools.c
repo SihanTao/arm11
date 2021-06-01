@@ -40,7 +40,7 @@ void print_bit(uint32_t i)
 }
 
 // TODO : make it work with bf instead of uint32
-// portability!!!!
+// TODO : this function is portable, I don't know do I need to change
 int get_bit(uint32_t i, int k)
 {
   return (i & (1 << k)) >> k;
@@ -57,6 +57,7 @@ instruction_t init_instruction(bitfield fetched)
 }
 
 // It can perform some conditional big-endian convertion before return
+// Todo : test it if the endian is big!
 uint32_t to_int(bitfield bf)
 {
   if (TARGET_MACHINE_ENDIAN == BIG)
@@ -67,6 +68,8 @@ uint32_t to_int(bitfield bf)
   return *result;
 }
 
+// It can perform some conditional big-endian convertion before return
+// Todo : test it if the endian is big!
 bitfield to_bf(uint32_t i)
 {
   bitfield * result = (bitfield *) &i;

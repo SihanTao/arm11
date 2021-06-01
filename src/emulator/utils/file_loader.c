@@ -30,6 +30,13 @@ void read_file_to_mem(char const *file_name, void *write_to, endian_mode mode)
     memcpy(write_to + position, buffer, WORD_LENGTH);
     position += 4;
   }
+
+  if (!feof(file_handler))
+  {
+    printf("file not ended!");
+  }
+
+  fclose(file_handler);
   // TODO : fix error reporting
   // should get an error if doesn't match word length
 }

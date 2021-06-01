@@ -25,11 +25,13 @@ int main(int argc, char **argv)
   Pipeline temp;
   if (states == NULL || next == NULL || current == NULL)
   {
+    printf("%s", "Error : Running out of memory.");
     return EXIT_FAILURE;
     // OS will collect resources
   }
 
-  // skip the first two cycles
+  // skip the first two cycles, for performance concern
+  // no looger need to do NULL flag check in fetch and decode
   next->fetched = fetch(states->pc, states->memory);
   FLASH_CYCLE;
   next->fetched = fetch(states->pc, states->memory);
@@ -41,7 +43,7 @@ int main(int argc, char **argv)
   {
     next->fetched = fetch(states->pc, states->memory);
     next->decoded = decode(current->fetched);
-  if (execute(&current->decoded, states) == EXIT)
+    if (execute(&current->decoded, states) == EXIT)
     {
       break;
     }
@@ -76,7 +78,7 @@ ArmState init_state(char const *file_name)
   result->flagC = false;
   result->flagV = false;
 
-  read_file_to_mem(file_name, result->memory, little);
+  read_file_to_mem(file_name, result->memory, LITTLE);
 
   return result;
 }
@@ -114,5 +116,5 @@ void free_pipeline(Pipeline pipeline)
 
 bitfield fetch(size_t pc, byte *memory)
 {
-  return read_word(pc, memory);
+  return peek(pc, memory);
 }

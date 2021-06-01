@@ -12,7 +12,7 @@ instruction_t decode (bitfield fetched)
 
 void find_type(instruction_t* instruction)
 {
-    uint32_t n = instruction->u.i;
+    uint32_t n = to_int(instruction->u.bf);
     if (get_bit(n, 27))
     {
         instruction->tag = BRANCH;
