@@ -67,7 +67,6 @@ void execute_MUL(instruction_t *decoded, ArmState arm_state)
 
 void execute_SDT(instruction_t *decoded, ArmState arm_state)
 {
-  
 }
 
 // void execute_SDT(instruction_t *decoded, ArmState arm_state)

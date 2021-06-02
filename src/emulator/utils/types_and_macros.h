@@ -97,8 +97,6 @@ typedef struct data_process_t
     // struct2 is the case when Op2 is a register.
     shift_reg_t shift_reg;
     //this is used to do operations on Op2.
-    // TODO : I am not sure whether we need this or not
-    //unsigned int op2 : 12;
   } operand2;
   unsigned int Rd : 4;
   unsigned int Rn : 4;
@@ -132,9 +130,6 @@ typedef struct trans_t
     shift_reg_t shift_reg;
     // struct2 is the case when Offset is an immediate offset.
     rotate_t imm_offset;
-    // TODO : I am not sure whether we need this or not
-    //unsigned int offset_value : 12;
-    //this is used to do operations on offset.
   } offset;
   /*** end offset ***/
 

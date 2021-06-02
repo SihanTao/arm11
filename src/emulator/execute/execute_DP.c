@@ -1,7 +1,7 @@
 #include "../utils/types_and_macros.h"
 #include "execute_DP.h"
 #include "../utils/tools.h"
-#include "execute_helper.h"
+#include "../execute/execute_helper.h"
 
 void execute_DP(instruction_t *decoded, ArmState arm_state)
 {
@@ -27,10 +27,11 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   }
 }
 
-uint32_t op2_carry(bitfield * reg, data_process_t data_ins, bool * flagC)
+uint32_t op2_carry(bitfield *reg, data_process_t data_ins, bool *flagC)
 {
-
-   if (data_ins.I) // OP2 is an immediate value.
+  // the logic here is still messy, but I am tired to fix it.
+  // hope it works                        -- Tony
+  if (data_ins.I) // OP2 is an immediate value.
   {
     rotate_t op2_imm = data_ins.operand2.imm_val;
     int rotation_amount = 2 * to_int(reg[op2_imm.rot_amt]);
@@ -46,14 +47,15 @@ uint32_t op2_carry(bitfield * reg, data_process_t data_ins, bool * flagC)
     uint32_t Rm = to_int(reg[op2_reg.Rm]);
     shift_type type = to_int(reg[op2_reg.shift.integer]);
 
-    *flagC = type == LSL ? get_bit(Rm, 32 - shift_val) : get_bit(Rm, shift_val - 1);
+    *flagC =
+        type == LSL ? get_bit(Rm, 32 - shift_val) : get_bit(Rm, shift_val - 1);
     return shift(Rm, shift_val, type);
   }
 }
 
 uint32_t compute_result(opcode_type opcode, uint32_t operand2, uint32_t Rn)
 {
-    switch (opcode)
+  switch (opcode)
   {
   case AND:
     return (Rn && operand2);
