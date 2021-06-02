@@ -11,7 +11,7 @@ void execute_ZERO(instruction_t* decode, ArmState armstate);
 bool test_instruction_cond(instruction_t* instruction, ArmState armstate);
 
 enum {
-    EQ = 0, NE, GE = 0b1010, LT, GT, LE, AL
+    EQ = 0, NE, GE = 10, LT, GT, LE, AL
 };
 
 enum {
@@ -19,10 +19,10 @@ enum {
 };
 
 enum data_processing_shift_type{
-  LOGICAL_LEFT = 0b00,
-  LOGICAL_RIGHT = 0b01,
-  ARITH_RIGHT = 0b10,
-  ROTATE_RIGHT = 0b11
+  LOGICAL_LEFT,
+  LOGICAL_RIGHT,
+  ARITH_RIGHT,
+  ROTATE_RIGHT
 };
 
 enum {
@@ -30,9 +30,9 @@ enum {
 };
 
 enum {
-  CONTINUE = 0,
-  EXIT = 1,
-  ERROR = 2
+  CONTINUE,
+  EXIT,
+  ERROR
 };
 
 #endif // EXECUTE

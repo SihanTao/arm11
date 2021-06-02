@@ -64,80 +64,25 @@ void execute_MUL(instruction_t *decoded, ArmState arm_state)
   }
 }
 
+// begin of execute_DP.
 void execute_DP(instruction_t *decoded, ArmState arm_state)
 {
   uint32_t result;
-
-  bool Change_FlagC = false; // the carry out bit need to be store in FlagC.
   data_process_t data_ins = decoded->u.data_process;
   bitfield *reg = arm_state->reg;
+  uint32_t operand2 = 0;
 
   if (data_ins.I) // OP2 is an immediate value.
   {
-    int rotation_amount = 2 * to_int(reg[data_ins.operand2.Iv.Rotate]);
-    uint32_t Imm = to_int(reg[data_ins.operand2.Iv.Imm]);
-    // TODO : extract this as a separate function.
-    int af_rot_val = 0;
-    for (int i = 0; i < rotation_amount; i++)
-    {
-      af_rot_val += pow(get_bit(Imm, i), (31 - i));
-    }
-    // uint32_t af_rot_val = rotate(rotation_amount, Imm);
-    // TODO : I don't think this will work, since Imm has length 8
-    reg[data_ins.operand2.Iv.Imm] = to_bf(af_rot_val + (Imm >> rotation_amount));
-    Change_FlagC = get_bit(Imm, rotation_amount - 1);
+    uint32_t operand2 = execute_DP_Im(reg, data_ins);
   }
   else //OP2 is a register.
   {
-    int shift_val = to_int(reg[data_ins.operand2.Register.Shift.Integer]);
-    uint32_t Rm = to_int(reg[data_ins.operand2.Register.Rm]);
-
-    switch (to_int(reg[data_ins.operand2.Register.Shift.ShiftT]))
-    {
-    case LOGICAL_LEFT: //logical left
-    {
-      reg[data_ins.operand2.op2] = to_bf(Rm << shift_val);
-      Change_FlagC = get_bit(Rm, 32 - shift_val);
-      break;
-    }
-    case LOGICAL_RIGHT: //logical right
-    {
-      reg[data_ins.operand2.op2] = to_bf(Rm >> shift_val);
-      Change_FlagC = get_bit(Rm, shift_val - 1);
-      break;
-    }
-    case ARITH_RIGHT: //arithmetic right
-    {
-      uint32_t after_shift = Rm >> shift_val;
-      int sign_bit = get_bit(Rm, 31);
-      uint32_t mask = 0;
-      for (int i = 31; i >= 32 - shift_val; i--)
-      {
-        mask += pow(sign_bit, i);
-      }
-      reg[data_ins.operand2.op2] = to_bf(after_shift | mask);
-      Change_FlagC = get_bit(Rm, shift_val - 1);
-      break;
-    }
-    case ROTATE_RIGHT: //rotate right
-    {
-      int af_rot_val = 0;
-      for (int i = 0; i < shift_val; i++)
-      {
-        af_rot_val += pow(get_bit(Rm, i), (31 - i));
-      }
-      reg[data_ins.operand2.op2] = to_bf(af_rot_val + (Rm >> shift_val));
-      Change_FlagC = get_bit(Rm, shift_val - 1);
-      break;
-    }
-    default:
-      break;
-    }
+    uint32_t operand2 = execute_DP_NIm(reg, data_ins);
   }
 
   //compute the result
   uint32_t Rn_value = to_int(reg[data_ins.Rn]);
-  uint32_t operand2 = to_int(reg[data_ins.operand2.op2]);
   switch (data_ins.OpCode)
   {
   case AND:
@@ -176,19 +121,72 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   }
 }
 
-uint32_t rotate(int rotation_amout, uint32_t content)
+bool Change_FlagC = false; // the carry out bit need to be store in FlagC.
+
+uint32_t rotate(int rotation_amout, uint32_t content) // function for rotate.
 {
     int af_rot_val = 0;
     for (int i = 0; i < rotation_amout; i++)
       {
         af_rot_val += pow(get_bit(content, i), (31 - i));
       }
-      return af_rot_val + content >> rotation_amout;
+    return af_rot_val + (content >> rotation_amout);
 }
 
-void execute_DP_Im(void);
+uint32_t execute_DP_Im(bitfield *reg, data_process_t data_ins)
+{
+  int rotation_amount = 2 * to_int(reg[data_ins.operand2.Iv.Rotate]);
+  uint32_t Imm = to_int(reg[data_ins.operand2.Iv.Imm]);
+  Change_FlagC = get_bit(Imm, rotation_amount - 1);
+  return rotate(rotation_amount, Imm);
+}
 
-void execute_DP_NIm(void);
+uint32_t execute_DP_NIm(bitfield *reg, data_process_t data_ins)
+{
+  int shift_val = to_int(reg[data_ins.operand2.Register.Shift.Integer]);
+  uint32_t Rm = to_int(reg[data_ins.operand2.Register.Rm]);
+
+  switch (to_int(reg[data_ins.operand2.Register.Shift.ShiftT]))
+  {
+    case LOGICAL_LEFT: //logical left
+    {
+      Change_FlagC = get_bit(Rm, 32 - shift_val);
+      return Rm << shift_val;
+      break;
+    }
+    case LOGICAL_RIGHT: //logical right
+    {
+      Change_FlagC = get_bit(Rm, shift_val - 1);
+      return Rm >> shift_val;
+      break;
+    }
+    case ARITH_RIGHT: //arithmetic right
+    {
+      uint32_t after_shift = Rm >> shift_val;
+      int sign_bit = get_bit(Rm, 31);
+      uint32_t mask = 0;
+      if (sign_bit == 1)
+      {
+        for (int i = 31; i >= 32 - shift_val; i--)
+        {
+          mask += pow(2, i);
+        }
+      }
+      Change_FlagC = get_bit(Rm, shift_val - 1);
+      return after_shift | mask;
+      break;
+    }
+    case ROTATE_RIGHT: //rotate right
+    {
+      Change_FlagC = get_bit(Rm, shift_val - 1);
+      return rotate(shift_val, Rm);
+      break;
+    }
+    default:
+      break;
+  }
+}
+// end of execute_DP.
 
 void execute_SDT(instruction_t *decoded, ArmState arm_state)
 {
