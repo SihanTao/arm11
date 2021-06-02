@@ -24,12 +24,12 @@ typedef enum endian_mode
 // 12 general purpose registers
 #define NUM_OF_REG (12)
 
-/****************** instruction_t *********************/
+/****************** enums **********************/
 
 /* Include the four instruction kind
  * with an undefined type
  */
-enum instruction_kind
+typedef enum instruction_kind
 {
   UNDEFINED,
   DATA_PROCESS,
@@ -37,7 +37,46 @@ enum instruction_kind
   TRANS,
   BRANCH,
   ZERO
-};
+} instruction_kind;
+
+typedef enum dp_opcode{
+    AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV
+} dp_opcode;
+
+typedef enum shift_type{
+  LSL,
+  LSR,
+  ASR,
+  ROR
+} shift_type;
+
+typedef enum load_store{
+    LOAD, STORE
+} load_store;
+
+typedef enum instruction_cond{
+    EQ = 0, NE, GE = 10, LT, GT, LE, AL
+} instruction_cond;
+/************** components for words ***********************/
+
+typedef struct shift_reg_t
+{
+  struct
+  {
+    unsigned int integer : 5;
+    unsigned int s_type : 2;
+    unsigned int : 1; // not used: 0.
+  } shift;
+  unsigned int Rm : 4;
+} shift_reg_t;
+
+typedef struct rotate_t
+{
+  unsigned int rot_amt : 4;
+  unsigned int rot_val : 8;
+} rotate_t;
+
+/****************** words *****************/
 
 //the struct of byte representation in memory
 typedef struct bitfield
@@ -50,36 +89,21 @@ typedef struct bitfield
 
 typedef struct data_process_t
 {
-  /*** begin operand 2 ***/
   // the union is used to present different cases of Op2.
   union
   {
     // struct1 is the case when Op2 is an immediate value.
-    struct
-    {
-      unsigned int Rotate : 4;
-      unsigned int Imm : 8;
-    } Iv;
+    rotate_t imm_val;
     // struct2 is the case when Op2 is a register.
-    struct
-    {
-      struct
-      {
-        unsigned int Integer : 5;
-        unsigned int ShiftT : 2;
-        unsigned int : 1; // not used: 0.
-      } Shift;
-      unsigned int Rm : 4;
-    } Register;
+    shift_reg_t shift_reg;
     //this is used to do operations on Op2.
-    unsigned int op2 : 12;
+    // TODO : I am not sure whether we need this or not
+    //unsigned int op2 : 12;
   } operand2;
-  /*** end operand 2 ***/
-
   unsigned int Rd : 4;
   unsigned int Rn : 4;
   unsigned int S : 1;
-  unsigned int OpCode : 4;
+  unsigned int opcode : 4;
   unsigned int I : 1;
   unsigned int : 2; // not used: 00
   unsigned int cond : 4;
@@ -105,23 +129,11 @@ typedef struct trans_t
   union
   {
     // struct1 is the case when Offset is a register.
-    struct
-    {
-      struct
-      {
-        unsigned int Integer : 5;
-        unsigned int ShiftT : 2;
-        unsigned int : 1; // not used: 0.
-      } Shift;
-      unsigned int Rm : 4;
-    } Register;
+    shift_reg_t shift_reg;
     // struct2 is the case when Offset is an immediate offset.
-    struct
-    {
-      unsigned int Rotate : 4;
-      unsigned int Imm : 8;
-    } Io;
-    unsigned int offset_value : 12;
+    rotate_t imm_offset;
+    // TODO : I am not sure whether we need this or not
+    //unsigned int offset_value : 12;
     //this is used to do operations on offset.
   } offset;
   /*** end offset ***/
@@ -144,6 +156,8 @@ typedef struct branch_t
   unsigned int cond : 4;
 } branch_t;
 
+/************************** tagged instruction *************************/
+
 /*
  * the definition of the structure
  * for instructions
@@ -154,7 +168,7 @@ typedef struct
   union
   {
     uint32_t i;
-     // I wanted to remove this i, since it will brake protability
+    // I wanted to remove this i, since it will brake protability
     bitfield bf;
     data_process_t data_process;
     mul_t mul;
@@ -162,6 +176,8 @@ typedef struct
     branch_t branch;
   } u;
 } instruction_t;
+
+/************************** tagged instruction end ************************/
 
 /*
  * The struct used to hold all states in this program
