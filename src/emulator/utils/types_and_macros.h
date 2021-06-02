@@ -76,6 +76,12 @@ typedef struct rotate_t
   unsigned int rot_val : 8;
 } rotate_t;
 
+typedef union shift_or_imm_t
+{
+  rotate_t imm_val;
+  shift_reg_t shift_reg;
+} shift_or_imm_t;
+
 /****************** words *****************/
 
 //the struct of byte representation in memory
@@ -90,14 +96,7 @@ typedef struct bitfield
 typedef struct data_process_t
 {
   // the union is used to present different cases of Op2.
-  union
-  {
-    // struct1 is the case when Op2 is an immediate value.
-    rotate_t imm_val;
-    // struct2 is the case when Op2 is a register.
-    shift_reg_t shift_reg;
-    //this is used to do operations on Op2.
-  } operand2;
+  shift_or_imm_t operand2;
   unsigned int Rd : 4;
   unsigned int Rn : 4;
   unsigned int S : 1;
@@ -124,13 +123,7 @@ typedef struct trans_t
 {
   /*** begin offset ***/
   // the union is used to present different cases of Offset.
-  union
-  {
-    // struct1 is the case when Offset is a register.
-    shift_reg_t shift_reg;
-    // struct2 is the case when Offset is an immediate offset.
-    rotate_t imm_offset;
-  } offset;
+  shift_or_imm_t offset;
   /*** end offset ***/
 
   unsigned int Rd : 4;

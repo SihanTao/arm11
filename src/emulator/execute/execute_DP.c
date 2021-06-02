@@ -10,9 +10,10 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   uint32_t result = 0;
   uint32_t Rn = to_int(reg[data_ins.Rn]);
 
-  bool newFlagC = false;
-  uint32_t operand2 = op2_carry(reg, data_ins, &newFlagC);
+  bool newFlagC = new_carry(reg, data_ins.operand2, data_ins.I);
+  uint32_t operand2 = shift_imm_handle(reg, data_ins.operand2, data_ins.I);
 
+  /*********** bugs here ******************/
   // if save result
   {
     result = compute_result(data_ins.opcode, operand2, Rn);
@@ -27,29 +28,26 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   }
 }
 
-uint32_t op2_carry(bitfield *reg, data_process_t data_ins, bool *flagC)
+bool new_carry(bitfield *reg, shift_or_imm_t shift_or_imm, bool is_imm)
 {
-  // the logic here is still messy, but I am tired to fix it.
-  // hope it works                        -- Tony
-  if (data_ins.I) // OP2 is an immediate value.
+
+  if (is_imm) // OP2 is an immediate value.
   {
-    rotate_t op2_imm = data_ins.operand2.imm_val;
+    rotate_t op2_imm = shift_or_imm.imm_val;
     int rotation_amount = 2 * to_int(reg[op2_imm.rot_amt]);
     uint32_t Imm = to_int(reg[op2_imm.rot_val]);
 
-    *flagC = get_bit(Imm, rotation_amount - 1);
-    return rotate(rotation_amount, Imm);
+    return get_bit(Imm, rotation_amount - 1);
   }
   else //OP2 is a register.
   {
-    shift_reg_t op2_reg = data_ins.operand2.shift_reg;
+    shift_reg_t op2_reg = shift_or_imm.shift_reg;
     int shift_val = to_int(reg[op2_reg.shift.integer]);
     uint32_t Rm = to_int(reg[op2_reg.Rm]);
     shift_type type = to_int(reg[op2_reg.shift.integer]);
 
-    *flagC =
+    return
         type == LSL ? get_bit(Rm, 32 - shift_val) : get_bit(Rm, shift_val - 1);
-    return shift(Rm, shift_val, type);
   }
 }
 

@@ -1,7 +1,10 @@
 #include <stdlib.h>
-#include "../utils/types_and_macros.h"
 #include <math.h>
-//#include "execute.h"
+#include "../utils/types_and_macros.h"
+#include "../execute/execute_helper.h"
+#include "../execute/execute_SDT.h"
+#include "../execute/execute_DP.h"
+#include "../execute/execute.h"
 #include "../utils/tools.h"
 #include "../utils/unit_test.h"
 
@@ -47,7 +50,7 @@ int main(void)
         0xEFFFFFFD3,
         "mul 0xFFFFFFFFD 0xF 0, S false I false");
 
-    free(arm_state);    
+    free(arm_state);
 
     //condition is set
     instruction_t dp_ins2 =
@@ -79,7 +82,7 @@ int main(void)
         0xEFFFFFFD3,
         "mul 0xFFFFFFFFD 0xF 0, S false I false");
 
-    free(arm_state);    
+    free(arm_state);
 
     //S = true I = false
     instruction_t dp_ins3 =
@@ -112,7 +115,7 @@ int main(void)
         "mul 0xFFFFFFFFD 0xF 0, S true I false");
 
     // C is set to the carry out from any shift operation
-    //test_true(arm_state->flagC == );    
+    //test_true(arm_state->flagC == );
 
     // N is set to bit 31 of the result
     test_true(arm_state->flagN == get_bit(0xFFFFFFD3, 31));
@@ -121,7 +124,7 @@ int main(void)
     test_true(arm_state->flagZ == (to_int(arm_state->reg[2]) == 0));
 
     free(arm_state);
-    
+
 
     //S = false I = true
     instruction_t dp_ins4 =
@@ -140,7 +143,7 @@ int main(void)
              0,
              .cond = 0}};
     arm_state = init_state();
-    
+
     arm_state->reg[2] = to_bf(0xF);        // Rd
     arm_state->reg[3] = to_bf(0);          // Rn
 
@@ -151,7 +154,7 @@ int main(void)
         0xEFFFFFFD3,
         "mul 0xFFFFFFFFD 0xF 0, S false I true");
 
-    free(arm_state);    
+    free(arm_state);
 
     //S = true I = true
     instruction_t dp_ins5 =
@@ -170,7 +173,7 @@ int main(void)
              0,
              .cond = 0}};
     arm_state = init_state();
-    
+
     arm_state->reg[2] = to_bf(0xF);        // Rd
     arm_state->reg[3] = to_bf(0);          // Rn
 
@@ -179,10 +182,10 @@ int main(void)
     test_int_v(
         to_int(arm_state->reg[2]),
         0xEFFFFFFD3,
-        "mul 0xFFFFFFFFD 0xF 0, S true I true"); 
+        "mul 0xFFFFFFFFD 0xF 0, S true I true");
 
     // C is set to the carry out from any shift operation
-    //test_true(arm_state->flagC == );    
+    //test_true(arm_state->flagC == );
 
     // N is set to bit 31 of the result
     test_true( arm_state->flagN == get_bit(0xFFFFFFD3, 31));
@@ -190,7 +193,7 @@ int main(void)
     // Z is set if and only if the result is zero.
     test_true(arm_state->flagZ == (to_int(arm_state->reg[2]) == 0));
 
-    free(arm_state);                               
+    free(arm_state);
   }
   */
 
@@ -364,8 +367,8 @@ int main(void)
         {.tag = TRANS,
          .u.trans = {
             // .offset = {
-              //   .Io.Imm = , 
-              //   .Io.Rotate = , 
+              //   .Io.Imm = ,
+              //   .Io.Rotate = ,
               //   .offset_value = },
              .Rd = 2,
              .Rn = 3,
@@ -379,7 +382,7 @@ int main(void)
     arm_state = init_state();
     arm_state->reg[1] = to_bf(2); // offset, 0000 0000 0010
     arm_state->reg[2] = to_bf(0); // Rd
-    arm_state->reg[3] = to_bf(1); // Rn, 
+    arm_state->reg[3] = to_bf(1); // Rn,
 
     execute_SDT(&trans_ins1, arm_state);
 

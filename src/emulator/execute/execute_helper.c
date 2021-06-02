@@ -80,3 +80,25 @@ bool test_instruction_cond(instruction_t *instruction, ArmState arm_state)
     break;
   }
 }
+
+uint32_t shift_imm_handle(bitfield * reg, shift_or_imm_t shift_or_imm, bool is_imm)
+{
+
+   if (is_imm) //Offset is a register.
+  {
+    shift_reg_t offset_reg = shift_or_imm.shift_reg;
+    int shift_val = to_int(reg[offset_reg.shift.integer]);
+    uint32_t Rm = to_int(reg[offset_reg.Rm]);
+    shift_type type = to_int(reg[offset_reg.shift.integer]);
+
+    return shift(Rm, shift_val, type);
+  }
+  else // Offset is an immediate value.
+  {
+    rotate_t offset_imm = shift_or_imm.imm_val;
+    int rotation_amount = 2 * to_int(reg[offset_imm.rot_amt]);
+    uint32_t Imm = to_int(reg[offset_imm.rot_val]);
+
+    return rotate(rotation_amount, Imm);
+  }
+}
