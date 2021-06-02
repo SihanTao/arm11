@@ -1,11 +1,11 @@
 #ifndef DECODE
 #define DECODE
 
-// decode will not receive NULL values!
 /* decode will initialize an instruction
  * then return an instruction_t with tag
  */
 instruction_t decode (bitfield fetched);
 void find_type(instruction_t* instruction);
+instruction_t init_instruction(bitfield fetched);
 
 #endif //DECODE

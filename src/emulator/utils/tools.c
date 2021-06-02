@@ -44,16 +44,6 @@ int get_bit(uint32_t i, int k)
   return (i & (1 << k)) >> k;
 }
 
-// TODO :
-// I think it is probably better to make this as a static function in decode.
-instruction_t init_instruction(bitfield fetched)
-{
-  instruction_t init;
-  init.tag = UNDEFINED;
-  init.u.bf = fetched;
-  return init;
-}
-
 // It can perform some conditional big-endian convertion before return
 // Todo : test it if the endian is big!
 uint32_t to_int(bitfield bf)

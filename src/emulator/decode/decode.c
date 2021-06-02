@@ -30,3 +30,11 @@ void find_type(instruction_t* instruction)
         instruction->tag = DATA_PROCESS;
     }
 }
+
+instruction_t init_instruction(bitfield fetched)
+{
+  instruction_t init;
+  init.tag = UNDEFINED;
+  init.u.bf = fetched;
+  return init;
+}
