@@ -18,17 +18,11 @@ int main(void)
   {
     // S = true A = false
     instruction_t mul_ins1 =
-        {.tag = MUL,
+        { .tag = MUL,
          .u.mul = {
-             .Rm = 1,
-             1001,
-             .Rs = 2,
-             .Rn = 3,
-             .Rd = 4,
-             .S = true,
-             .A = false,
-             0,
-             .cond = 0}};
+             .Rm = 1, 1001, .Rs = 2, .Rn = 3, .Rd = 4,
+             .S = true, .A = false, 0, .cond = 0
+             }};
 
     arm_state->reg[1] = to_bf(0xFFFFFFFD); // Rm
     arm_state->reg[2] = to_bf(0xF);        // Rs
@@ -42,7 +36,7 @@ int main(void)
         "mul 0xFFFFFFFFD 0xF 0, S true A false");
 
     // N is set to bit 31 of the result
-    test_true( arm_state->flagN == get_bit(0xFFFFFFD3, 31));
+    test_true(arm_state->flagN == get_bit(0xFFFFFFD3, 31));
 
     // Z is set if and only if the result is zero.
     test_true(arm_state->flagZ == (to_int(arm_state->reg[4]) == 0));
@@ -75,7 +69,7 @@ int main(void)
         "mul 0xFFFFFFFFD 0xF 0, S true A false");
 
     // N is set to bit 31 of the result
-    test_true( arm_state->flagN == get_bit(0xFFFFFFD3, 31));
+    test_true(arm_state->flagN == get_bit(0xFFFFFFD3, 31));
 
     // Z is set if and only if the result is zero.
     test_true(arm_state->flagZ == (to_int(arm_state->reg[4]) == 0));
@@ -109,7 +103,7 @@ int main(void)
         "mul 1 2 3 4, S true A true");
 
     // N is set to bit 31 of the result
-    test_true( arm_state->flagN == get_bit(0xFFFFFFD3, 31));
+    test_true(arm_state->flagN == get_bit(0xFFFFFFD3, 31));
 
     // Z is set if and only if the result is zero.
     test_true(arm_state->flagZ == (to_int(arm_state->reg[4]) == 0));
@@ -170,7 +164,7 @@ int main(void)
         "mul 0xFFFFFFFFD 0xF 0, S false A false");
 
     free(arm_state);
-   }
+  }
 
   add_test("Test for Trans execution");
   {
@@ -195,8 +189,8 @@ int main(void)
              .cond = 0}};
     arm_state = init_state();
     arm_state->reg[1] = to_bf(12); // offset
-    arm_state->reg[2] = to_bf(0); // Rd
-    arm_state->reg[3] = to_bf(2); // Rn
+    arm_state->reg[2] = to_bf(0);  // Rd
+    arm_state->reg[3] = to_bf(2);  // Rn
 
     execute_SDT(&trans_ins1, arm_state);
 
@@ -367,7 +361,6 @@ int main(void)
     arm_state->reg[3] = to_bf(2); // Rn
 
     execute_SDT(&trans_ins9, arm_state);
-
   }
 
   add_test("Test for Branch execution");
