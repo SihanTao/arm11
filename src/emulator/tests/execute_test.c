@@ -196,9 +196,16 @@ int main(void)
     arm_state = init_state();
     arm_state->reg[1] = to_bf(12); // offset
     arm_state->reg[2] = to_bf(0); // Rd
-    arm_state->reg[3] = to_bf(2); // Rn
+    arm_state->reg[3] = to_bf(1); // Rn
 
     execute_SDT(&trans_ins1, arm_state);
+
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "STR R0, [R1, #12], all false");
+
+    free(arm_state);
 
     //condition is set
     instruction_t trans_ins2 =
@@ -221,6 +228,13 @@ int main(void)
 
     execute_SDT(&trans_ins2, arm_state);
 
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "STR R0, [R1, #12], all false");
+
+    free(arm_state);
+
     //L = true U = false P = false I = false
     instruction_t trans_ins3 =
         {.tag = TRANS,
@@ -241,6 +255,13 @@ int main(void)
     arm_state->reg[3] = to_bf(2); // Rn
 
     execute_SDT(&trans_ins3, arm_state);
+
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "LDR R0, [R1, #12], L = true U = false P = false I = false");
+
+    free(arm_state);
 
     //L = false U = true P = false I = false
     instruction_t trans_ins4 =
@@ -263,6 +284,13 @@ int main(void)
 
     execute_SDT(&trans_ins4, arm_state);
 
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "LDR R0, [R1, #12], L = false U = true P = false I = false");
+
+    free(arm_state);
+
     //L = false U = false P = true I = false
     instruction_t trans_ins5 =
         {.tag = TRANS,
@@ -283,6 +311,13 @@ int main(void)
     arm_state->reg[3] = to_bf(2); // Rn
 
     execute_SDT(&trans_ins5, arm_state);
+
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "STR R0, [R1], #12, L = false U = false P = true I = false");
+
+    free(arm_state);
 
     //L = false U = false P = false I = true
     instruction_t trans_ins6 =
@@ -305,6 +340,13 @@ int main(void)
 
     execute_SDT(&trans_ins6, arm_state);
 
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "STR R0, [R1], #12, L = false U = false P = false I = true");
+
+    free(arm_state);
+
     //L = true U = true P = false I = false
     instruction_t trans_ins7 =
         {.tag = TRANS,
@@ -325,6 +367,13 @@ int main(void)
     arm_state->reg[3] = to_bf(2); // Rn
 
     execute_SDT(&trans_ins7, arm_state);
+
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "LDR R0, [R1], #12, L = true U = true P = false I = false");
+
+    free(arm_state);
 
     //L = true U = false P = true I = false
     instruction_t trans_ins8 =
@@ -347,6 +396,13 @@ int main(void)
 
     execute_SDT(&trans_ins8, arm_state);
 
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "LDR R0, [R1], #12, L = true U = false P = true I = false");
+
+    free(arm_state);
+
     //L = true U = false P = false I = true
     instruction_t trans_ins9 =
         {.tag = TRANS,
@@ -367,6 +423,13 @@ int main(void)
     arm_state->reg[3] = to_bf(2); // Rn
 
     execute_SDT(&trans_ins9, arm_state);
+
+    test_int_v(
+        to_int(arm_state->reg[2]),
+        1,
+        "LDR R0, [R1], #12, L = true U = false P = false I = true");
+
+    free(arm_state);
 
   }
 

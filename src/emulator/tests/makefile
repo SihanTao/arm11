@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -pedantic #-Werror
-CFLAGS += -Wall -Wextra -Wpedantic \
+CFLAGS += -Wall -Wextra -Wpedantic -lm\
           -Wformat=2 -Wno-unused-parameter -Wshadow \
           -Wwrite-strings -Wstrict-prototypes -Wold-style-definition \
           -Wredundant-decls -Wnested-externs -Wmissing-include-dirs
@@ -26,7 +26,7 @@ $(DIR_TEST_BIN)/file_loader_test.test: $(DIR_OBJ)/file_loader_test.o
 	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o $(DIR_OBJ)/file_loader.o $(DIR_OBJ)/tools.o
 
 $(DIR_TEST_BIN)/execute_test.test: $(DIR_OBJ)/execute_test.o
-	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute.o
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute.o -lm
 
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.c
 	$(CC) $(CFLAGS) -c  $< -o $@

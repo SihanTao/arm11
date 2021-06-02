@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -pedantic #-Werror
-CFLAGS += -Wall -Wextra -Wpedantic \
+CFLAGS += -Wall -Wextra -Wpedantic -lm\
           -Wformat=2 -Wno-unused-parameter -Wshadow \
           -Wwrite-strings -Wstrict-prototypes -Wold-style-definition \
           -Wredundant-decls -Wnested-externs -Wmissing-include-dirs
