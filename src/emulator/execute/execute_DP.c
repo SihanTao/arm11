@@ -10,8 +10,8 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   uint32_t result = 0;
   uint32_t Rn = to_int(reg[data_ins.Rn]);
 
-  bool newFlagC = false; 
-  uint32_t operand2 = handle_DP_op2_carry(reg, data_ins, &newFlagC);
+  bool newFlagC = false;
+  uint32_t operand2 = op2_carry(reg, data_ins, &newFlagC);
 
   // if save result
   {

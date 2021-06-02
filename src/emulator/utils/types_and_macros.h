@@ -39,9 +39,9 @@ typedef enum instruction_kind
   ZERO
 } instruction_kind;
 
-typedef enum dp_opcode{
+typedef enum opcode_type{
     AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV
-} dp_opcode;
+} opcode_type;
 
 typedef enum shift_type{
   LSL,

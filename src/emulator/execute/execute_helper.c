@@ -1,5 +1,8 @@
+#include <math.h>
+
 #include "../utils/types_and_macros.h"
 #include "execute_helper.h"
+#include "../utils/tools.h"
 
 uint32_t rotate(int rotation_amount, uint32_t content)
 {

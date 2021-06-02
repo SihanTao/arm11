@@ -19,14 +19,19 @@ all: $(TEST)
 $(DIR_TEST_BIN)/unit_test_test.test: $(DIR_OBJ)/unit_test_test.o
 	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o
 
-# $(DIR_TEST_BIN)/instruction_processor_test.test: $(DIR_OBJ)/instruction_processor_test.o
-# 	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o $(DIR_OBJ)/instruction_processor.o $(DIR_OBJ)/bit_operation.o
+$(DIR_TEST_BIN)/tools_test.test: $(DIR_OBJ)/tools_test.o
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o
 
 $(DIR_TEST_BIN)/file_loader_test.test: $(DIR_OBJ)/file_loader_test.o
 	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o $(DIR_OBJ)/file_loader.o $(DIR_OBJ)/tools.o
 
 $(DIR_TEST_BIN)/execute_test.test: $(DIR_OBJ)/execute_test.o
-	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute.o -lm
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute.o -lm \
+	$(DIR_OBJ)/execute_DP.o $(DIR_OBJ)/execute_helper.o
+
+$(DIR_TEST_BIN)/decode_test.test: $(DIR_OBJ)/decode_test.o
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/decode.o
+
 
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.c
 	$(CC) $(CFLAGS) -c  $< -o $@
