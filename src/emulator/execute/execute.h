@@ -9,6 +9,10 @@ void execute_SDT(instruction_t* decode, ArmState armstate);
 void execute_BRANCH(instruction_t* decode, ArmState armstate);
 void execute_ZERO(instruction_t* decode, ArmState armstate);
 bool test_instruction_cond(instruction_t* instruction, ArmState armstate);
+uint32_t rotate(int rotation_amout, uint32_t content);
+uint32_t execute_DP_Im(bitfield *reg, data_process_t data_ins);
+uint32_t execute_DP_NIm(bitfield *reg, data_process_t data_ins);
+
 
 enum {
     EQ = 0, NE, GE = 10, LT, GT, LE, AL

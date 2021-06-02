@@ -65,6 +65,8 @@ void execute_MUL(instruction_t *decoded, ArmState arm_state)
 }
 
 // begin of execute_DP.
+bool Change_FlagC = false; // the carry out bit need to be store in FlagC.
+
 void execute_DP(instruction_t *decoded, ArmState arm_state)
 {
   uint32_t result;
@@ -120,8 +122,6 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
     arm_state->flagC = Change_FlagC;
   }
 }
-
-bool Change_FlagC = false; // the carry out bit need to be store in FlagC.
 
 uint32_t rotate(int rotation_amout, uint32_t content) // function for rotate.
 {
