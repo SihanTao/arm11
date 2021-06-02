@@ -84,7 +84,7 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
     }
     // uint32_t af_rot_val = rotate(rotation_amount, Imm);
     // TODO : I don't think this will work, since Imm has length 8
-    reg[data_ins.operand2.Iv.Imm] = to_bf(af_rot_val + (Imm << rotation_amount));
+    reg[data_ins.operand2.Iv.Imm] = to_bf(af_rot_val + (Imm >> rotation_amount));
     Change_FlagC = get_bit(Imm, rotation_amount - 1);
   }
   else //OP2 is a register.
@@ -96,19 +96,19 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
     {
     case LOGICAL_LEFT: //logical left
     {
-      reg[data_ins.operand2.op2] = to_bf(Rm >> shift_val);
+      reg[data_ins.operand2.op2] = to_bf(Rm << shift_val);
       Change_FlagC = get_bit(Rm, 32 - shift_val);
       break;
     }
     case LOGICAL_RIGHT: //logical right
     {
-      reg[data_ins.operand2.op2] = to_bf(Rm << shift_val);
+      reg[data_ins.operand2.op2] = to_bf(Rm >> shift_val);
       Change_FlagC = get_bit(Rm, shift_val - 1);
       break;
     }
     case ARITH_RIGHT: //arithmetic right
     {
-      uint32_t after_shift = Rm << shift_val;
+      uint32_t after_shift = Rm >> shift_val;
       int sign_bit = get_bit(Rm, 31);
       uint32_t mask = 0;
       for (int i = 31; i >= 32 - shift_val; i--)
@@ -126,7 +126,7 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
       {
         af_rot_val += pow(get_bit(Rm, i), (31 - i));
       }
-      reg[data_ins.operand2.op2] = to_bf(af_rot_val + (Rm << shift_val));
+      reg[data_ins.operand2.op2] = to_bf(af_rot_val + (Rm >> shift_val));
       Change_FlagC = get_bit(Rm, shift_val - 1);
       break;
     }
@@ -174,6 +174,16 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
     arm_state->flagZ = (!result) ? 1 : 0;
     arm_state->flagC = Change_FlagC;
   }
+}
+
+uint32_t rotate(int rotation_amout, uint32_t content)
+{
+    int af_rot_val = 0;
+    for (int i = 0; i < rotation_amout; i++)
+      {
+        af_rot_val += pow(get_bit(content, i), (31 - i));
+      }
+      return af_rot_val + content >> rotation_amout;
 }
 
 void execute_DP_Im(void);
