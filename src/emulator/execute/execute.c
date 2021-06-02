@@ -176,6 +176,16 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   }
 }
 
+uint32_t rotate(int rotation_amout, uint32_t content)
+{
+    int af_rot_val = 0;
+    for (int i = 0; i < rotation_amout; i++)
+      {
+        af_rot_val += pow(get_bit(content, i), (31 - i));
+      }
+      return af_rot_val + content >> rotation_amout;
+}
+
 void execute_DP_Im(void);
 
 void execute_DP_NIm(void);
