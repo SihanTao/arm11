@@ -16,8 +16,41 @@ int main(void)
 
   add_test("Test for rotate");
   {
-      test_int_v(rotate(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
+      test_int_v(rotate(1, 0x0000000B), 0x80000005, "1011 becomes 1000..0101");
+
+      test_int_v(rotate(2, 0x0000001A), 0x40000006, "11010 becomes 0100..0110");
+
+      test_int_v(rotate(3, 0x0000005D), 0xA000000B, "1011101 becomes 1010..1011");
   }
+
+  add_test("Test for shift");
+  {
+      test_int_v(shift(0x0000000B, 1, LSL), 0x00000016, "1011 becomes 10110");
+
+      test_int_v(shift(0x0000001A, 2, LSR), 0x00000006, "11010 becomes 110");
+
+      test_int_v(shift(0xA000000B, 3, ASR), 0xF4000001, "1010..1011 becomes 1111010..0001");
+
+      test_int_v(shift(0x0000005D, 3, ROR), 0xA000000B, "1011101 becomes 1010..1011");
+  }
+
+  add_test("Test for arith_right");
+  {
+      test_int_v(arith_right(1, 0x0000001A), 0x0000000D, "..11010 becomes ..1101");
+
+      test_int_v(arith_right(2, 0x80000005), 0xE0000001, "1000..0101 becomes 1110..0001");
+
+      test_int_v(arith_right(3, 0xA000000B), 0xF4000001, "1010..1011 becomes 1111010..0001");
+  }
+
+//   add_test("Test for shift_imm_handle");
+//   {
+//       test_int_v(shift_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
+
+//       test_int_v(shift_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
+
+//       test_int_v(shift_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
+//   }
 /*
   add_test("Test for data processing execution");
   {
@@ -25,16 +58,15 @@ int main(void)
         {.tag = DATA_PROCESS,
          .u.data_process = {
              .operand2 = {
-                 .op2 = 1,
-                 .Register = {
-                     .Rm = 1,
-                     .Shift = {
-                         .Integer = ,
-                         .ShiftT = }}},
+                 .shift_reg = {
+                     .Rm = ,
+                     .shift = {
+                         .integer = ,
+                         .s_type = }}},
              .Rd = 2,
              .Rn = 3,
              .S = false,//CPSR flags not update
-             .OpCode = 4,
+             .opcode = 4,
              .I = false,//op2 is a register
              0,
              .cond = 0}};
@@ -66,7 +98,7 @@ int main(void)
              .Rd = 2,
              .Rn = 3,
              .S = false,//CPSR flags not update
-             .OpCode = 4,
+             .opcode = 4,
              .I = false,//op2 is a register
              0,
              .cond = 1}};
@@ -98,7 +130,7 @@ int main(void)
              .Rd = 2,
              .Rn = 3,
              .S = true, //CPSR flags update
-             .OpCode = 4,
+             .opcode = 4,
              .I = false,//op2 is a register
              0,
              .cond = 0}};
@@ -138,7 +170,7 @@ int main(void)
              .Rd = 2,
              .Rn = 3,
              .S = false, //CPSR flags not update
-             .OpCode = 4,
+             .opcode = 4,
              .I = true, //op2 is an immediate constant
              0,
              .cond = 0}};
@@ -168,7 +200,7 @@ int main(void)
              .Rd = 2,
              .Rn = 3,
              .S = true, //CPSR flags update
-             .OpCode = 4,
+             .opcode = 4,
              .I = true, //op2 is an immediate constant
              0,
              .cond = 0}};
