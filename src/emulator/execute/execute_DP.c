@@ -12,7 +12,7 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   bitfield Rd = reg[data_ins.Rd];
 
   bool newFlagC = new_carry(reg, data_ins.operand2, data_ins.I);
-  uint32_t operand2 = shift_imm_handle(reg, data_ins.operand2, data_ins.I);
+  uint32_t operand2 = shift_imm_handle(reg, data_ins.operand2, !data_ins.I);
 
   /*********** bugs here ******************/
   // if save result
