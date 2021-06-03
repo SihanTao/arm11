@@ -3,32 +3,32 @@
 \usepackage{fullpage}
 
 \begin{document}
-
-\title{ARM Checkpoint Report}
-\author{Sihan Tao, Taowen Liu, Ranchen Li, Chuxuan Li}
-
-\maketitle
-
-\section{Group Organisation}
-
-Taowen and Sihan first designed the structure of the emulator, and they specified the parameters and return types of all required functions. Sihan designed intermediate representations of all instructions and wrote the decoding part for all four instructions. Then he wrote the interface for the execution part and implemented multiply instruction and some global helper functions which are also used in implementations of other instructions. Taowen constructed the main loop and took charge of maintaining code quality and troubleshooting. He wrote the file loader and fetching part as well. Ranchen wrote branch and data processing instructions and Chuxuan wrote single data transfer instructions with the assistance of Taowen. 
-
-Our group works well together. We usually help each other through Teams video calls and Wechat whenever there are problems with writing codes or understanding the specification.
-
-\section{Implementation Strategies}
-
-We created some modules: Main, Decode, Execute, Utils and Tests.
-
-Main module depends on Execute and Decode module. And everything requires Utils module since date types and common helpers are defined there.
-
-Main module contains the \texttt{emulate.c} and its header. In \texttt{emulate.c}, there is a main function and several helpers (initializers and destructors). Fetch command is also defined in main module, because it is rather a short function. Main loop maintains the state of all registers, memory and all . We used old and new pipelines in order to avoid overlaying.
-
-Decode module contains \texttt{decode.c} and its header. \texttt{decode.c} accepts a fetched instruction of unknown type as an argument and return the intermediate representation which defined in \texttt{types\_and\_macros.h}.
-
-Execute module contains \texttt{execute\_helpers.c}, \texttt{execute\_DP.c}, \texttt{execute\_SDT.c} and \texttt{execute.c} as well as their headers. Data processing instruction is defined in \texttt{execute\_DP.c} and single data transfer instruction is defined in \texttt{execute\_SDT.c} since their logic are complicated. Multiplication and branch instruction is defined in \texttt{execute.c}. In \texttt{execute\_helpers.c}, there are common helpers (data rotation ...) since these helpers are commonly used in execution module, we put them into one file.
-
-Utils module contains \texttt{tools.c}, \texttt{types\_and\_macros.h}, \texttt{unit\_test.c} and \texttt{file\_loader.c} and headers. \texttt{tools.c} has some bit operation and type transformation functions for general use. \texttt{types\_and\_macros.h} contains all the data types, structures and enumerations which are used in other functions. We defined all the instructions using a tag and a union of specific instructions. For specific instructions, we specified the exact length of parts in instructions such that they can fit in 32 bits. We also defined enum for opcodes.
-
-Tests module contains all the module test source file.
-
+	
+	\title{ARM Checkpoint Report}
+	\author{Sihan Tao, Taowen Liu, Ranchen Li, Chuxuan Li}
+	
+	\maketitle
+	
+	\section{Group Organisation}
+	
+	Taowen and Sihan first designed the structure of the emulator, and they specified the parameters and return types of all required functions. They also did the helper functions. Sihan designed intermediate representations of instructions and wrote the decoding part. Then he wrote the dispatcher for the execution part and implemented multiply instruction. Taowen constructed the main loop, the file loader and fetching part. Ranchen and Chuxuan worked on with branch, data processing and single data transfer instructions. Taowen helped Chuxuan and Ranchen to rewrite the functions, extract common logic. Taowen restructured the project.
+	
+	Our group works well together. We usually help each other through Teams video calls and Wechat whenever there are problems with writing codes or understanding the specification.
+	
+	\section{Implementation Strategies}
+	
+	We created some modules: Main, Decode, Execute, Utils and Tests.
+	
+	Main module depends on Execute and Decode module. And everything requires Utils module since date types and common helpers are defined there.
+	
+	Main module contains the \texttt{emulate.c} and its header. In \texttt{emulate.c}, there is a main function and several helpers (initializers and destructors). Fetch command is also defined in main module, because it is rather a short function. Main loop maintains the state of all registers, memory and all . We used old and new pipelines in order to avoid overlaying.
+	
+	Decode module contains \texttt{decode.c} and its header. \texttt{decode.c} accepts a fetched instruction of unknown type as an argument and return the intermediate representation which defined in \texttt{types\_and\_macros.h}.
+	
+	Execute module contains \texttt{execute\_helpers.c}, \texttt{execute\_DP.c}, \texttt{execute\_SDT.c} and \texttt{execute.c} as well as their headers. Data processing instruction is defined in \texttt{execute\_DP.c} and single data transfer instruction is defined in \texttt{execute\_SDT.c} since their logic are complicated. Multiplication and branch instruction is defined in \texttt{execute.c}. In \texttt{execute\_helpers.c}, there are common helpers (data rotation ...) since these helpers are commonly used in execution module, we put them into one file.
+	
+	Utils module contains \texttt{tools.c}, \texttt{types\_and\_macros.h}, \texttt{unit\_test.c} and \texttt{file\_loader.c} and headers. \texttt{tools.c} has some bit operation and type transformation functions for general use. \texttt{types\_and\_macros.h} contains all the data types, structures and enumerations which are used in other functions. We defined all the instructions using a tag and a union of specific instructions. For specific instructions, we specified the exact length of parts in instructions such that they can fit in 32 bits. We also defined enum for opcodes.
+	
+	Tests module contains all the module test source file.
+	
 \end{document}
