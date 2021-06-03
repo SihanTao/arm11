@@ -18,7 +18,7 @@ int main(void)
   {
       test_int_v(rotate(1, 0x0000000B), 0x80000005, "1011 becomes 1000..0101");
 
-      test_int_v(rotate(2, 0x0000001A), 0x80000006, "11010 becomes 1000..0110");
+      test_int_v(rotate(2, 0x0000001A), 0x40000006, "11010 becomes 0100..0110");
 
       test_int_v(rotate(3, 0x0000005D), 0xA000000B, "1011101 becomes 1010..1011");
   }
@@ -29,18 +29,18 @@ int main(void)
 
       test_int_v(shift(0x0000001A, 2, LSR), 0x00000006, "11010 becomes 110");
 
-      test_int_v(shift(0xA000000B, 3, ASR), 0xD0000005, "1010..1011 becomes 1101..0101");
+      test_int_v(shift(0xA000000B, 3, ASR), 0xF4000001, "1010..1011 becomes 1111010..0001");
 
       test_int_v(shift(0x0000005D, 3, ROR), 0xA000000B, "1011101 becomes 1010..1011");
   }
 
   add_test("Test for arith_right");
   {
-      test_int_v(arith_right(1, 0x0000001A), 0x00000005, "1011 becomes 101");
+      test_int_v(arith_right(1, 0x0000001A), 0x0000000D, "..11010 becomes ..1101");
 
-      test_int_v(arith_right(2, 0x80000005), 0xC0000002, "1000..0101 becomes 1100..0010");
+      test_int_v(arith_right(2, 0x80000005), 0xE0000001, "1000..0101 becomes 1110..0001");
 
-      test_int_v(arith_right(3, 0xA000000B), 0xD0000005, "1010..1011 becomes 1101..0101");
+      test_int_v(arith_right(3, 0xA000000B), 0xF4000001, "1010..1011 becomes 1111010..0001");
   }
 
 //   add_test("Test for shift_imm_handle");
