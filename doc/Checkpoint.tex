@@ -3,66 +3,63 @@
 \usepackage{fullpage}
 
 \begin{document}
-
+	
 	\title{ARM Checkpoint Report}
 	\author{Sihan Tao, Taowen Liu, Ranchen Li, Chuxuan Li}
-
+	
 	\maketitle
-
+	
 	\section{Group Organisation}
-
-  Our group adapted a modular developing organisation. Such organisation reduced the dependencies between the modules and allowed us to work in parallel in order to improve the efficiency.
-
-  Taowen and Sihan first designed the structure of the emulator, and they specified the interfaces of different modules. Sihan worked on Decode module, he designed intermediate representations of instructions and finished the decoding part. Taowen worked on Main module, he constructed the main loop, designed the representation of machine state and pipeline structure. He also did the file loader and fetching part. Ranchen and Chuxuan worked on Execute module, Chuxuan worked on single data transfer instruction and Ranchen worked on branch, data processing instructions. Sihan helped to write interface for the Execute module and implemented multiply instruction. Taowen joined them and worked together to debug, refactor functions, and extract common helper functions.
-
-  Since we designed the global types data structures before actually writing the code. The well designed data type and structure made our code self-documenting. Also, it is consistent throughout the different modules, which alleviated the load of coordinating.
-
-  We also designed a separate Test module for unit test. After implementing the functions, each group member wrote a simple test program for these functions they have written. Sometimes we did other people's job to speed up this progress.
-
-  Teams video call and pair programming were very useful technique we used in our project. Whenever people got stuck, we would start a teams call, sharing screen, and work together to solve the problem.
-
-  We installed the same formatter to maintain the consistency of the style.
-
+	
+	Our group adopted a modular developing organisation which reduced the dependencies between the modules and allowed us to work in parallel to improve efficiency.
+	
+	Taowen and Sihan first designed the structure of the emulator, and they specified the interfaces of different modules. Sihan worked on the Decode module. He designed intermediate representations of instructions and finished the decoding part. Taowen is responsible for the Main module, including constructing the main loop and designing machine state representation and pipeline structure. He also did the file loader and fetching part. Ranchen and Chuxuan worked on the Execute module. Chuxuan worked on single data transfer instruction, and Ranchen worked on branch and data processing instructions. Sihan helped to write an interface for the Execute module and implemented multiply instruction. Taowen joined them and worked together to debug, refactor functions, and extract common helper functions.
+	
+	Since we designed the global types and data structures before actually writing the code, the well-designed data type and structure made our code self-documenting. In addition, it is consistent throughout the different modules, which alleviated the load of coordinating.
+	
+	We also designed a separate Test module for unit test. After implementing the functions, each group member wrote a simple test program for their written functions. Sometimes we did other people's work to speed up this progress.
+	
+	Teams video call and pair programming are instrumental techniques we used in our project. Whenever people got stuck, we would start a teams call, sharing screen, and work together to solve the problem.
+	
+	We installed the same formatter to maintain the consistency of the style.
+	
 	\section{Implementation Strategies}
-
-	We created modules to split the work: Main, Decode, Execute, Utils and Tests.
-
-	Main module depends on Execute and Decode module. And everything requires Utils module since date types and common helpers are defined there.
-
-  \subsection{Main module}
-
-	Main module contains the \texttt{emulate.c} and its header. In \texttt{emulate.c}, there is a main function and several helpers (initializers and destructors). Fetch command is also defined in main module, because it is rather a short function. Main loop maintains the state of all registers, memory and pipeline states. We used old and new pipelines in order to avoid overlaying caused by pipeline executing.
-
-  \subsection{Decode module}
-
-	Decode module contains \texttt{decode.c} and its header. \texttt{decode.c} accepts a fetched instruction of unknown type as an argument and return the intermediate representation which defined in \texttt{types\_and\_macros.h}. Because we have well designed data structure for instructions, the work of decode module is clear, simple and elegant.
-
-  \subsection{Execute module}
-
-	Execute module contains \texttt{execute\_helpers.c}, \texttt{execute\_DP.c}, \texttt{execute\_SDT.c} and \texttt{execute.c} as well as their headers. Function execute is the dispatcher in this module, it calls the sub-functions according to the tag of instruction. Data processing instruction is defined in \texttt{execute\_DP.c} and single data transfer instruction is defined in \texttt{execute\_SDT.c} since their logic are complicated. Shorter functions, Multiplication and branch instruction are defined in \texttt{execute.c}. In \texttt{execute\_helpers.c}, there are common helpers (data rotation ...) since these helpers are commonly used in execution module, we put them into one file in order to reuse the logic.
-
-  \subsection{Utils module}
-
-	Utils module contains \texttt{tools.c}, \texttt{types\_and\_macros.h}, \texttt{unit\_test.c} and \texttt{file\_loader.c} and headers. \texttt{tools.c} has bit operation and type transformation functions for general use. \texttt{types\_and\_macros.h} contains all the data types, structures and enumerations which are used in other functions. We defined all the instructions using a tag and a union of specific instructions. For specific instructions, we specified the exact length of parts in instructions such that they can fit in 32 bits which is very efficient in terms of memory usage. We also defined enums in this file.
-
-  \subsection{Tests module}
-
-	Tests module contains all the module test source file. We designed a specialised test framework for this program.
-
-  However, since this is not a standard framework. People need some time to familiarise with this framework.
-
-  \section{Aspects we can improve on.}
-
-  \subsection{Makefile and Git usage}
-
-  We designed a modular makefile system, however, this system is fragile since any compilation error would cause the whole system stop working. Some of us could familiarise with the usage of git branch to avoid conflicts and Makefile problems.
-
-  \subsection{Split the work}
-
-  We splited work according to modules in emulator part. Despite this allowed us to work in parallel, it caused problem in collaboration. When some of us got stuck, the rest of us did not know that they need help. After the appointed ddl approaches, people realised they need help, and this slowed down our work. We could solve this problem by doing code review in group meetings.
-
-  \subsection{Consistency}
-
-  Because we splited work in modules, people only focused on their own work. However, since people have different conventions in naming the variables and different views toward code quality, we occasionally need to rewrite functions to maintain the consistency in code quality.
-
+	
+	We created modules to split the work: Main, Decode, Execute, Utils and Tests. The Main module depends on the Execute and Decode module. Furthermore, the Utils module is essential for all other modules as data types and common helpers are defined there.
+	
+	\subsection{Main module}
+	
+	Main module contains the \texttt{emulate.c} and its header. In \texttt{emulate.c}, there is a main function and several helpers (initializers and destructors). The fetch command is also defined in main module. The state of all registers, memory and pipeline states are maintained in the Main loop. We used old and new pipelines in order to avoid overlaying caused by pipeline executing.
+	
+	\subsection{Decode module}
+	
+	Decode module contains \texttt{decode.c} and its header. \texttt{decode.c} accepts a fetched instruction of unknown type as an argument and return the intermediate representation which defined in \texttt{types\_and\_macros.h}. Owing to the well-designed data structure for instructions, the functionality of the decode module is clear, simple and elegant.
+	
+	\subsection{Execute module}
+	
+	Execute module contains \texttt{execute\_helpers.c}, \texttt{execute\_DP.c}, \texttt{execute\_SDT.c} and \texttt{execute.c} as well as their headers. Function execute is the dispatcher in this module, which calls the sub-functions according to the tag of instruction. 
+	Data processing instruction is defined in \texttt{execute\_DP.c} and single data transfer instruction is defined in \texttt{execute\_SDT.c} since their logic are complicated. Shorter functions, Multiplication and branch instruction are defined in \texttt{execute.c}. We integrated some helper functions(data rotation ...) widely used in the execution module in \texttt{execute\_helpers.c} in order to reuse them later.
+	
+	\subsection{Utils module}
+	
+	Utils module contains \texttt{tools.c}, \texttt{types\_and\_macros.h}, \texttt{unit\_test.c} and \texttt{file\_loader.c} and headers. \texttt{tools.c} has bit operation and type transformation functions for general use. \texttt{types\_and\_macros.h} contains all the data types, structures and enumerations used in other functions. We defined all the instructions using a tag and a union of specific instructions. For specific instructions, we specified the exact length of parts in instructions such that they can fit in 32 bits which is very efficient in terms of memory usage. Enums are defined in this file as well.
+	
+	\subsection{Tests module}
+	
+	Tests module contains all the module test source file. We designed a specialised test framework for this program. However, since this is not a standard framework, people need some time to familiarise themselves with this framework.
+	
+	\section{Aspects we can improve on.}
+	
+	\subsection{Makefile and Git usage}
+	
+	We designed a modular makefile system. However, this system is fragile since any compilation error would stop the whole system from working. Some of us should learn how to use git branch to avoid conflicts and Makefile problems.
+	
+	\subsection{Split the work}
+	
+	We split work according to modules in the emulator part. Despite this allowed us to work in parallel, it caused a problem in collaboration. When some of us got stuck, the rest of us did not know that they need help. After the appointed deadline, people realised they need help, which slowed down our work. We could solve this problem by doing code review in group meetings.
+	
+	\subsection{Consistency}
+	
+	Since we split work into modules, people only focused on their work. However, since people have different conventions in naming the variables and different views toward code quality, we occasionally need to rewrite functions to maintain consistency in code quality.
+	
 \end{document}
