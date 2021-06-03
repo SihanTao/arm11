@@ -4,27 +4,31 @@
 
 \begin{document}
 
-\title{ARM Checkpoint... }
-\author{TODO}
+\title{ARM Checkpoint Report}
+\author{Sihan Tao, Tony Liu, Ranchen Li ,Chuxuan Li}
 
 \maketitle
 
 \section{Group Organisation}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+Tony and Sihan first worked out the structure of the project should have and then figured out all the data types and the structure needed for the implementation. Tony wrote the binary file loader and the main loop for the emulator. Before Sihan wrote the execution for multiply instructions and some helper functions, he wrote the decoding part and the interface of the execution part. Finally Ranchen and Chuxuan worked together to write the execution part for data processing, single data transfer and branch instructions.
+
+For each function, there were mainly two jobs to do: Writing the code and creating the unit test. After implementing the functions, each group member wrote a simple test program for these functions they have written. Sometimes we did other people's job to speed up the progress. 
+
+Our group works well together. We usually help each other through Teams and Wechat whenever there is problems for writing codes or understanding the specification. 
+
+An adjustment could be to meet more frequently online to ensure all the group members fully understand what to do. Sihan and Tony wrote a lot of codes before the rests started to do the allocated jobs so in the following weeks, we should work more as a group to complete the task.
 
 \section{Implementation Strategies}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+We have created some subfolders: main, decode, execute, utils and tests. 
+
+main: 
+decode contains \texttt{decode.c} and \texttt{decode.h}. \texttt{decode.c} accepts a fetched instruction of unknown type as an argument and return the classified instruction.
+execute contains ... TODO: Chuxuan and Ranchen
+utils contains \texttt{tools.c}, \texttt{types\_and\_macros.h}, \texttt{unit\_test.c} and \texttt{file\_loader.c}.
+\texttt{tools.c} has some helper functions for general use.
+\texttt{types\_and\_macros.h} contains all the data types, structures and enumerations which are used in other functions. 
+
 
 \end{document}
