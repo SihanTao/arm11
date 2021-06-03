@@ -9,7 +9,10 @@ uint32_t rotate(int rotation_amount, uint32_t content)
   int af_rot_val = 0;
   for (int i = 0; i < rotation_amount; i++)
   {
-    af_rot_val += pow(get_bit(content, i), (31 - i));
+    if (get_bit(content, i) == 1)
+    {
+      af_rot_val += pow(2, (31 - i));
+    }
   }
   return af_rot_val + (content >> rotation_amount);
 }

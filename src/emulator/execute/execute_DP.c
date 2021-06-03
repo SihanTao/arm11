@@ -9,6 +9,7 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   data_process_t data_ins = decoded->u.data_process;
   uint32_t result = 0;
   uint32_t Rn = to_int(reg[data_ins.Rn]);
+  bitfield Rd = reg[data_ins.Rd];
 
   bool newFlagC = new_carry(reg, data_ins.operand2, data_ins.I);
   uint32_t operand2 = shift_imm_handle(reg, data_ins.operand2, data_ins.I);
@@ -16,8 +17,7 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   /*********** bugs here ******************/
   // if save result
   {
-    result = compute_result(data_ins.opcode, operand2, Rn);
-    reg[data_ins.Rd] = to_bf(result);
+    compute_result(data_ins.opcode, operand2, Rn, Rd);
   }
 
   if (data_ins.S)
@@ -51,20 +51,20 @@ bool new_carry(bitfield *reg, shift_or_imm_t shift_or_imm, bool is_imm)
   }
 }
 
-uint32_t compute_result(opcode_type opcode, uint32_t operand2, uint32_t Rn)
+void compute_result(opcode_type opcode, uint32_t operand2, uint32_t Rn, bitfield Rd)
 {
   switch (opcode)
   {
   case AND:
-    return (Rn && operand2);
+    Rd = to_bf(Rn && operand2);
   case EOR:
-    return (Rn ^ operand2);
+    Rd = to_bf(Rn ^ operand2);
   case SUB:
-    return (Rn - operand2);
+    Rd = to_bf(Rn - operand2);
   case RSB:
-    return (operand2 - Rn);
+    Rd = to_bf (operand2 - Rn);
   case ADD:
-    return (Rn + operand2);
+    Rd = to_bf (Rn + operand2);
   case TST:
     /*** not sure what to do*****/
     (Rn && operand2); //result not written
@@ -73,9 +73,9 @@ uint32_t compute_result(opcode_type opcode, uint32_t operand2, uint32_t Rn)
   case CMP:
     (Rn - operand2); //result not written
   case ORR:
-    return (Rn || operand2);
+    Rd = to_bf(Rn || operand2);
   case MOV:
-    return (operand2);
+    Rd = to_bf(operand2);
   default:
     break;
   }

@@ -16,7 +16,7 @@ int main(void)
 
   add_test("Test for rotate");
   {
-      test_int_v(rotate(1, 0x3F3), 0x456, "1011 becomes 1110");
+      test_int_v(rotate(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
   }
 /*
   add_test("Test for data processing execution");
