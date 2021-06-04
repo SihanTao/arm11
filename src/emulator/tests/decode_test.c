@@ -20,19 +20,19 @@ int main(void)
 
         instruction_t *p = instructions;
         find_type(p);
-	    print_bit(p->u.i);
+	    print_bit(p->word.i);
         test_int_v(p->tag, DATA_PROCESS, "mov r1, #1 == data processing");
 
         find_type(++p);
-	    print_bit(p->u.i);
+	    print_bit(p->word.i);
         test_int_v(p->tag, BRANCH, "b foo == branch");
 
         find_type(++p);
-	    print_bit(p->u.i);
+	    print_bit(p->word.i);
         test_int_v(p->tag, DATA_PROCESS, "mov r2, #2 == data processing");
 
         find_type(p);
-	    print_bit(p->u.i);
+	    print_bit(p->word.i);
         test_int_v(p->tag, DATA_PROCESS, "foo: mov r3, #3 == data processing");
 
         /* add01
@@ -41,21 +41,21 @@ int main(void)
          */
         instruction_t add01[] = {{0, {0xe3a01001}}, {0, {0xe2812002}}};
         find_type(&add01[0]);
-	    print_bit(add01[0].u.i);
+	    print_bit(add01[0].word.i);
         test_int_v(add01[0].tag, DATA_PROCESS, "mov r1,#1 == DATA_PROCESS");
 
         find_type(&add01[1]);
-	    print_bit(add01[1].u.i);
+	    print_bit(add01[1].word.i);
         test_int_v(add01[1].tag, DATA_PROCESS, "add r2,r1,#2 == DATA_PROCESS");
 
         instruction_t mul = {0, {0xe0020091}}; //9100 02e0 mul r2,r1,r0
         find_type(&mul);
-	    print_bit(mul.u.i);
+	    print_bit(mul.word.i);
         test_int_v(mul.tag, MUL, "mul r2,r1,r0 == multiply");
 
         instruction_t bne = {0, {0x1afffffa}};// faff ff1a bne loop
         find_type(&bne);
-	    print_bit(bne.u.i);
+	    print_bit(bne.word.i);
         test_int_v(bne.tag, BRANCH, "bne == BRANCH");
 
         /*
@@ -69,7 +69,7 @@ int main(void)
 
         p = ldr01;
         find_type(p);
-	    print_bit(p->u.i);
+	    print_bit(p->word.i);
         /* Note here the instruction ldr r0,=0x02 works as mov r0, =0x42
          * I realise it after reading the example on page 15.
          * This confused me a lot when testing
@@ -77,11 +77,11 @@ int main(void)
         test_int_v(p->tag, DATA_PROCESS, "ldr r0,=0x02 == DATA_PROCESS");
         p++;
         find_type(p);
-	    print_bit(p->u.i);
+	    print_bit(p->word.i);
         test_int_v(p->tag, TRANS, "ldr r2,[r0] == TRANS");
         p++;
         find_type(p);
-	    print_bit(p->u.i);
+	    print_bit(p->word.i);
         test_int_v(p->tag, DATA_PROCESS, "cmp r2,r0 == DATA_PROCESS");
     }
 
@@ -102,7 +102,7 @@ int main(void)
         instruction_t res[4];
         for (int i = 0; i < 4; i++)
         {
-            instructions_bf[i] = instructions[i].u.bf;
+            instructions_bf[i] = instructions[i].word.bf;
             res[i] = decode(instructions_bf[i]);
         }
 

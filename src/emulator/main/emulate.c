@@ -44,8 +44,14 @@ int main(int argc, char **argv)
   {
     next->fetched = fetch(states->pc, states->memory);
     next->decoded = decode(current->fetched);
-    if (execute(&current->decoded, states) == EXIT)
+    exit_type exit_status= execute(current->decoded, states);
+    if (exit_status == EXIT)
     {
+      break;
+    }
+    if (exit_status == ERROR)
+    {
+      perror("An error found, please check your code!");
       break;
     }
     FLASH_CYCLE;
@@ -105,7 +111,7 @@ Pipeline init_pipeline(void)
   result->fetched.byte4 = 0;
 
   result->decoded.tag = UNDEFINED;
-  result->decoded.u.i = 0;
+  result->decoded.word.i = 0;
 
   return result;
 }
