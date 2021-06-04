@@ -43,20 +43,20 @@
 //       test_int_v(arith_right(3, 0xA000000B), 0xF4000001, "1010..1011 becomes 1111010..0001");
 //   }
 
-// //   add_test("Test for shift_imm_handle");
+// //   add_test("Test for reg_imm_handle");
 // //   {
-// //       test_int_v(shift_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
+// //       test_int_v(reg_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
 
-// //       test_int_v(shift_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
+// //       test_int_v(reg_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
 
-// //       test_int_v(shift_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
+// //       test_int_v(reg_imm_handle(1, 0x0000000B), 0x80000005, "1011 becomes 1101");
 // //   }
 // /*
 //   add_test("Test for data processing execution");
 //   {
 //       instruction_t dp_ins1 =
 //         {.tag = DATA_PROCESS,
-//          .word.dp = {
+//          .word.proc = {
 //              .operand2 = {
 //                  .shift_reg = {
 //                      .Rm = ,
@@ -87,7 +87,7 @@
 //     //condition is set
 //     instruction_t dp_ins2 =
 //         {.tag = DATA_PROCESS,
-//          .word.dp = {
+//          .word.proc = {
 //              .operand2 = {
 //                  .op2 = 1,
 //                  .Register = {
@@ -119,7 +119,7 @@
 //     //S = true I = false
 //     instruction_t dp_ins3 =
 //         {.tag = DATA_PROCESS,
-//          .word.dp = {
+//          .word.proc = {
 //              .operand2 = {
 //                  .op2 = 1,
 //                  .Register = {
@@ -161,7 +161,7 @@
 //     //S = false I = true
 //     instruction_t dp_ins4 =
 //         {.tag = DATA_PROCESS,
-//          .word.dp = {
+//          .word.proc = {
 //              .operand2 = {
 //                  .op2 = ,
 //                  .Iv = {
@@ -191,7 +191,7 @@
 //     //S = true I = true
 //     instruction_t dp_ins5 =
 //         {.tag = DATA_PROCESS,
-//          .word.dp = {
+//          .word.proc = {
 //              .operand2 = {
 //                  .op2 = ,
 //                  .Iv = {

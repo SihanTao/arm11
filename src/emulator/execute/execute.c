@@ -18,7 +18,7 @@ exit_type execute(instruction_t decoded, ArmState arm_state)
     switch (decoded.tag)
     {
     case DATA_PROCESS:
-      execute_DP(decoded.word.dp, arm_state);
+      execute_DP(decoded.word.proc, arm_state);
       return CONTINUE;
     case MUL:
       execute_MUL(decoded.word.mul, arm_state);
@@ -39,7 +39,7 @@ exit_type execute(instruction_t decoded, ArmState arm_state)
 
 void execute_MUL(mul_t instruction, ArmState arm_state)
 {
-  // pre: PC is not used as operand or desination register
+  // pre: PC is not used as operand or destination register
   //      Rd will not be the same as Rm
   bitfield *reg = arm_state->reg;
   uint32_t Rm = to_int(reg[instruction.Rm]);

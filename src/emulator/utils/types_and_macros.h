@@ -16,7 +16,7 @@
  * =====================
  *  - enums - instruction tags and instruction opcodes
  *
- *  - components of instructions - used in trans and dp instructions
+ *  - components of instructions - used in trans and proc instructions
  *
  *  - words - including bitfield and 4 instructions 32 bits long
  *
@@ -49,7 +49,8 @@ typedef enum endian_type
 // 12 general purpose registers
 #define NUM_OF_REG (12)
 
-typedef enum exit_type{
+typedef enum exit_type
+{
   CONTINUE,
   EXIT,
   ERROR
@@ -65,13 +66,13 @@ typedef enum ins_type
 {
   UNDEFINED,
   DATA_PROCESS,
-  MUL,
-  TRANS,
+  MUL,   // Multiplication
+  TRANS, // Single data transfer
   BRANCH,
   ZERO
 } ins_type;
 
-typedef enum dp_type
+typedef enum proc_type
 {
   AND,
   EOR,
@@ -83,14 +84,14 @@ typedef enum dp_type
   CMP,
   ORR,
   MOV
-} dp_type;
+} proc_type;
 
 typedef enum shift_type
 {
-  LSL,
-  LSR,
-  ASR,
-  ROR
+  LSL, // Logical left
+  LSR, // Logical right
+  ASR, // Arithmetic right
+  ROR  // Rotate right
 } shift_type;
 
 typedef enum trans_type
@@ -99,47 +100,42 @@ typedef enum trans_type
   STORE
 } trans_type;
 
-typedef enum ins_cond_type
+typedef enum cond_type
 {
-  EQ = 0,
-  NE,
-  GE = 10,
-  LT,
-  GT,
-  LE,
-  AL
-} ins_cond_type;
+  EQ = 0,  // equal
+  NE,      // not equal
+  GE = 10, // greater or equal
+  LT,      // less than
+  GT,      // greater than
+  LE,      // less than or equal
+  AL       // always
+} cond_type;
 
 /************** components for words ***********************/
 
-// TODO : find a better name for this
 typedef struct shift_reg_t
 {
-  struct
-  {
-    unsigned int val : 5;
-    unsigned int type : 2;
-    unsigned int : 1; // not used: 0.
-  } shift;
+  unsigned int val : 5;
+  unsigned int type : 2;
+  unsigned int : 1; // not used: 0.
   unsigned int Rm : 4;
 } shift_reg_t;
 
-// TODO : find a better name for this
-typedef struct rotate_t
+typedef struct rot_imm_t
 {
   unsigned int amount : 4;
-  unsigned int value : 8;
-} rotate_t;
+  unsigned int imm : 8;
+} rot_imm_t;
 
 typedef union reg_or_imm_t
 {
-  rotate_t imm_val;
+  rot_imm_t rot_imm;
   shift_reg_t shift_reg;
 } reg_or_imm_t;
 
 /****************** words *****************/
 
-//the struct of byte representation in memory
+// represents word in memory and registers
 typedef struct bitfield
 {
   unsigned int byte4 : 8;
@@ -148,7 +144,7 @@ typedef struct bitfield
   unsigned int byte1 : 8;
 } bitfield;
 
-typedef struct data_process_t
+typedef struct proc_t
 {
   reg_or_imm_t operand2;
   unsigned int Rd : 4;
@@ -158,7 +154,7 @@ typedef struct data_process_t
   unsigned int I : 1;
   unsigned int : 2; // not used: 00
   unsigned int cond : 4;
-} data_process_t;
+} proc_t;
 
 typedef struct mul_t
 {
@@ -207,7 +203,7 @@ typedef struct
   {
     uint32_t i;
     bitfield bf;
-    data_process_t dp;
+    proc_t proc;
     mul_t mul;
     trans_t trans;
     branch_t branch;
@@ -220,10 +216,15 @@ typedef struct
  * The struct used to hold the state of the machine
  *
  * - In order to make memory byte addressable, we
- * used `byte *` for memory
+ *   used `byte *` for memory
  *
  * - CPSR regsiters are represented using 4 `bool`
- * value, which makes it easier to use
+ *   value, which makes it easier to use
+ *
+ * - The reason we used bitfield for `reg *` is
+ *   because we left the opportunity to make the
+ *   code compatible with both big and little endian
+ *   machines
  */
 typedef struct arm_state_struct
 {

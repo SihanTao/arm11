@@ -9,7 +9,7 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
   bitfield *reg = arm_state->reg;
 
   uint32_t Rn = to_int(reg[instruction.Rn]);
-  uint32_t offset = shift_imm_handle(reg, instruction.offset, instruction.I);
+  uint32_t offset = reg_imm_handle(reg, instruction.offset, instruction.I);
 
   //if U is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
   Rn = (instruction.U) ? Rn + offset : Rn - offset;
