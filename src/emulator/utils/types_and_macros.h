@@ -2,21 +2,46 @@
 #define TYPES_AND_MACROS
 
 /*
+ *
+ * Type Conventions
+ * ====================
+ * `*_type` s are used for enums
+ *
+ * `*_t` s are used for non pointer types
+ *
+ * CamelCase types are used for pointer types
+ *
+ *
+ * Table of contents
+ * =====================
+ *  - enums - instruction tags and instruction opcodes
+ *
+ *  - components of instructions - used in trans and dp instructions
+ *
+ *  - words - including bitfield and 4 instructions 32 bits long
+ *
+ *  - tagged instructions
+ *
+ *  - arm state - represent all machine states
+ */
+
+/*
  * In order to minisize redundant code, include some std-libs here.
  */
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef char byte;
+typedef uint8_t byte;
 
 // default target machine endian is littel
 #define TARGET_MACHINE_ENDIAN LITTLE
-typedef enum endian_mode
+
+typedef enum endian_type
 {
   BIG,
   LITTLE
-} endian_mode;
+} endian_type;
 
 // res-pi has 64k of memory, thus max address is 65536
 #define MAX_MEMORY_ADDRESS (65536)
@@ -24,12 +49,19 @@ typedef enum endian_mode
 // 12 general purpose registers
 #define NUM_OF_REG (12)
 
+typedef enum exit_type{
+  CONTINUE,
+  EXIT,
+  ERROR
+} exit_type;
+
 /****************** enums **********************/
 
-/* Include the four instruction kind
+/*
+ * Include the four instruction kind
  * with an undefined type
  */
-typedef enum instruction_kind
+typedef enum ins_type
 {
   UNDEFINED,
   DATA_PROCESS,
@@ -37,50 +69,73 @@ typedef enum instruction_kind
   TRANS,
   BRANCH,
   ZERO
-} instruction_kind;
+} ins_type;
 
-typedef enum opcode_type{
-    AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV
-} opcode_type;
+typedef enum dp_type
+{
+  AND,
+  EOR,
+  SUB,
+  RSB,
+  ADD,
+  TST,
+  TEQ,
+  CMP,
+  ORR,
+  MOV
+} dp_type;
 
-typedef enum shift_type{
+typedef enum shift_type
+{
   LSL,
   LSR,
   ASR,
   ROR
 } shift_type;
 
-typedef enum load_store{
-    LOAD, STORE
-} load_store;
+typedef enum trans_type
+{
+  LOAD,
+  STORE
+} trans_type;
 
-typedef enum instruction_cond{
-    EQ = 0, NE, GE = 10, LT, GT, LE, AL
-} instruction_cond;
+typedef enum ins_cond_type
+{
+  EQ = 0,
+  NE,
+  GE = 10,
+  LT,
+  GT,
+  LE,
+  AL
+} ins_cond_type;
+
 /************** components for words ***********************/
 
+// TODO : find a better name for this
 typedef struct shift_reg_t
 {
   struct
   {
-    unsigned int integer : 5;
-    unsigned int s_type : 2;
+    unsigned int val : 5;
+    unsigned int type : 2;
     unsigned int : 1; // not used: 0.
   } shift;
   unsigned int Rm : 4;
 } shift_reg_t;
 
+// TODO : find a better name for this
 typedef struct rotate_t
 {
-  unsigned int rot_amt : 4;
-  unsigned int rot_val : 8;
+  unsigned int amount : 4;
+  unsigned int value : 8;
 } rotate_t;
 
-typedef union shift_or_imm_t
+typedef union reg_or_imm_t
 {
   rotate_t imm_val;
   shift_reg_t shift_reg;
-} shift_or_imm_t;
+} reg_or_imm_t;
 
 /****************** words *****************/
 
@@ -95,8 +150,7 @@ typedef struct bitfield
 
 typedef struct data_process_t
 {
-  // the union is used to present different cases of Op2.
-  shift_or_imm_t operand2;
+  reg_or_imm_t operand2;
   unsigned int Rd : 4;
   unsigned int Rn : 4;
   unsigned int S : 1;
@@ -121,11 +175,7 @@ typedef struct mul_t
 
 typedef struct trans_t
 {
-  /*** begin offset ***/
-  // the union is used to present different cases of Offset.
-  shift_or_imm_t offset;
-  /*** end offset ***/
-
+  reg_or_imm_t offset;
   unsigned int Rd : 4;
   unsigned int Rn : 4;
   unsigned int L : 1;
@@ -152,29 +202,34 @@ typedef struct branch_t
  */
 typedef struct
 {
-  enum instruction_kind tag;
+  enum ins_type tag;
   union
   {
     uint32_t i;
-    // I wanted to remove this i, since it will brake protability
     bitfield bf;
-    data_process_t data_process;
+    data_process_t dp;
     mul_t mul;
     trans_t trans;
     branch_t branch;
-  } u;
+  } word;
 } instruction_t;
 
 /************************** tagged instruction end ************************/
 
 /*
- * The struct used to hold all states in this program
+ * The struct used to hold the state of the machine
+ *
+ * - In order to make memory byte addressable, we
+ * used `byte *` for memory
+ *
+ * - CPSR regsiters are represented using 4 `bool`
+ * value, which makes it easier to use
  */
 typedef struct arm_state_struct
 {
   size_t pc;
-  bitfield *reg; // use bitfield to avoid
-  byte *memory;  // In order to make it byte addressable
+  bitfield *reg;
+  byte *memory;
   bool flagN;
   bool flagZ;
   bool flagC;

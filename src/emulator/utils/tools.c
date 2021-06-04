@@ -68,9 +68,9 @@ bitfield to_bf(uint32_t i)
   return *result;
 }
 
-bitfield peek(size_t position, byte * memory)
+bitfield peek(size_t address, byte * memory)
 {
   bitfield result;
-  memcpy(&result, memory + position, sizeof(bitfield));
+  memcpy(&result, memory + address, sizeof(bitfield));
   return result;
 }

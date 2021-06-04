@@ -8,7 +8,7 @@
 
 #include "../utils/tools.h"
 
-void read_file_to_mem(char const *file_name, void *write_to, endian_mode mode)
+void read_file_to_mem(char const *file_name, void *write_to, endian_type mode)
 {
   assert(write_to);
   int position = 0;

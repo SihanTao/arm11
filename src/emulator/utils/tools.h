@@ -1,10 +1,3 @@
-/*
- * Provide the interface of some
- * functions for bit operation
- *
- * Author: Sihan Tao
- */
-
 #ifndef BITOPERATION_H
 #define BITOPERATION_H
 
@@ -28,6 +21,10 @@ extern void convert_endian_ptr(char * buffer);
 extern bitfield convert_endian(bitfield word);
 extern uint32_t to_int(bitfield b);
 extern bitfield to_bf(uint32_t i);
-extern bitfield peek(size_t position, byte * memory);
+
+/*
+ * Returns the bitfield stored in that address
+ */
+extern bitfield peek(size_t address, byte * memory);
 
 #endif
