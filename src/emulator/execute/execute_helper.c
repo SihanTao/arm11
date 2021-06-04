@@ -57,13 +57,13 @@ uint32_t arith_right(uint32_t shift_val, uint32_t Rm)
   return after_shift | mask;
 }
 
-bool test_instruction_cond(instruction_t *instruction, ArmState arm_state)
+bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
 {
   bool N = arm_state->flagN;
   bool Z = arm_state->flagZ;
   bool C = arm_state->flagC;
   bool V = arm_state->flagV;
-  switch (instruction->u.data_process.cond) // cond is at the same position in all cases
+  switch (instruction.word.dp.cond) // cond is at the same position in all cases
   {
   case EQ:
     return (N);
@@ -84,23 +84,23 @@ bool test_instruction_cond(instruction_t *instruction, ArmState arm_state)
   }
 }
 
-uint32_t shift_imm_handle(bitfield * reg, shift_or_imm_t shift_or_imm, bool is_imm)
+uint32_t shift_imm_handle(bitfield * reg, reg_or_imm_t shift_or_imm, bool is_imm)
 {
 
    if (is_imm) //Offset is a register.
   {
     shift_reg_t offset_reg = shift_or_imm.shift_reg;
-    int shift_val = to_int(reg[offset_reg.shift.integer]);
+    int shift_val = to_int(reg[offset_reg.shift.val]);
     uint32_t Rm = to_int(reg[offset_reg.Rm]);
-    shift_type type = to_int(reg[offset_reg.shift.integer]);
+    shift_type type = to_int(reg[offset_reg.shift.val]);
 
     return shift(Rm, shift_val, type);
   }
   else // Offset is an immediate value.
   {
     rotate_t offset_imm = shift_or_imm.imm_val;
-    int rotation_amount = 2 * to_int(reg[offset_imm.rot_amt]);
-    uint32_t Imm = to_int(reg[offset_imm.rot_val]);
+    int rotation_amount = 2 * to_int(reg[offset_imm.amount]);
+    uint32_t Imm = to_int(reg[offset_imm.value]);
 
     return rotate(rotation_amount, Imm);
   }

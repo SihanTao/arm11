@@ -11,64 +11,61 @@
 #include "../execute/execute_SDT.h"
 
 
-bool execute(instruction_t *decoded, ArmState arm_state)
+exit_type execute(instruction_t decoded, ArmState arm_state)
 {
   if (test_instruction_cond(decoded, arm_state))
   {
-    switch (decoded->tag)
+    switch (decoded.tag)
     {
     case DATA_PROCESS:
-      execute_DP(decoded, arm_state);
+      execute_DP(decoded.word.dp, arm_state);
       return CONTINUE;
     case MUL:
-      execute_MUL(decoded, arm_state);
+      execute_MUL(decoded.word.mul, arm_state);
       return CONTINUE;
     case TRANS:
-      execute_SDT(decoded, arm_state);
+      execute_TRANS(decoded.word.trans, arm_state);
       return CONTINUE;
     case BRANCH:
-      execute_BRANCH(decoded, arm_state);
+      execute_BRANCH(decoded.word.branch, arm_state);
       return CONTINUE;
     case ZERO:
       return EXIT;
-    case UNDEFINED:
-      return ERROR;
     default:
       return ERROR;
     }
   }
 }
 
-void execute_MUL(instruction_t *decoded, ArmState arm_state)
+void execute_MUL(mul_t instruction, ArmState arm_state)
 {
   // pre: PC is not used as operand or desination register
   //      Rd will not be the same as Rm
   bitfield *reg = arm_state->reg;
-  mul_t mul_ins = decoded->u.mul;
-  uint32_t Rm = to_int(reg[mul_ins.Rm]);
-  uint32_t Rs = to_int(reg[mul_ins.Rs]);
-  uint32_t Rn = to_int(reg[mul_ins.Rn]);
+  uint32_t Rm = to_int(reg[instruction.Rm]);
+  uint32_t Rs = to_int(reg[instruction.Rs]);
+  uint32_t Rn = to_int(reg[instruction.Rn]);
   uint32_t result = Rm * Rs;
 
   // the accumulate bit is set
-  if (mul_ins.A)
+  if (instruction.A)
   {
     result += Rn;
   }
   // Save the result
-  reg[mul_ins.Rd] = to_bf(result);
+  reg[instruction.Rd] = to_bf(result);
 
   // If the S bit is set, we need to update the CPSR
-  if (mul_ins.S)
+  if (instruction.S)
   {
     arm_state->flagN = get_bit(result, 31);
     arm_state->flagZ = result == 0;
   }
 }
 
-void execute_BRANCH(instruction_t *decoded, ArmState arm_state)
+void execute_BRANCH(branch_t instruction, ArmState arm_state)
 {
-  uint32_t offset = to_int(arm_state->reg[decoded->u.branch.offset]);
+  uint32_t offset = to_int(arm_state->reg[instruction.offset]);
   int sign_bit = get_bit(offset, 24);
   uint32_t mask = 0;
   uint32_t extended = 0;

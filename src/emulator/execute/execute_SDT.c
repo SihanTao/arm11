@@ -3,63 +3,62 @@
 #include "../utils/tools.h"
 #include "../execute/execute_helper.h"
 
-void execute_SDT(instruction_t *decoded, ArmState arm_state)
+void execute_TRANS(trans_t instruction, ArmState arm_state)
 {
   uint32_t result;
-  trans_t trans_ins = decoded->u.trans;
   bitfield *reg = arm_state->reg;
 
-  uint32_t Rn = to_int(reg[trans_ins.Rn]);
-  uint32_t offset = shift_imm_handle(reg, trans_ins.offset, trans_ins.I);
+  uint32_t Rn = to_int(reg[instruction.Rn]);
+  uint32_t offset = shift_imm_handle(reg, instruction.offset, instruction.I);
 
   //if U is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
-  Rn = (trans_ins.U) ? Rn + offset : Rn - offset;
+  Rn = (instruction.U) ? Rn + offset : Rn - offset;
 
   //If L is set, the word is loaded from memory, otherwise the word is stored into memory.
-  if (trans_ins.L)
+  if (instruction.L)
   {
     result = Rn;
   }
   else
   {
-    reg[trans_ins.Rd] = to_bf(Rn);
+    reg[instruction.Rd] = to_bf(Rn);
   }
 
-  if (trans_ins.P) //pre-indexing, the offset is added/subtracted to the base register before transferring the data.
+  if (instruction.P) //pre-indexing, the offset is added/subtracted to the base register before transferring the data.
   {
-    uint32_t newRn = (trans_ins.U) ? Rn + offset : Rn - offset;
+    uint32_t newRn = (instruction.U) ? Rn + offset : Rn - offset;
 
-    switch (trans_ins.P)
+    switch (instruction.P)
     {
     case LOAD:
-      result = to_int(reg[trans_ins.Rn]) + to_int(reg[offset]);
+      result = to_int(reg[instruction.Rn]) + to_int(reg[offset]);
       break;
 
     case STORE:
-      reg[trans_ins.Rd] = to_bf(newRn);
+      reg[instruction.Rd] = to_bf(newRn);
       break;
 
     default:
       break;
     }
-    Rn = (trans_ins.U) ? Rn + offset : Rn - offset;
+    Rn = (instruction.U) ? Rn + offset : Rn - offset;
   }
   else //(post-indexing, the offset is added/subtracted to the base register after transferring.
   {
-    switch (trans_ins.P)
+    switch (instruction.P)
     {
     case LOAD:
       result = Rn;
       break;
 
     case STORE:
-      reg[trans_ins.Rd] = to_bf(Rn);
+      reg[instruction.Rd] = to_bf(Rn);
       break;
 
     default:
       break;
     }
-    Rn = (trans_ins.U) ? Rn + offset : Rn - offset;
+    Rn = (instruction.U) ? Rn + offset : Rn - offset;
   }
 }
 

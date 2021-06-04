@@ -3,24 +3,23 @@
 #include "../utils/tools.h"
 #include "../execute/execute_helper.h"
 
-void execute_DP(instruction_t *decoded, ArmState arm_state)
+void execute_DP(data_process_t instruction, ArmState arm_state)
 {
   bitfield *reg = arm_state->reg;
-  data_process_t data_ins = decoded->u.data_process;
   uint32_t result = 0;
-  uint32_t Rn = to_int(reg[data_ins.Rn]);
-  bitfield Rd = reg[data_ins.Rd];
+  uint32_t Rn = to_int(reg[instruction.Rn]);
+  bitfield Rd = reg[instruction.Rd];
 
-  bool newFlagC = new_carry(reg, data_ins.operand2, data_ins.I);
-  uint32_t operand2 = shift_imm_handle(reg, data_ins.operand2, !data_ins.I);
+  bool newFlagC = new_carry(reg, instruction.operand2, instruction.I);
+  uint32_t operand2 = shift_imm_handle(reg, instruction.operand2, !instruction.I);
 
   /*********** bugs here ******************/
   // if save result
   {
-    compute_result(data_ins.opcode, operand2, Rn, Rd);
+    compute_result(instruction.opcode, operand2, Rn, Rd);
   }
 
-  if (data_ins.S)
+  if (instruction.S)
   {
     arm_state->flagN = get_bit(result, 31);
     arm_state->flagZ = (!result) ? 1 : 0;
@@ -28,30 +27,30 @@ void execute_DP(instruction_t *decoded, ArmState arm_state)
   }
 }
 
-bool new_carry(bitfield *reg, shift_or_imm_t shift_or_imm, bool is_imm)
+bool new_carry(bitfield *reg, reg_or_imm_t shift_or_imm, bool is_imm)
 {
 
   if (is_imm) // OP2 is an immediate value.
   {
     rotate_t op2_imm = shift_or_imm.imm_val;
-    int rotation_amount = 2 * to_int(reg[op2_imm.rot_amt]);
-    uint32_t Imm = to_int(reg[op2_imm.rot_val]);
+    int rotation_amount = 2 * to_int(reg[op2_imm.amount]);
+    uint32_t Imm = to_int(reg[op2_imm.value]);
 
     return get_bit(Imm, rotation_amount - 1);
   }
   else //OP2 is a register.
   {
     shift_reg_t op2_reg = shift_or_imm.shift_reg;
-    int shift_val = to_int(reg[op2_reg.shift.integer]);
+    int shift_val = to_int(reg[op2_reg.shift.val]);
     uint32_t Rm = to_int(reg[op2_reg.Rm]);
-    shift_type type = to_int(reg[op2_reg.shift.integer]);
+    shift_type type = to_int(reg[op2_reg.shift.val]);
 
     return
         type == LSL ? get_bit(Rm, 32 - shift_val) : get_bit(Rm, shift_val - 1);
   }
 }
 
-void compute_result(opcode_type opcode, uint32_t operand2, uint32_t Rn, bitfield Rd)
+void compute_result(dp_type opcode, uint32_t operand2, uint32_t Rn, bitfield Rd)
 {
   switch (opcode)
   {

@@ -2,16 +2,10 @@
 #define EXECUTE
 
 // // execute will not receive NULL value;
-extern bool execute(instruction_t* decode, ArmState armstate);
-extern void execute_MUL(instruction_t* decode, ArmState armstate);
-void execute_SDT(instruction_t* decode, ArmState armstate);
-void execute_BRANCH(instruction_t* decode, ArmState armstate);
-void execute_ZERO(instruction_t* decode, ArmState armstate);
+extern exit_type execute(instruction_t decoded, ArmState armstate);
+extern void execute_MUL(mul_t instruction, ArmState armstate);
+extern void execute_BRANCH(branch_t instruction, ArmState armstate);
 
-typedef enum exit_type{
-  CONTINUE,
-  EXIT,
-  ERROR
-} exit_type;
+
 
 #endif // EXECUTE
