@@ -61,10 +61,10 @@ uint32_t arith_right(uint32_t shift_amount, uint32_t target)
 
 bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
 {
-  bool N = arm_state->flagN;
-  bool Z = arm_state->flagZ;
-  bool C = arm_state->flagC;
-  bool V = arm_state->flagV;
+  bool N = arm_state->neg;
+  bool Z = arm_state->zero;
+  bool C = arm_state->carry;
+  bool V = arm_state->ovflw;
   switch (instruction.word.proc.cond) // cond is at the same position in all cases
   {
   case EQ:

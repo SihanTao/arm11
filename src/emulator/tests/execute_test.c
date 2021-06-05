@@ -65,9 +65,9 @@
 //                          .type = }}},
 //              .Rd = 2,
 //              .Rn = 3,
-//              .S = false,//CPSR flags not update
+//              .set_cond = false,//CPSR flags not update
 //              .opcode = 4,
-//              .I = false,//op2 is a register
+//              .is_imm = false,//op2 is a register
 //              0,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -80,7 +80,7 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         0xEFFFFFFD3,
-//         "mul 0xFFFFFFFFD 0xF 0, S false I false");
+//         "mul 0xFFFFFFFFD 0xF 0, set_cond false is_imm false");
 
 //     free(arm_state);
 
@@ -97,9 +97,9 @@
 //                          .ShiftT = }}},
 //              .Rd = 2,
 //              .Rn = 3,
-//              .S = false,//CPSR flags not update
+//              .set_cond = false,//CPSR flags not update
 //              .opcode = 4,
-//              .I = false,//op2 is a register
+//              .is_imm = false,//op2 is a register
 //              0,
 //              .cond = 1}};
 //     arm_state = init_state();
@@ -112,11 +112,11 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         0xEFFFFFFD3,
-//         "mul 0xFFFFFFFFD 0xF 0, S false I false");
+//         "mul 0xFFFFFFFFD 0xF 0, set_cond false is_imm false");
 
 //     free(arm_state);
 
-//     //S = true I = false
+//     //set_cond = true is_imm = false
 //     instruction_t dp_ins3 =
 //         {.tag = DATA_PROCESS,
 //          .word.proc = {
@@ -129,9 +129,9 @@
 //                          .ShiftT = }}},
 //              .Rd = 2,
 //              .Rn = 3,
-//              .S = true, //CPSR flags update
+//              .set_cond = true, //CPSR flags update
 //              .opcode = 4,
-//              .I = false,//op2 is a register
+//              .is_imm = false,//op2 is a register
 //              0,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -144,21 +144,21 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         0xEFFFFFFD3,
-//         "mul 0xFFFFFFFFD 0xF 0, S true I false");
+//         "mul 0xFFFFFFFFD 0xF 0, set_cond true is_imm false");
 
 //     // C is set to the carry out from any shift operation
-//     //test_true(arm_state->flagC == );
+//     //test_true(arm_state->carry == );
 
 //     // N is set to bit 31 of the result
-//     test_true(arm_state->flagN == get_bit(0xFFFFFFD3, 31));
+//     test_true(arm_state->neg == get_bit(0xFFFFFFD3, 31));
 
 //     // Z is set if and only if the result is zero.
-//     test_true(arm_state->flagZ == (to_int(arm_state->reg[2]) == 0));
+//     test_true(arm_state->zero == (to_int(arm_state->reg[2]) == 0));
 
 //     free(arm_state);
 
 
-//     //S = false I = true
+//     //set_cond = false is_imm = true
 //     instruction_t dp_ins4 =
 //         {.tag = DATA_PROCESS,
 //          .word.proc = {
@@ -169,9 +169,9 @@
 //                      .Rotate = }},
 //              .Rd = 2,
 //              .Rn = 3,
-//              .S = false, //CPSR flags not update
+//              .set_cond = false, //CPSR flags not update
 //              .opcode = 4,
-//              .I = true, //op2 is an immediate constant
+//              .is_imm = true, //op2 is an immediate constant
 //              0,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -184,11 +184,11 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         0xEFFFFFFD3,
-//         "mul 0xFFFFFFFFD 0xF 0, S false I true");
+//         "mul 0xFFFFFFFFD 0xF 0, set_cond false is_imm true");
 
 //     free(arm_state);
 
-//     //S = true I = true
+//     //set_cond = true is_imm = true
 //     instruction_t dp_ins5 =
 //         {.tag = DATA_PROCESS,
 //          .word.proc = {
@@ -199,9 +199,9 @@
 //                      .Rotate = }},
 //              .Rd = 2,
 //              .Rn = 3,
-//              .S = true, //CPSR flags update
+//              .set_cond = true, //CPSR flags update
 //              .opcode = 4,
-//              .I = true, //op2 is an immediate constant
+//              .is_imm = true, //op2 is an immediate constant
 //              0,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -214,16 +214,16 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         0xEFFFFFFD3,
-//         "mul 0xFFFFFFFFD 0xF 0, S true I true");
+//         "mul 0xFFFFFFFFD 0xF 0, set_cond true is_imm true");
 
 //     // C is set to the carry out from any shift operation
-//     //test_true(arm_state->flagC == );
+//     //test_true(arm_state->carry == );
 
 //     // N is set to bit 31 of the result
-//     test_true( arm_state->flagN == get_bit(0xFFFFFFD3, 31));
+//     test_true( arm_state->neg == get_bit(0xFFFFFFD3, 31));
 
 //     // Z is set if and only if the result is zero.
-//     test_true(arm_state->flagZ == (to_int(arm_state->reg[2]) == 0));
+//     test_true(arm_state->zero == (to_int(arm_state->reg[2]) == 0));
 
 //     free(arm_state);
 //   }
@@ -231,7 +231,7 @@
 
 //   add_test("Test for Mul execution");
 //   {
-//     // S = true A = false
+//     // set_cond = true acc = false
 //     instruction_t mul_ins1 =
 //         {.tag = MUL,
 //          .word.mul = {
@@ -240,8 +240,8 @@
 //              .Rs = 2,
 //              .Rn = 3,
 //              .Rd = 4,
-//              .S = true,
-//              .A = false,
+//              .set_cond = true,
+//              .acc = false,
 //              0,
 //              .cond = 0}};
 
@@ -254,17 +254,17 @@
 //     test_int_v(
 //         to_int(arm_state->reg[4]),
 //         0xEFFFFFFD3,
-//         "mul 0xFFFFFFFFD 0xF 0, S true A false");
+//         "mul 0xFFFFFFFFD 0xF 0, set_cond true acc false");
 
 //     // N is set to bit 31 of the result
-//     test_true( arm_state->flagN == get_bit(0xFFFFFFD3, 31));
+//     test_true( arm_state->neg == get_bit(0xFFFFFFD3, 31));
 
 //     // Z is set if and only if the result is zero.
-//     test_true(arm_state->flagZ == (to_int(arm_state->reg[4]) == 0));
+//     test_true(arm_state->zero == (to_int(arm_state->reg[4]) == 0));
 
 //     free(arm_state);
 
-//     // S = true A = flase condition is set
+//     // set_cond = true acc = flase condition is set
 //     instruction_t mul_ins2 =
 //         {.tag = MUL,
 //          .word.mul = {
@@ -273,8 +273,8 @@
 //              .Rs = 2,
 //              .Rn = 3,
 //              .Rd = 4,
-//              .S = true,
-//              .A = false,
+//              .set_cond = true,
+//              .acc = false,
 //              01,
 //              .cond = 1}};
 //     arm_state = init_state();
@@ -287,17 +287,17 @@
 //     test_int_v(
 //         to_int(arm_state->reg[4]),
 //         0xEFFFFFFD3,
-//         "mul 0xFFFFFFFFD 0xF 0, S true A false");
+//         "mul 0xFFFFFFFFD 0xF 0, set_cond true acc false");
 
 //     // N is set to bit 31 of the result
-//     test_true( arm_state->flagN == get_bit(0xFFFFFFD3, 31));
+//     test_true( arm_state->neg == get_bit(0xFFFFFFD3, 31));
 
 //     // Z is set if and only if the result is zero.
-//     test_true(arm_state->flagZ == (to_int(arm_state->reg[4]) == 0));
+//     test_true(arm_state->zero == (to_int(arm_state->reg[4]) == 0));
 
 //     free(arm_state);
 
-//     // S = true A = true
+//     // set_cond = true acc = true
 //     instruction_t mul_ins3 =
 //         {.tag = MUL,
 //          .word.mul = {
@@ -306,8 +306,8 @@
 //              .Rs = 2,
 //              .Rn = 3,
 //              .Rd = 4,
-//              .S = true,
-//              .A = true,
+//              .set_cond = true,
+//              .acc = true,
 //              0,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -321,17 +321,17 @@
 //     test_int_v(
 //         to_int(arm_state->reg[4]),
 //         0x00000005,
-//         "mul 1 2 3 0, S true A true");
+//         "mul 1 2 3 0, set_cond true acc true");
 
 //     // N is set to bit 31 of the result
-//     test_true( arm_state->flagN == get_bit(0x00000005, 31));
+//     test_true( arm_state->neg == get_bit(0x00000005, 31));
 
 //     // Z is set if and only if the result is zero.
-//     test_true(arm_state->flagZ == (to_int(arm_state->reg[4]) == 0));
+//     test_true(arm_state->zero == (to_int(arm_state->reg[4]) == 0));
 
 //     free(arm_state);
 
-//     // S = false A = true
+//     // set_cond = false acc = true
 //     instruction_t mul_ins4 =
 //         {.tag = MUL,
 //          .word.mul = {
@@ -340,8 +340,8 @@
 //              .Rs = 2,
 //              .Rn = 3,
 //              .Rd = 4,
-//              .S = false,
-//              .A = true,
+//              .set_cond = false,
+//              .acc = true,
 //              0,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -355,11 +355,11 @@
 //     test_int_v(
 //         to_int(arm_state->reg[4]),
 //         0x00000005,
-//         "mul 1 2 3 0, S false A true");
+//         "mul 1 2 3 0, set_cond false acc true");
 
 //     free(arm_state);
 
-//     // S = false A = flase
+//     // set_cond = false acc = flase
 //     instruction_t mul_ins5 =
 //         {.tag = MUL,
 //          .word.mul = {
@@ -368,8 +368,8 @@
 //              .Rs = 2,
 //              .Rn = 3,
 //              .Rd = 4,
-//              .S = false,
-//              .A = false,
+//              .set_cond = false,
+//              .acc = false,
 //              0,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -382,7 +382,7 @@
 //     test_int_v(
 //         to_int(arm_state->reg[4]),
 //         0xEFFFFFFD3,
-//         "mul 0xFFFFFFFFD 0xF 0, S false A false");
+//         "mul 0xFFFFFFFFD 0xF 0, set_cond false acc false");
 
 //     free(arm_state);
 //    }
@@ -404,11 +404,11 @@
 //               //   .offset_value = },
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false,//str
+//              .is_load = false,//str
 //              0,
-//              .U = false,//sub
-//              .P = false,//post
-//              .I = false,//imm
+//              .is_up = false,//sub
+//              .is_pre = false,//post
+//              .is_imm = false,//is_imm
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -432,11 +432,11 @@
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false,//store
+//              .is_load = false,//store
 //              0,
-//              .U = false,//sub
-//              .P = false,//post
-//              .I = false,//imm
+//              .is_up = false,//sub
+//              .is_pre = false,//post
+//              .is_imm = false,//is_imm
 //              01,
 //              .cond = 1}};
 //     arm_state = init_state();
@@ -453,18 +453,18 @@
 
 //     free(arm_state);
 
-//     //L = true U = false P = false I = false
+//     //is_load = true is_up = false is_pre = false is_imm = false
 //     instruction_t trans_ins3 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = true, //load
+//              .is_load = true, //load
 //              0,
-//              .U = false,//sub
-//              .P = false,//post
-//              .I = false,//imm
+//              .is_up = false,//sub
+//              .is_pre = false,//post
+//              .is_imm = false,//is_imm
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -477,22 +477,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "LDR R0, [R1], #12, L = true U = false P = false I = false");
+//         "LDR R0, [R1], #12, is_load = true is_up = false is_pre = false is_imm = false");
 
 //     free(arm_state);
 
-//     //L = false U = true P = false I = false
+//     //is_load = false is_up = true is_pre = false is_imm = false
 //     instruction_t trans_ins4 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false,//store
+//              .is_load = false,//store
 //              0,
-//              .U = true, //add
-//              .P = false,//post
-//              .I = false,//imm
+//              .is_up = true, //add
+//              .is_pre = false,//post
+//              .is_imm = false,//is_imm
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -505,22 +505,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "STR R0, [R1], #12, L = false U = true P = false I = false");
+//         "STR R0, [R1], #12, is_load = false is_up = true is_pre = false is_imm = false");
 
 //     free(arm_state);
 
-//     //L = false U = false P = true I = false
+//     //is_load = false is_up = false is_pre = true is_imm = false
 //     instruction_t trans_ins5 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false,//store
+//              .is_load = false,//store
 //              0,
-//              .U = false,//sub
-//              .P = true, //pre
-//              .I = false,//imm
+//              .is_up = false,//sub
+//              .is_pre = true, //pre
+//              .is_imm = false,//is_imm
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -533,22 +533,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "STR R0, [R1, #12], L = false U = false P = true I = false");
+//         "STR R0, [R1, #12], is_load = false is_up = false is_pre = true is_imm = false");
 
 //     free(arm_state);
 
-//     //L = false U = false P = false I = true
+//     //is_load = false is_up = false is_pre = false is_imm = true
 //     instruction_t trans_ins6 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false,//store
+//              .is_load = false,//store
 //              0,
-//              .U = false,//sub
-//              .P = false,//post
-//              .I = true, //reg
+//              .is_up = false,//sub
+//              .is_pre = false,//post
+//              .is_imm = true, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -561,22 +561,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "STR R0, [R1], #12, L = false U = false P = false I = true");
+//         "STR R0, [R1], #12, is_load = false is_up = false is_pre = false is_imm = true");
 
 //     free(arm_state);
 
-//     //L = true U = true P = false I = false
+//     //is_load = true is_up = true is_pre = false is_imm = false
 //     instruction_t trans_ins7 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = true, //load
+//              .is_load = true, //load
 //              0,
-//              .U = true, //add
-//              .P = false,//post
-//              .I = false,//imm
+//              .is_up = true, //add
+//              .is_pre = false,//post
+//              .is_imm = false,//is_imm
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -589,22 +589,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "LDR R0, [R1], #12, L = true U = true P = false I = false");
+//         "LDR R0, [R1], #12, is_load = true is_up = true is_pre = false is_imm = false");
 
 //     free(arm_state);
 
-//     //L = true U = false P = true I = false
+//     //is_load = true is_up = false is_pre = true is_imm = false
 //     instruction_t trans_ins8 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = true, //load
+//              .is_load = true, //load
 //              0,
-//              .U = false,//sub
-//              .P = true, //pre
-//              .I = false,//imm
+//              .is_up = false,//sub
+//              .is_pre = true, //pre
+//              .is_imm = false,//is_imm
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -617,22 +617,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "LDR R0, [R1, #12], L = true U = false P = true I = false");
+//         "LDR R0, [R1, #12], is_load = true is_up = false is_pre = true is_imm = false");
 
 //     free(arm_state);
 
-//     //L = true U = false P = false I = true
+//     //is_load = true is_up = false is_pre = false is_imm = true
 //     instruction_t trans_ins9 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = true, //load
+//              .is_load = true, //load
 //              0,
-//              .U = false,//sub
-//              .P = false,//post
-//              .I = true, //reg
+//              .is_up = false,//sub
+//              .is_pre = false,//post
+//              .is_imm = true, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -645,22 +645,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "LDR R0, [R1], #12, L = true U = false P = false I = true");
+//         "LDR R0, [R1], #12, is_load = true is_up = false is_pre = false is_imm = true");
 
 //     free(arm_state);
 
-//     //L = false U = true P = true I = false
+//     //is_load = false is_up = true is_pre = true is_imm = false
 //     instruction_t trans_ins10 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false, //store
+//              .is_load = false, //store
 //              0,
-//              .U = true,//add
-//              .P = true,//pre
-//              .I = false, //imm
+//              .is_up = true,//add
+//              .is_pre = true,//pre
+//              .is_imm = false, //is_imm
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -673,22 +673,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "STR R0, [R1, #12], L = false U = true P = true I = false");
+//         "STR R0, [R1, #12], is_load = false is_up = true is_pre = true is_imm = false");
 
 //     free(arm_state);
 
-//     //L = false U = true P = false I = true
+//     //is_load = false is_up = true is_pre = false is_imm = true
 //     instruction_t trans_ins11 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false, //store
+//              .is_load = false, //store
 //              0,
-//              .U = true,//add
-//              .P = false,//post
-//              .I = true, //reg
+//              .is_up = true,//add
+//              .is_pre = false,//post
+//              .is_imm = true, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -701,22 +701,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "STR R0, [R1], #12, L = false U = true P = false I = true");
+//         "STR R0, [R1], #12, is_load = false is_up = true is_pre = false is_imm = true");
 
 //     free(arm_state);
 
-//     //L = false U = false P = true I = true
+//     //is_load = false is_up = false is_pre = true is_imm = true
 //     instruction_t trans_ins12 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false, //store
+//              .is_load = false, //store
 //              0,
-//              .U = false,//sub
-//              .P = true,//pre
-//              .I = true, //reg
+//              .is_up = false,//sub
+//              .is_pre = true,//pre
+//              .is_imm = true, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -729,22 +729,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "STR R0, [R1, #12], L = false U = false P = true I = true");
+//         "STR R0, [R1, #12], is_load = false is_up = false is_pre = true is_imm = true");
 
 //     free(arm_state);
 
-//     //L = true U = true P = true I = false
+//     //is_load = true is_up = true is_pre = true is_imm = false
 //     instruction_t trans_ins13 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = true, //load
+//              .is_load = true, //load
 //              0,
-//              .U = true,//add
-//              .P = true,//pre
-//              .I = false, //reg
+//              .is_up = true,//add
+//              .is_pre = true,//pre
+//              .is_imm = false, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -757,22 +757,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "LDR R0, [R1, #12], L = true U = true P = true I = false");
+//         "LDR R0, [R1, #12], is_load = true is_up = true is_pre = true is_imm = false");
 
 //     free(arm_state);
 
-//     //L = true U = true P = false I = true
+//     //is_load = true is_up = true is_pre = false is_imm = true
 //     instruction_t trans_ins14 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = true, //load
+//              .is_load = true, //load
 //              0,
-//              .U = true,//add
-//              .P = false,//post
-//              .I = true, //reg
+//              .is_up = true,//add
+//              .is_pre = false,//post
+//              .is_imm = true, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -785,22 +785,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "LDR R0, [R1], #12, L = true U = true P = false I = true");
+//         "LDR R0, [R1], #12, is_load = true is_up = true is_pre = false is_imm = true");
 
 //     free(arm_state);
 
-//     //L = true U = false P = true I = true
+//     //is_load = true is_up = false is_pre = true is_imm = true
 //     instruction_t trans_ins15 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = true, //load
+//              .is_load = true, //load
 //              0,
-//              .U = false,//sub
-//              .P = true,//pre
-//              .I = true, //reg
+//              .is_up = false,//sub
+//              .is_pre = true,//pre
+//              .is_imm = true, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -813,22 +813,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "LDR R0, [R1, #12], L = true U = false P = true I = true");
+//         "LDR R0, [R1, #12], is_load = true is_up = false is_pre = true is_imm = true");
 
 //     free(arm_state);
 
-//     //L = false U = true P = true I = true
+//     //is_load = false is_up = true is_pre = true is_imm = true
 //     instruction_t trans_ins16 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = false, //store
+//              .is_load = false, //store
 //              0,
-//              .U = true,//add
-//              .P = true,//pre
-//              .I = true, //reg
+//              .is_up = true,//add
+//              .is_pre = true,//pre
+//              .is_imm = true, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -841,22 +841,22 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "STR R0, [R1, #12], L = false U = true P = true I = true");
+//         "STR R0, [R1, #12], is_load = false is_up = true is_pre = true is_imm = true");
 
 //     free(arm_state);
 
-//     //L = true U = true P = true I = true
+//     //is_load = true is_up = true is_pre = true is_imm = true
 //     instruction_t trans_ins17 =
 //         {.tag = TRANS,
 //          .word.trans = {
 //              .offset = 1,
 //              .Rd = 2,
 //              .Rn = 3,
-//              .L = true, //load
+//              .is_load = true, //load
 //              0,
-//              .U = true,//add
-//              .P = true,//pre
-//              .I = true, //reg
+//              .is_up = true,//add
+//              .is_pre = true,//pre
+//              .is_imm = true, //reg
 //              01,
 //              .cond = 0}};
 //     arm_state = init_state();
@@ -869,7 +869,7 @@
 //     test_int_v(
 //         to_int(arm_state->reg[2]),
 //         1,
-//         "LDR R0, [R1, #12], L = true U = true P = true I = true");
+//         "LDR R0, [R1, #12], is_load = true is_up = true is_pre = true is_imm = true");
 
 //     free(arm_state);
 
@@ -918,10 +918,10 @@
 //   }
 
 //   result->pc = 0;
-//   result->flagN = false;
-//   result->flagZ = false;
-//   result->flagC = false;
-//   result->flagV = false;
+//   result->neg = false;
+//   result->zero = false;
+//   result->carry = false;
+//   result->ovflw = false;
 
 //   return result;
 // }

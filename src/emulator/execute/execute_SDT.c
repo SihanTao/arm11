@@ -9,13 +9,13 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
   bitfield *reg = arm_state->reg;
 
   uint32_t Rn = to_int(reg[instruction.Rn]);
-  uint32_t offset = reg_imm_handle(reg, instruction.offset, instruction.I);
+  uint32_t offset = reg_imm_handle(reg, instruction.offset, instruction.is_imm);
 
-  //if U is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
-  Rn = (instruction.U) ? Rn + offset : Rn - offset;
+  //if is_up is set then offset is added to Rn. Otherwise the offset is subtracted from Rn.
+  Rn = (instruction.is_up) ? Rn + offset : Rn - offset;
 
-  //If L is set, the word is loaded from memory, otherwise the word is stored into memory.
-  if (instruction.L)
+  //If is_load is set, the word is loaded from memory, otherwise the word is stored into memory.
+  if (instruction.is_load)
   {
     result = Rn;
   }
@@ -24,11 +24,11 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
     reg[instruction.Rd] = to_bf(Rn);
   }
 
-  if (instruction.P) //pre-indexing, the offset is added/subtracted to the base register before transferring the data.
+  if (instruction.is_pre) //pre-indexing, the offset is added/subtracted to the base register before transferring the data.
   {
-    uint32_t newRn = (instruction.U) ? Rn + offset : Rn - offset;
+    uint32_t newRn = (instruction.is_up) ? Rn + offset : Rn - offset;
 
-    switch (instruction.P)
+    switch (instruction.is_pre)
     {
     case LOAD:
       result = to_int(reg[instruction.Rn]) + to_int(reg[offset]);
@@ -41,11 +41,11 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
     default:
       break;
     }
-    Rn = (instruction.U) ? Rn + offset : Rn - offset;
+    Rn = (instruction.is_up) ? Rn + offset : Rn - offset;
   }
   else //(post-indexing, the offset is added/subtracted to the base register after transferring.
   {
-    switch (instruction.P)
+    switch (instruction.is_pre)
     {
     case LOAD:
       result = Rn;
@@ -58,7 +58,7 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
     default:
       break;
     }
-    Rn = (instruction.U) ? Rn + offset : Rn - offset;
+    Rn = (instruction.is_up) ? Rn + offset : Rn - offset;
   }
 }
 

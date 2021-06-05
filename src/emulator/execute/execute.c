@@ -48,18 +48,18 @@ void execute_MUL(mul_t instruction, ArmState arm_state)
   uint32_t result = Rm * Rs;
 
   // the accumulate bit is set
-  if (instruction.A)
+  if (instruction.acc)
   {
     result += Rn;
   }
   // Save the result
   reg[instruction.Rd] = to_bf(result);
 
-  // If the S bit is set, we need to update the CPSR
-  if (instruction.S)
+  // If the set_cond bit is set, we need to update the CPSR
+  if (instruction.set_cond)
   {
-    arm_state->flagN = get_bit(result, 31);
-    arm_state->flagZ = result == 0;
+    arm_state->neg = get_bit(result, 31);
+    arm_state->zero = result == 0;
   }
 }
 

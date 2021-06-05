@@ -80,10 +80,10 @@ ArmState init_state(char const *file_name)
   }
 
   result->pc = 0;
-  result->flagN = false;
-  result->flagZ = false;
-  result->flagC = false;
-  result->flagV = false;
+  result->neg = false;
+  result->zero = false;
+  result->carry = false;
+  result->ovflw = false;
 
   read_file_to_mem(file_name, result->memory, LITTLE);
 

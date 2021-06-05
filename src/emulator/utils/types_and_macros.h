@@ -151,7 +151,7 @@ typedef struct proc_t
   unsigned int Rn : 4;
   unsigned int S : 1;
   unsigned int opcode : 4;
-  unsigned int I : 1;
+  unsigned int is_imm : 1; // else is register
   unsigned int : 2; // not used: 00
   unsigned int cond : 4;
 } proc_t;
@@ -163,8 +163,8 @@ typedef struct mul_t
   unsigned int Rs : 4;
   unsigned int Rn : 4;
   unsigned int Rd : 4;
-  unsigned int S : 1;
-  unsigned int A : 1;
+  unsigned int set_cond : 1;
+  unsigned int acc : 1;
   unsigned int : 6; // not used:0000
   unsigned int cond : 4;
 } mul_t;
@@ -174,11 +174,11 @@ typedef struct trans_t
   reg_or_imm_t offset;
   unsigned int Rd : 4;
   unsigned int Rn : 4;
-  unsigned int L : 1;
+  unsigned int is_load : 1; // else is store
   unsigned int : 2; // not used 00
-  unsigned int U : 1;
-  unsigned int P : 1;
-  unsigned int I : 1;
+  unsigned int is_up : 1; // else is down
+  unsigned int is_pre : 1; // else is post
+  unsigned int is_imm : 1; // else is register
   unsigned int : 2; // not used 01
   unsigned int cond : 4;
 } trans_t;
@@ -231,10 +231,10 @@ typedef struct arm_state_struct
   size_t pc;
   bitfield *reg;
   byte *memory;
-  bool flagN;
-  bool flagZ;
-  bool flagC;
-  bool flagV;
+  bool neg;
+  bool zero;
+  bool carry;
+  bool ovflw; // overflow
 } arm_state_struct;
 
 typedef arm_state_struct *ArmState;

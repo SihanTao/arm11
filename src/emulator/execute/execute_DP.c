@@ -10,8 +10,8 @@ void execute_DP(proc_t instruction, ArmState arm_state)
   uint32_t Rn = to_int(reg[instruction.Rn]);
   bitfield Rd = reg[instruction.Rd];
 
-  bool newFlagC = new_carry(reg, instruction.operand2, instruction.I);
-  uint32_t operand2 = reg_imm_handle(reg, instruction.operand2, !instruction.I);
+  bool newFlagC = new_carry(reg, instruction.operand2, instruction.is_imm);
+  uint32_t operand2 = reg_imm_handle(reg, instruction.operand2, instruction.is_imm);
 
   /*********** bugs here ******************/
   // if save result
@@ -21,9 +21,9 @@ void execute_DP(proc_t instruction, ArmState arm_state)
 
   if (instruction.S)
   {
-    arm_state->flagN = get_bit(result, 31);
-    arm_state->flagZ = result == 0;
-    arm_state->flagC = newFlagC;
+    arm_state->neg = get_bit(result, 31);
+    arm_state->zero = result == 0;
+    arm_state->carry = newFlagC;
   }
 }
 
@@ -35,7 +35,7 @@ bool new_carry(bitfield *reg, reg_or_imm_t shift_or_imm, bool is_imm)
   // {
   //   rot_imm_t op2_imm = shift_or_imm.rot_imm;
   //   int rotation_amount = 2 * to_int(reg[op2_imm.amount]);
-  //   uint32_t Imm = to_int(reg[op2_imm.imm]);
+  //   uint32_t Imm = to_int(reg[op2_imm.is_imm]);
 
   //   return get_bit(Imm, rotation_amount - 1);
   // }
