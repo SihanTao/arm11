@@ -1,455 +1,18 @@
 #include <stdlib.h>
 #include <math.h>
+
 #include "../utils/types_and_macros.h"
-#include "../execute/execute_helper.h"
-#include "../execute/execute_SDT.h"
-#include "../execute/execute_DP.h"
+
 #include "../execute/execute.h"
 #include "../utils/tools.h"
 #include "../utils/unit_test.h"
 
-static ArmState init_state();
 
 int main(void)
 {
-  ArmState arm_state = init_state();
+  ArmState arm_state = init_state_for_test();
 
-  add_test("Test for rotate");
-  {
-      test_int_v(rotate(1, 0x0000000B), 0x80000005, "1011 becomes 1000..0101");
 
-      test_int_v(rotate(2, 0x0000001A), 0x40000006, "11010 becomes 0100..0110");
-
-      test_int_v(rotate(3, 0x0000005D), 0xA000000B, "1011101 becomes 1010..1011");
-  }
-
-  add_test("Test for shift");
-  {
-      test_int_v(shift(0x0000000B, 1, LSL), 0x00000016, "1011 becomes 10110");
-
-      test_int_v(shift(0x0000001A, 2, LSR), 0x00000006, "11010 becomes 110");
-
-      test_int_v(shift(0xA000000B, 3, ASR), 0xF4000001, "1010..1011 becomes 1111010..0001");
-
-      test_int_v(shift(0x0000005D, 3, ROR), 0xA000000B, "1011101 becomes 1010..1011");
-  }
-
-  add_test("Test for arith_right");
-  {
-      test_int_v(arith_right(1, 0x0000001A), 0x0000000D, "..11010 becomes ..1101");
-
-      test_int_v(arith_right(2, 0x80000005), 0xE0000001, "1000..0101 becomes 1110..0001");
-
-      test_int_v(arith_right(3, 0xA000000B), 0xF4000001, "1010..1011 becomes 1111010..0001");
-  }
-
-  add_test("Test for reg_imm_handle");
-  {
-      bitfield reg_imm_bf[1];
-      reg_or_imm_t imm1 = 
-      {.rot_imm.imm = 0x0000000B,
-       .rot_imm.amount = 1};
-
-      test_int_v(reg_imm_handle(reg_imm_bf, imm1, 0), 0xC0000002, "1011 becomes 1100..0010");
-
-      bitfield reg_imm_bf[1];
-      reg_or_imm_t imm2 = 
-      {.rot_imm.imm = 0x0000001A,
-       .rot_imm.amount = 2};
-
-      test_int_v(reg_imm_handle(reg_imm_bf, imm2, 0), 0xA0000001, "11010 becomes 1010..0001");
- 
-      reg_or_imm_t reg1 = 
-      {.shift_reg = {
-        .Rm = 1,
-        0,
-        .type = LSL,
-        .val = 1}};
-      
-      reg_imm_bf[1] = to_bf(0x0000000B);//Rm
-      test_int_v(reg_imm_handle(reg_imm_bf, reg1, 1), 0x00000016, "1011 becomes 10110");
-
-      reg_or_imm_t reg2 = 
-      {.shift_reg = {
-        .Rm = 1,
-        0,
-        .type = LSR,
-        .val = 2}};
-      
-      bitfield reg_imm_bf[1];
-      reg_imm_bf[1] = to_bf(0x0000001A);//Rm
-      test_int_v(reg_imm_handle(reg_imm_bf, reg2, 1), 0x00000006, "11010 becomes 110");
-
-      reg_or_imm_t reg3 = 
-      {.shift_reg = {
-        .Rm = 1,
-        0,
-        .type = ASR,
-        .val = 3}};
-      
-      bitfield reg_imm_bf[1];
-      reg_imm_bf[1] = to_bf(0xA000000B);//Rm
-      test_int_v(reg_imm_handle(reg_imm_bf, reg3, 1), 0xF4000001, "1010..1011 becomes 1111010..0001");
-
-      reg_or_imm_t reg4 = 
-      {.shift_reg = {
-        .Rm = 1,
-        0,
-        .type = ROR,
-        .val = 3}};
-      
-      bitfield reg_imm_bf[1];
-      reg_imm_bf[1] = to_bf(0x0000005D);//Rm
-      test_int_v(reg_imm_handle(reg_imm_bf, reg4, 1), 0xA000000B, "1011101 becomes 1010..1011");
-  }
-
-  add_test("Test for data processing execution");
-  {
-    //set_cond = false S = false is_imm = false
-    proc_t dp_ins1 =
-    {
-      .operand2 = 
-      {
-        .shift_reg = {
-          .Rm = 1,
-          0,
-          .type = LSL,
-          .val = 1
-        }
-      },
-      .Rd = 2,
-      .Rn = 3,
-      .set_cond = false,//CPSR flags not update
-      .opcode = AND,
-      .is_imm = false,//op2 is a register
-      0,
-      .cond = 0
-      };
-    arm_state = init_state();
-    arm_state->reg[1] = to_bf(0x0000000B); // Rm = 1011
-    arm_state->reg[2] = to_bf(0);          // Rd 
-    arm_state->reg[3] = to_bf(2);          // Rn = 10
-
-    execute_DP(dp_ins1, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[2]),
-        2,//10
-        "Rm = 1011, Rn = 10, 1011 becomes 10110, 10110 AND 10, so Rd = 10, set_cond = false S = false is_imm = false");
-
-    free(arm_state);
-
-    //set_cond = true S = false is_imm = false
-    proc_t dp_ins2 =
-    {
-      .operand2 = 
-      {
-        .shift_reg = {
-          .Rm = 1,
-          0,
-          .type = ASR,
-          .val = 3
-        }
-      },
-      .Rd = 2,
-      .Rn = 3,
-      .set_cond = false,//CPSR flags not update
-      .opcode = SUB,
-      .is_imm = false,//op2 is a register
-      0,
-      .cond = 1
-    };
-    arm_state = init_state();
-    arm_state->reg[1] = to_bf(0xA000000B); // Rm = 1010..1011
-    arm_state->reg[2] = to_bf(0);          // Rd
-    arm_state->reg[3] = to_bf(0xF8000002); // Rn = 1111100..0000
-
-    execute_DP(dp_ins2, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[2]),
-        0x4000001,//1000...0001
-        "Rm = 1010..1011, Rn = 10, 1010..1011 becomes 1111010..0001, 1111100..0000 SUB 1111010..0001, so Rd = 1000...0001, set_cond = true S = false is_imm = false");
-
-    free(arm_state);
-
-    //S = true is_imm = false 
-    proc_t dp_ins3 =
-    {
-      .operand2 = 
-      {
-        .shift_reg = {
-          .Rm = 1,
-          0,
-          .type = ROR,
-          .val = 3
-        }
-      },
-      .Rd = 2,
-      .Rn = 3,
-      .set_cond = true, //CPSR flags update
-      .opcode = TST,
-      .is_imm = false,//op2 is a register
-      0,
-      .cond = 0
-    };
-    arm_state = init_state();
-    arm_state->reg[1] = to_bf(0x0000005D); // Rm = 1011101
-    arm_state->reg[2] = to_bf(0);          // Rd
-    arm_state->reg[3] = to_bf(3);          // Rn = 11
-
-    execute_DP(dp_ins3, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[2]),
-        0,//result not written
-        "Rm = 1011101, Rn = 10, 1011101 becomes 1010..1011, 1010..1011 AND 11, Rd = 0, S = true is_imm = false");
-
-    //C is set to the carry out from any shift operation
-    //C is set to 0 as the result is not written
-    test_true(arm_state->carry == 0);
-
-    // N is set to bit 31 of the result
-    test_true(arm_state->neg == get_bit(0, 31));
-
-    // Z is set if and only if the result is zero.
-    test_true(arm_state->zero == (to_int(arm_state->reg[2]) == 0));
-
-    free(arm_state);
-
-    //S = false is_imm = true
-    proc_t dp_ins4 =
-    {
-      .operand2 = 
-      {
-        .rot_imm.imm = 0x0000000B, //1011
-        .rot_imm.amount = 1
-      },
-      .Rd = 1,
-      .Rn = 2,
-      .set_cond = false, //CPSR flags not update
-      .opcode = ORR,
-      .is_imm = true, //op2 is an immediate constant
-      0,
-      .cond = 0
-    };
-    arm_state = init_state();
-
-    arm_state->reg[1] = to_bf(0);        // Rd
-    arm_state->reg[2] = to_bf(3);        // Rn = 11
-
-    execute_DP(dp_ins4, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[1]),
-        0x6000003, //1100...0011
-        "1011 becomes 1100..0010, 1100...0010 ORR 11, so Rd = 1100...0011, S = false is_imm = true");
-
-    free(arm_state);
-
-    //S = true is_imm = true
-    proc_t dp_ins5 =
-    {
-      .operand2 = 
-      {
-        .rot_imm.imm = 0x0000001A, //11010
-        .rot_imm.amount = 2
-      },
-      .Rd = 1,
-      .Rn = 2,
-      .set_cond = true, //CPSR flags update
-      .opcode = ADD,
-      .is_imm = true, //op2 is an immediate constant
-      0,
-      .cond = 0
-    };
-    arm_state = init_state();
-
-    arm_state->reg[1] = to_bf(0);        // Rd
-    arm_state->reg[2] = to_bf(2);        // Rn = 10
-
-    execute_DP(dp_ins5, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[1]),
-        0x5000003, //1010..0011
-        "11010 becomes 1010..0001, 1010..0001 ADD 10, so Rd = 1010..0011, S = true is_imm = true");
-
-    //C is set to the carry out of the bit 31 of the ALU
-    // C is set to 0 as the addition does not produced a carry
-    test_true(arm_state->carry == 0);
-
-    // N is set to bit 31 of the result
-    test_true( arm_state->neg == get_bit(0x5000003, 31));
-
-    // Z is set if and only if the result is zero.
-    test_true(arm_state->zero == (to_int(arm_state->reg[1]) == 0));
-
-    free(arm_state);
-  }
-  
-
-  add_test("Test for Mul execution");
-  {
-    // set_cond = true acc = false
-    mul_t mul_ins1 =
-    {
-      .Rm = 1,
-      1001,
-      .Rs = 2,
-      .Rn = 3,
-      .Rd = 4,
-      .set_cond = true,
-      .acc = false,
-      0,
-      .cond = 0
-    };
-
-    arm_state->reg[1] = to_bf(0xFFFFFFFD); // Rm
-    arm_state->reg[2] = to_bf(0xF);        // Rs
-    arm_state->reg[4] = to_bf(0);          // Rd
-
-    execute_MUL(mul_ins1, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[4]),
-        0xEFFFFFFD3,
-        "mul 0xFFFFFFFFD 0xF 0, set_cond true acc false");
-
-    // N is set to bit 31 of the result
-    test_true( arm_state->neg == get_bit(0xFFFFFFD3, 31));
-
-    // Z is set if and only if the result is zero.
-    test_true(arm_state->zero == (to_int(arm_state->reg[4]) == 0));
-
-    free(arm_state);
-
-    // set_cond = true acc = flase condition is set
-    mul_t mul_ins2 =
-    {     
-      .Rm = 1,
-      1001,
-      .Rs = 2,
-      .Rn = 3,
-      .Rd = 4,
-      .set_cond = true,
-      .acc = false,
-      01,
-      .cond = 1
-    };
-
-    arm_state = init_state();
-    arm_state->reg[1] = to_bf(0xFFFFFFFD); // Rm
-    arm_state->reg[2] = to_bf(0xF);        // Rs
-    arm_state->reg[4] = to_bf(0);          // Rd
-
-    execute_MUL(mul_ins2, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[4]),
-        0xEFFFFFFD3,
-        "mul 0xFFFFFFFFD 0xF 0, set_cond true acc false");
-
-    // N is set to bit 31 of the result
-    test_true( arm_state->neg == get_bit(0xFFFFFFD3, 31));
-
-    // Z is set if and only if the result is zero.
-    test_true(arm_state->zero == (to_int(arm_state->reg[4]) == 0));
-
-    free(arm_state);
-
-    // set_cond = true acc = true
-    mul_t mul_ins3 =
-    {         
-      .Rm = 1,
-      1001,
-      .Rs = 2,
-      .Rn = 3,
-      .Rd = 4,
-      .set_cond = true,
-      .acc = true,
-      0,
-      .cond = 0
-    };
-
-    arm_state = init_state();
-    arm_state->reg[1] = to_bf(1); // Rm
-    arm_state->reg[2] = to_bf(2); // Rs
-    arm_state->reg[3] = to_bf(3); // Rn
-    arm_state->reg[4] = to_bf(0); // Rd
-
-    execute_MUL(mul_ins3, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[4]),
-        0x00000005,
-        "mul 1 2 3 0, set_cond true acc true");
-
-    // N is set to bit 31 of the result
-    test_true( arm_state->neg == get_bit(0x00000005, 31));
-
-    // Z is set if and only if the result is zero.
-    test_true(arm_state->zero == (to_int(arm_state->reg[4]) == 0));
-
-    free(arm_state);
-
-    // set_cond = false acc = true
-    mul_t mul_ins4 =
-    {
-      .Rm = 1,
-      1001,
-      .Rs = 2,
-      .Rn = 3,
-      .Rd = 4,
-      .set_cond = false,
-      .acc = true,
-      0,
-      .cond = 0
-    };
-
-    arm_state = init_state();
-    arm_state->reg[1] = to_bf(1); // Rm
-    arm_state->reg[2] = to_bf(2); // Rs
-    arm_state->reg[3] = to_bf(3); // Rn
-    arm_state->reg[4] = to_bf(0); // Rd
-
-    execute_MUL(mul_ins4, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[4]),
-        0x00000005,
-        "mul 1 2 3 0, set_cond false acc true");
-
-    free(arm_state);
-
-    // set_cond = false acc = flase
-    mul_t mul_ins5 =
-    {
-      .Rm = 1,
-      1001,
-      .Rs = 2,
-      .Rn = 3,
-      .Rd = 4,
-      .set_cond = false,
-      .acc = false,
-      0,
-      .cond = 0
-    };
-
-    arm_state = init_state();
-    arm_state->reg[1] = to_bf(0xFFFFFFFD); // Rm
-    arm_state->reg[2] = to_bf(0xF);        // Rs
-    arm_state->reg[4] = to_bf(0);          // Rd
-
-    execute_MUL(mul_ins5, arm_state);
-
-    test_int_v(
-        to_int(arm_state->reg[4]),
-        0xEFFFFFFD3,
-        "mul 0xFFFFFFFFD 0xF 0, set_cond false acc false");
-
-    free(arm_state);
-   }
 
   // add_test("Test for Trans execution");
   // {
@@ -461,7 +24,7 @@ int main(void)
 
   //   trans_t trans_ins1 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
   //       .rot_imm.imm = 0x0000000B,//1011
   //       .rot_imm.amount = 1
@@ -476,7 +39,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(1); // Rd
   //   arm_state->reg[2] = to_bf(0); // Rn,
 
@@ -493,7 +56,7 @@ int main(void)
   //   //condition is set
   //   trans_t trans_ins2 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
   //       .rot_imm.imm = 0x0000001A,
   //       .rot_imm.amount = 2
@@ -508,7 +71,7 @@ int main(void)
   //     01,
   //     .cond = 1
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[2] = to_bf(1); // Rd
   //   arm_state->reg[3] = to_bf(0); // Rn
 
@@ -525,7 +88,7 @@ int main(void)
   //   //is_load = true is_up = false is_pre = false is_imm = false
   //   trans_t trans_ins3 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
   //       .rot_imm.imm = 0x0000001A,
   //       .rot_imm.amount = 2
@@ -540,7 +103,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0); // Rd
   //   arm_state->reg[2] = to_bf(2); // Rn
 
@@ -557,7 +120,7 @@ int main(void)
   //   //is_load = false is_up = true is_pre = false is_imm = false
   //   trans_t trans_ins4 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
   //       .rot_imm.imm = 0x0000000B,
   //       .rot_imm.amount = 1
@@ -572,7 +135,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(2); // Rd
   //   arm_state->reg[2] = to_bf(0); // Rn
 
@@ -589,7 +152,7 @@ int main(void)
   //   //is_load = false is_up = false is_pre = true is_imm = false
   //   trans_t trans_ins5 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
   //       .rot_imm.imm = 0x0000000B,
   //       .rot_imm.amount = 1
@@ -604,7 +167,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(3); // Rd
   //   arm_state->reg[2] = to_bf(0); // Rn
 
@@ -620,9 +183,9 @@ int main(void)
   //   //is_load = false is_up = false is_pre = false is_imm = true
   //   trans_t trans_ins6 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = LSL,
@@ -639,7 +202,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0x0000000B); // Rm
   //   arm_state->reg[2] = to_bf(1); // Rd
   //   arm_state->reg[3] = to_bf(0); // Rn
@@ -657,7 +220,7 @@ int main(void)
   //   //is_load = true is_up = true is_pre = false is_imm = false
   //   trans_t trans_ins7 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
   //       .rot_imm.imm = 0x0000001A,
   //       .rot_imm.amount = 2
@@ -672,7 +235,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0); // Rd
   //   arm_state->reg[2] = to_bf(2); // Rn
 
@@ -689,7 +252,7 @@ int main(void)
   //   //is_load = true is_up = false is_pre = true is_imm = false
   //   trans_t trans_ins8 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
   //       .rot_imm.imm = 0x0000001A,
   //       .rot_imm.amount = 2
@@ -704,7 +267,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0); // Rd
   //   //arm_state->reg[2] - 0xA0000001 = to_bf(2); // Rn
 
@@ -720,9 +283,9 @@ int main(void)
   //   //is_load = true is_up = false is_pre = false is_imm = true
   //   trans_t trans_ins9 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = LSR,
@@ -739,7 +302,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0x0000001A); // Rm
   //   arm_state->reg[2] = to_bf(0); // Rd
   //   arm_state->reg[3] = to_bf(2); // Rn
@@ -757,7 +320,7 @@ int main(void)
   //   //is_load = false is_up = true is_pre = true is_imm = false
   //   trans_t trans_ins10 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
   //       .rot_imm.imm = 0x0000000B,
   //       .rot_imm.amount = 1
@@ -772,7 +335,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(3); // Rd
   //   //arm_state->reg[2] + 0xC0000002 = to_bf(0); // Rn
 
@@ -788,9 +351,9 @@ int main(void)
   //   //is_load = false is_up = true is_pre = false is_imm = true
   //   trans_t trans_ins11 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = ASR,
@@ -807,7 +370,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0xA000000B); // Rm
   //   arm_state->reg[2] = to_bf(2); // Rd
   //   arm_state->reg[3] = to_bf(0); // Rn
@@ -825,9 +388,9 @@ int main(void)
   //   //is_load = false is_up = false is_pre = true is_imm = true
   //   trans_t trans_ins12 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = ROR,
@@ -844,7 +407,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0x0000005D); // Rm
   //   arm_state->reg[2] = to_bf(2); // Rd
   //   //arm_state->reg[3] - 0xA000000B = to_bf(0); // Rn
@@ -861,9 +424,9 @@ int main(void)
   //   //is_load = true is_up = true is_pre = true is_imm = false
   //   trans_t trans_ins13 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = ROR,
@@ -880,7 +443,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0x0000005D); // Rm
   //   arm_state->reg[2] = to_bf(0); // Rd
   //   //arm_state->reg[3] + 0xA000000B = to_bf(2); // Rn
@@ -897,9 +460,9 @@ int main(void)
   //   //is_load = true is_up = true is_pre = false is_imm = true
   //   trans_t trans_ins14 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = ASR,
@@ -916,7 +479,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0xA000000B); // Rm
   //   arm_state->reg[2] = to_bf(0); // Rd
   //   arm_state->reg[3] = to_bf(2); // Rn
@@ -934,9 +497,9 @@ int main(void)
   //   //is_load = true is_up = false is_pre = true is_imm = true
   //   trans_t trans_ins15 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = LSR,
@@ -953,7 +516,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0x0000001A); // Rm
   //   arm_state->reg[2] = to_bf(0); // Rd
   //   arm_state->reg[3] - 0x00000006 = to_bf(2); // Rn
@@ -970,9 +533,9 @@ int main(void)
   //   //is_load = false is_up = true is_pre = true is_imm = true
   //   trans_t trans_ins16 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = LSL,
@@ -989,7 +552,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0x0000000B); // Rm
   //   arm_state->reg[2] = to_bf(1); // Rd
   //   arm_state->reg[3] + 0x00000016 = to_bf(0); // Rn
@@ -1006,9 +569,9 @@ int main(void)
   //   //is_load = true is_up = true is_pre = true is_imm = true
   //   trans_t trans_ins17 =
   //   {
-  //     .offset = 
+  //     .offset =
   //     {
-  //       .shift_reg = 
+  //       .shift_reg =
   //       {
   //         .Rm = 1,
   //         .type = LSL,
@@ -1025,7 +588,7 @@ int main(void)
   //     01,
   //     .cond = 0
   //   };
-  //   arm_state = init_state();
+  //   arm_state = init_state_for_test();
   //   arm_state->reg[1] = to_bf(0x0000000B); // Rm
   //   arm_state->reg[2] = to_bf(0); // Rd
   //   arm_state->reg[3] + 0x00000016 = to_bf(2); // Rn
@@ -1041,53 +604,30 @@ int main(void)
 
   // }
 
-  add_test("Test for Branch execution");
-  {
-    branch_t branch_ins1 =
-    {
-      .offset = 1,
-      1010,
-      .cond = 0
-    };
-    arm_state = init_state();
-    execute_BRANCH(branch_ins1, arm_state);
+  // add_test("Test for Branch execution");
+  // {
+  //   branch_t branch_ins1 =
+  //   {
+  //     .offset = 1,
+  //     1010,
+  //     .cond = 0
+  //   };
+  //   arm_state = init_state_for_test();
+  //   execute_BRANCH(branch_ins1, arm_state);
 
-    //condition is set
-    branch_t branch_ins2 =
-    {
-      .offset = 1,
-      1010,
-      .cond = 1
-    };
-    arm_state = init_state();
-    execute_BRANCH(branch_ins2, arm_state);
-  }
+  //   //condition is set
+  //   branch_t branch_ins2 =
+  //   {
+  //     .offset = 1,
+  //     1010,
+  //     .cond = 1
+  //   };
+  //   arm_state = init_state_for_test();
+  //   execute_BRANCH(branch_ins2, arm_state);
+  // }
 
   end_all_tests();
 
   return 0;
 }
 
-ArmState init_state()
-{
-  ArmState result = (ArmState)malloc(sizeof(arm_state_struct));
-  if (result == NULL)
-  {
-    return NULL;
-  }
-
-  result->reg = calloc(NUM_OF_REG, sizeof(bitfield));
-  result->memory = calloc(MAX_MEMORY_ADDRESS, sizeof(byte));
-  if (result->reg == NULL || result->memory == NULL)
-  {
-    return NULL;
-  }
-
-  result->pc = 0;
-  result->neg = false;
-  result->zero = false;
-  result->carry = false;
-  result->ovflw = false;
-
-  return result;
-}

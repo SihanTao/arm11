@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
 #include "../utils/types_and_macros.h"
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "file_loader.h"
 
@@ -11,8 +11,8 @@
 void read_file_to_mem(char const *file_name, void *write_to, endian_type mode)
 {
   assert(write_to);
-  int position = 0;
-  char buffer[WORD_LENGTH];
+  int   position = 0;
+  char  buffer[WORD_LENGTH];
   FILE *file_handler = fopen(file_name, "rb");
 
   if (file_handler == NULL)
@@ -27,7 +27,7 @@ void read_file_to_mem(char const *file_name, void *write_to, endian_type mode)
     {
       convert_endian_ptr(buffer);
     }
-    memcpy(write_to + position, buffer, WORD_LENGTH);
+    memcpy((char *)write_to + position, buffer, WORD_LENGTH);
     position += 4;
   }
 
