@@ -1,12 +1,11 @@
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "../utils/types_and_macros.h"
 #include "tools.h"
 
-
-void convert_endian_ptr(char *buffer)
+void convert_endian_ptr (char *buffer)
 {
   char temp;
   temp = buffer[0];
@@ -17,8 +16,7 @@ void convert_endian_ptr(char *buffer)
   buffer[2] = temp;
 }
 
-
-bitfield convert_endian(bitfield word)
+bitfield convert_endian (bitfield word)
 {
   byte temp;
   temp = word.byte1;
@@ -30,47 +28,44 @@ bitfield convert_endian(bitfield word)
   return word;
 }
 
-void print_bit(uint32_t i)
+void print_bit (uint32_t i)
 {
   for (int k = INT_BIT_LENGTH - 1; k >= 0; k--)
-  {
-    printf("%d", get_bit(i, k));
-  }
-  printf("\n");
+    {
+      printf ("%d", get_bit (i, k));
+    }
+  printf ("\n");
 }
 
-int get_bit(uint32_t i, int k)
-{
-  return (i & (1 << k)) >> k;
-}
+int get_bit (uint32_t i, int k) { return (i & (1 << k)) >> k; }
 
 // It can perform some conditional big-endian convertion before return
 // Todo : test it if the endian is big!
-uint32_t to_int(bitfield bf)
+uint32_t to_int (bitfield bf)
 {
   if (TARGET_MACHINE_ENDIAN == BIG)
-  {
-    bf = convert_endian(bf);
-  }
-  uint32_t * result = (uint32_t *) &bf;
+    {
+      bf = convert_endian (bf);
+    }
+  uint32_t *result = (uint32_t *)&bf;
   return *result;
 }
 
 // It can perform some conditional big-endian convertion before return
 // Todo : test it if the endian is big!
-bitfield to_bf(uint32_t i)
+bitfield to_bf (uint32_t i)
 {
-  bitfield * result = (bitfield *) &i;
+  bitfield *result = (bitfield *)&i;
   if (TARGET_MACHINE_ENDIAN == BIG)
-  {
-    *result = convert_endian(*result);
-  }
+    {
+      *result = convert_endian (*result);
+    }
   return *result;
 }
 
-bitfield peek(size_t address, byte * memory)
+bitfield peek (size_t address, byte *memory)
 {
   bitfield result;
-  memcpy(&result, memory + address, sizeof(bitfield));
+  memcpy (&result, memory + address, sizeof (bitfield));
   return result;
 }

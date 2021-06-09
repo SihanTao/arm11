@@ -242,4 +242,4 @@ typedef struct arm_state_struct
 
 typedef arm_state_struct *ArmState;
 
-#endif //TYPES_AND_MACROS
+#endif // TYPES_AND_MACROS
