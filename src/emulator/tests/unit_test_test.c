@@ -31,7 +31,7 @@ int main (void)
       long long long_long_value;
       char char_value;
     };
-    struct My_struct target_struct = { 12, 13241234, 'a' };
+    //struct My_struct target_struct = { 12, 13241234, 'a' };
     struct My_struct expect_struct = { 13, 1232341, 'a' };
     struct My_struct target_struct2 = { 13, 1232341, 'a' };
 

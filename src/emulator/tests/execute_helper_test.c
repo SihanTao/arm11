@@ -1,7 +1,10 @@
-#include "../execute/execute_helper.h"
-#include "../utils/types_and_macros.h"
-#include "../utils/unit_test.h"
 #include <stdio.h>
+
+#include "../utils/types_and_macros.h"
+
+#include "../execute/execute_helper.h"
+
+#include "../utils/unit_test.h"
 
 int main(void)
 {

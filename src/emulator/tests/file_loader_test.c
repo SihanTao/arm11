@@ -1,7 +1,9 @@
 #include <string.h>
 
-#include "../utils/file_loader.h"
 #include "../utils/types_and_macros.h"
+
+#include "../utils/file_loader.h"
+
 #include "../utils/unit_test.h"
 
 int main(void)

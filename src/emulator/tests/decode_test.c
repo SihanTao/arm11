@@ -1,6 +1,8 @@
-#include "../decode/decode.h"
-#include "../utils/tools.h"
 #include "../utils/types_and_macros.h"
+
+#include "../decode/decode.h"
+
+#include "../utils/tools.h"
 #include "../utils/unit_test.h"
 
 int main(void)

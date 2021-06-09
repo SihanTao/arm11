@@ -1,5 +1,6 @@
-#include "../utils/tools.h"
 #include "../utils/types_and_macros.h"
+
+#include "../utils/tools.h"
 #include "../utils/unit_test.h"
 
 int main (void)
