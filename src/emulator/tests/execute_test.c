@@ -66,7 +66,7 @@ int main(void)
         .type = LSL,
         .val = 1}};
       
-      bitfield reg_imm_bf[1] = to_bf(0x0000000B);//Rm
+      reg_imm_bf[1] = to_bf(0x0000000B);//Rm
       test_int_v(reg_imm_handle(reg_imm_bf, reg1, 1), 0x00000016, "1011 becomes 10110");
 
       reg_or_imm_t reg2 = 
@@ -76,7 +76,8 @@ int main(void)
         .type = LSR,
         .val = 2}};
       
-      bitfield reg_imm_bf[1] = to_bf(0x0000001A);//Rm
+      bitfield reg_imm_bf[1];
+      reg_imm_bf[1] = to_bf(0x0000001A);//Rm
       test_int_v(reg_imm_handle(reg_imm_bf, reg2, 1), 0x00000006, "11010 becomes 110");
 
       reg_or_imm_t reg3 = 
@@ -86,7 +87,8 @@ int main(void)
         .type = ASR,
         .val = 3}};
       
-      bitfield reg_imm_bf[1] = to_bf(0xA000000B);//Rm
+      bitfield reg_imm_bf[1];
+      reg_imm_bf[1] = to_bf(0xA000000B);//Rm
       test_int_v(reg_imm_handle(reg_imm_bf, reg3, 1), 0xF4000001, "1010..1011 becomes 1111010..0001");
 
       reg_or_imm_t reg4 = 
@@ -96,7 +98,8 @@ int main(void)
         .type = ROR,
         .val = 3}};
       
-      bitfield reg_imm_bf[1] = to_bf(0x0000005D);//Rm
+      bitfield reg_imm_bf[1];
+      reg_imm_bf[1] = to_bf(0x0000005D);//Rm
       test_int_v(reg_imm_handle(reg_imm_bf, reg4, 1), 0xA000000B, "1011101 becomes 1010..1011");
   }
 
