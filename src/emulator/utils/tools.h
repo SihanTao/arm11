@@ -20,9 +20,15 @@ extern bitfield convert_endian (bitfield word);
 extern uint32_t to_int (bitfield b);
 extern bitfield to_bf (uint32_t i);
 
+
+/*
+ * make some fake ArmState, all 0, for testing
+ */
+extern ArmState init_state_for_test(void);
+
 /*
  * Returns the bitfield stored in that address
  */
-extern bitfield peek (size_t address, byte *memory);
+extern bitfield load (size_t address, byte *memory);
 
 #endif

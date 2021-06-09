@@ -63,9 +63,33 @@ bitfield to_bf (uint32_t i)
   return *result;
 }
 
-bitfield peek (size_t address, byte *memory)
+bitfield load (size_t address, byte *memory)
 {
   bitfield result;
   memcpy (&result, memory + address, sizeof (bitfield));
+  return result;
+}
+
+ArmState init_state_for_test()
+{
+  ArmState result = (ArmState)malloc(sizeof(arm_state_struct));
+  if (result == NULL)
+  {
+    return NULL;
+  }
+
+  result->reg = calloc(NUM_OF_REG, sizeof(bitfield));
+  result->memory = calloc(MAX_MEMORY_ADDRESS, sizeof(byte));
+  if (result->reg == NULL || result->memory == NULL)
+  {
+    return NULL;
+  }
+
+  result->pc = 0;
+  result->neg = false;
+  result->zero = false;
+  result->carry = false;
+  result->ovflw = false;
+
   return result;
 }
