@@ -1,7 +1,9 @@
+#include <stdlib.h>
+
+#include "../utils/types_and_macros.h"
+
 #include "decode.h"
 #include "../utils/tools.h"
-#include "../utils/types_and_macros.h"
-#include <stdlib.h>
 
 instruction_t decode (bitfield fetched)
 {
