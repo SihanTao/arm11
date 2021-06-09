@@ -116,7 +116,7 @@ int main(void)
       },
       .Rd = 2,
       .Rn = 3,
-      .S = false,//CPSR flags not update
+      .set_cond = false,//CPSR flags not update
       .opcode = AND,
       .is_imm = false,//op2 is a register
       0,
@@ -150,7 +150,7 @@ int main(void)
       },
       .Rd = 2,
       .Rn = 3,
-      .S = false,//CPSR flags not update
+      .set_cond = false,//CPSR flags not update
       .opcode = SUB,
       .is_imm = false,//op2 is a register
       0,
@@ -184,7 +184,7 @@ int main(void)
       },
       .Rd = 2,
       .Rn = 3,
-      .S = true, //CPSR flags update
+      .set_cond = true, //CPSR flags update
       .opcode = TST,
       .is_imm = false,//op2 is a register
       0,
@@ -224,7 +224,7 @@ int main(void)
       },
       .Rd = 1,
       .Rn = 2,
-      .S = false, //CPSR flags not update
+      .set_cond = false, //CPSR flags not update
       .opcode = ORR,
       .is_imm = true, //op2 is an immediate constant
       0,
@@ -254,7 +254,7 @@ int main(void)
       },
       .Rd = 1,
       .Rn = 2,
-      .S = true, //CPSR flags update
+      .set_cond = true, //CPSR flags update
       .opcode = ADD,
       .is_imm = true, //op2 is an immediate constant
       0,
