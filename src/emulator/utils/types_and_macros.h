@@ -115,16 +115,16 @@ typedef enum cond_type
 
 typedef struct shift_reg_t
 {
-  unsigned int val : 5;
-  unsigned int type : 2;
+  unsigned int val : 5; // amount of shifting
+  unsigned int type : 2; // datatype : shift type
   unsigned int : 1; // not used: 0.
   unsigned int Rm : 4;
 } shift_reg_t;
 
 typedef struct rot_imm_t
 {
-  unsigned int amount : 4;
-  unsigned int imm : 8;
+  unsigned int amount : 4; // amount of rotation
+  unsigned int imm : 8; // target that rotation applied on
 } rot_imm_t;
 
 typedef union reg_or_imm_t
@@ -149,8 +149,8 @@ typedef struct proc_t
   reg_or_imm_t operand2;
   unsigned int Rd : 4;
   unsigned int Rn : 4;
-  unsigned int S : 1;
-  unsigned int opcode : 4;
+  unsigned int set_cond : 1;
+  unsigned int opcode : 4; // datatype : proc_type
   unsigned int is_imm : 1; // else is register
   unsigned int : 2; // not used: 00
   unsigned int cond : 4;

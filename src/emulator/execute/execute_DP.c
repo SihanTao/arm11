@@ -19,7 +19,7 @@ void execute_DP(proc_t instruction, ArmState arm_state)
     compute_result(instruction.opcode, operand2, Rn, Rd);
   }
 
-  if (instruction.S)
+  if (instruction.set_cond)
   {
     arm_state->neg = get_bit(result, 31);
     arm_state->zero = result == 0;
