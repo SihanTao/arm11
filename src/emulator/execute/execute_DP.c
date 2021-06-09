@@ -5,26 +5,26 @@
 
 void execute_DP(proc_t instruction, ArmState arm_state)
 {
-  bitfield *reg = arm_state->reg;
-  uint32_t result = 0;
-  uint32_t Rn = to_int(reg[instruction.Rn]);
-  bitfield Rd = reg[instruction.Rd];
+  // bitfield *reg = arm_state->reg;
+  // uint32_t result = 0;
+  // uint32_t Rn = to_int(reg[instruction.Rn]);
+  // bitfield Rd = reg[instruction.Rd];
 
-  bool newFlagC = new_carry(reg, instruction.operand2, instruction.is_imm);
-  uint32_t operand2 = reg_imm_handle(reg, instruction.operand2, instruction.is_imm);
+  // bool newFlagC = new_carry(reg, instruction.operand2, instruction.is_imm);
+  // uint32_t operand2 = reg_imm_handle(reg, instruction.operand2, instruction.is_imm);
 
-  /*********** bugs here ******************/
-  // if save result
-  {
-    compute_result(instruction.opcode, operand2, Rn, Rd);
-  }
+  // /*********** bugs here ******************/
+  // // if save result
+  // {
+  //   compute_result(instruction.opcode, operand2, Rn, Rd);
+  // }
 
-  if (instruction.set_cond)
-  {
-    arm_state->neg = get_bit(result, 31);
-    arm_state->zero = result == 0;
-    arm_state->carry = newFlagC;
-  }
+  // if (instruction.set_cond)
+  // {
+  //   arm_state->neg = get_bit(result, 31);
+  //   arm_state->zero = result == 0;
+  //   arm_state->carry = newFlagC;
+  // }
 }
 
 /* need to rewrite */

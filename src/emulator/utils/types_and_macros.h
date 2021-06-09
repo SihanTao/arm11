@@ -46,6 +46,9 @@ typedef enum endian_type
 // res-pi has 64k of memory, thus max address is 65536
 #define MAX_MEMORY_ADDRESS (65536)
 
+// word_size = 32 (4 bytes)
+#define WORD_SIZE (32)
+
 // 12 general purpose registers
 #define NUM_OF_REG (12)
 
@@ -115,16 +118,16 @@ typedef enum cond_type
 
 typedef struct shift_reg_t
 {
-  unsigned int val : 5; // amount of shifting
+  unsigned int val : 5;  // amount of shifting
   unsigned int type : 2; // datatype : shift type
-  unsigned int : 1; // not used: 0.
+  unsigned int : 1;      // not used: 0.
   unsigned int Rm : 4;
 } shift_reg_t;
 
 typedef struct rot_imm_t
 {
   unsigned int amount : 4; // amount of rotation
-  unsigned int imm : 8; // target that rotation applied on
+  unsigned int imm : 8;    // target that rotation applied on
 } rot_imm_t;
 
 typedef union reg_or_imm_t
@@ -152,7 +155,7 @@ typedef struct proc_t
   unsigned int set_cond : 1;
   unsigned int opcode : 4; // datatype : proc_type
   unsigned int is_imm : 1; // else is register
-  unsigned int : 2; // not used: 00
+  unsigned int : 2;        // not used: 00
   unsigned int cond : 4;
 } proc_t;
 
@@ -175,11 +178,11 @@ typedef struct trans_t
   unsigned int Rd : 4;
   unsigned int Rn : 4;
   unsigned int is_load : 1; // else is store
-  unsigned int : 2; // not used 00
-  unsigned int is_up : 1; // else is down
-  unsigned int is_pre : 1; // else is post
-  unsigned int is_imm : 1; // else is register
-  unsigned int : 2; // not used 01
+  unsigned int : 2;         // not used 00
+  unsigned int is_up : 1;   // else is down
+  unsigned int is_pre : 1;  // else is post
+  unsigned int is_imm : 1;  // else is register
+  unsigned int : 2;         // not used 01
   unsigned int cond : 4;
 } trans_t;
 
