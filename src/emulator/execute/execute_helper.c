@@ -99,12 +99,12 @@ void reg_imm_handle(bitfield *reg, reg_or_imm_t reg_imm, bool is_imm,
   value_carry_t result;
   if (is_imm)
   {
-    result = shift(to_int(reg[reg_imm.shift_reg.Rm]), reg_imm.shift_reg.val,
-                   reg_imm.shift_reg.type);
+    result = rotate(reg_imm.rot_imm.imm, 2 * reg_imm.rot_imm.amount);
   }
   else
   {
-    result = rotate(reg_imm.rot_imm.imm, 2 * reg_imm.rot_imm.amount);
+    result = shift(to_int(reg[reg_imm.shift_reg.Rm]), reg_imm.shift_reg.val,
+                   reg_imm.shift_reg.type);
   }
 
   *value_out = result.value;
