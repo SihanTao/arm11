@@ -75,6 +75,10 @@ int main(void){
 		print_token(token, length);
 	}
 
+	add_test("Test tokenize instruction");
+	{
+		// example: beq01.s
 
+	}
 	end_all_tests();
 }
