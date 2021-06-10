@@ -10,7 +10,7 @@
 //}
 char* get_opcode(token_t* token, char* instruction);
 
-token_t* tokenize_instruction(char* instruction)
+token_t* tokenize_instruction(char* instruction, int num_line)
 {
 	token_t* token = calloc(1, sizeof(token_t));
 	if (token == NULL)
@@ -21,7 +21,9 @@ token_t* tokenize_instruction(char* instruction)
 	// First get the opcode
 	char* rest = get_opcode(token, instruction);
 	// Set the line number
-	//
+	token->line_num = num_line;
+
+
 }
 
 char* get_opcode(token_t* token, char* instruction)

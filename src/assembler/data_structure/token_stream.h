@@ -30,5 +30,5 @@ typedef token_t *TokenStream;
 // returns if it is the end of token stream
 //extern bool is_end(token_t current);
 extern char* get_opcode(token_t* token, char* instruction);
-extern token_t* tokenize_instruction(char* instruction);
+extern token_t* tokenize_instruction(char* instruction, int num_line);
 #endif // TOKENSTREAM
