@@ -1,24 +1,33 @@
 #ifndef TOKENSTREAM
 #define TOKENSTREAM
 
-// TODO : complete this
-typedef struct token_t {
-	int tag;
-	char ** oprands;
+typedef enum operand_type
+{
+  NUMBER,
+  STRING,
+  END_OPERANDS
+} operand_type;
+
+typedef struct token_t
+{
+  char *     opcode;
+  int        line_num;
+  operand_t *operands;
 } token_t;
 
-typedef struct token_node_t {
-	token_t data;
-	token_node_t * next;
-	token_node_t * prev;
-} token_node_t;
+typedef struct operand_t
+{
+  operand_type tag;
+  union
+  {
+    char *letters;
+    int   number;
+  } operand_data;
+} operand_t;
 
-typedef struct token_stream_t {
-	token_node_t * head_holder;
-	token_node_t * tail_holder;
-} token_stream_t;
+typedef token_t *TokenStream;
 
-typedef token_stream_t *TokenStream;
+// returns if it is the end of token stream
+extern bool is_end(token_t current);
 
-#endif //TOKENSTREAM
-
+#endif // TOKENSTREAM
