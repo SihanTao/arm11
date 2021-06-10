@@ -63,7 +63,7 @@ char** split_operand_field(char* rest)
 	fields[i] = strtok(rest, ",");
 	while (fields[i] != NULL)
 	{
-		fields[i++] = strtok(NULL, ",");
+		fields[++i] = strtok(NULL, ",");
 	}
 
 	return fields;
