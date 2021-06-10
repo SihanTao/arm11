@@ -1,5 +1,6 @@
 #ifndef TOKENSTREAM
 #define TOKENSTREAM
+#include <stdbool.h>
 
 typedef enum operand_type
 {
@@ -34,6 +35,6 @@ extern char** split_operand_field(char* rest, int length);
 extern token_t* tokenize_instruction(char* instruction, int num_line);
 extern void set_token_operand(token_t* token, char** operand_field, int length);
 extern void print_token(token_t* token, int);
-extern bool is_label_line(char* line)
+extern bool is_label_line(char* line);
 
 #endif // TOKENSTREAM

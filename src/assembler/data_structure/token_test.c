@@ -74,5 +74,7 @@ int main(void){
 		set_token_operand(token, fields, length);
 		print_token(token, length);
 	}
+
+
 	end_all_tests();
 }

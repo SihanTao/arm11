@@ -19,14 +19,26 @@ token_t* tokenize_instruction(char* instruction, int num_line)
 		perror("Fail to allocate memory in tokenize_instruction");
 		exit(EXIT_FAILURE);
 	}
-	// First get the opcode
-	char* rest = get_opcode(token, instruction);
+
 	// Set the line number
 	token->line_num = num_line;
-	// Get the operand field
-	int length = count_num_operand(rest);
-	char** operand_field = split_operand_field(rest, length);
+	if (is_label_line(instruction))
+	{
+		token->opcode = instruction;
+		token->operands = NULL;
+	}
+	else
+	{
+		// get the opcode
+		char* rest = get_opcode(token, instruction);
 
+		// Get the operand field
+		int length = count_num_operand(rest);
+		char** operand_field = split_operand_field(rest, length);
+		set_token_operand(token, operand_field, length);
+	}
+
+	return token;
 }
 
 char* get_opcode(token_t* token, char* instruction)
@@ -78,7 +90,7 @@ void set_token_operand(token_t* token, char** operand_field, int length)
 	char** current_operand = operand_field;
 	while (*current_operand != NULL)
 	{
-		token->line_num = line_number;
+//		token->line_num = line_number;
 		if (*current_operand[0] == '#' || *current_operand[0] == '=')
 		{
 			token->operands->tag = NUMBER;
@@ -104,9 +116,12 @@ void print_token(token_t* token, int num_operand)
 		operand_t op = token->operands[i];
 		bool flag = (op.tag == STRING);
 		printf("The token tag is: %s\n", flag ? "STRING" : "NUMBER");
-		if (flag) {
+		if (flag)
+		{
 			printf("Letters = %s\n", op.operand_data.letters);
-		} else {
+		}
+		else
+		{
 			printf("Number = %d\n", op.operand_data.number);
 		}
 	}
