@@ -44,16 +44,16 @@ int main(void){
 	}
 
 
-	printf("Test strtol\n");
-	char eg[] = "0x42";
-	printf("%ld\n", strtol(eg, NULL, 0));
-	char eg1[] = "#3";
-	printf("%ld\n", strtol(eg1+1, NULL, 0));
-	char *field[] = {"0x42","#3"};
-	char **cursor = field;
-	printf("%ld\n", strtol(*cursor, NULL, 0));
-	cursor++;
-	printf("%ld\n", strtol(*cursor+1, NULL, 0));
+//	printf("Test strtol\n");
+//	char eg[] = "0x42";
+//	printf("%ld\n", strtol(eg, NULL, 0));
+//	char eg1[] = "#3";
+//	printf("%ld\n", strtol(eg1+1, NULL, 0));
+//	char *field[] = {"0x42","#3"};
+//	char **cursor = field;
+//	printf("%ld\n", strtol(*cursor, NULL, 0));
+//	cursor++;
+//	printf("%ld\n", strtol(*cursor+1, NULL, 0));
 
 	add_test("Test print token:");
 	{
@@ -64,5 +64,15 @@ int main(void){
 		print_token(&token, 2);
 	}
 
+	add_test("Test set_token_operand:");
+	{
+		char instruction1[] = "mov r1,#3";
+		token_t* token = calloc(1, sizeof(token_t));
+		char *rest = get_opcode(token, instruction1);
+		int length = count_num_operand(rest);
+		char **fields = split_operand_field(rest, length);
+		set_token_operand(token, fields, length);
+		print_token(token, length);
+	}
 	end_all_tests();
 }

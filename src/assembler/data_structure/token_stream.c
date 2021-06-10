@@ -74,9 +74,11 @@ char** split_operand_field(char* rest, int length)
 void set_token_operand(token_t* token, char** operand_field, int length)
 {
 	token->operands = calloc(length, sizeof(operand_t));
+	int line_number = 0;
 	char** current_operand = operand_field;
 	while (*current_operand != NULL)
 	{
+		token->line_num = line_number;
 		if (*current_operand[0] == '#' || *current_operand[0] == '=')
 		{
 			token->operands->tag = NUMBER;
@@ -87,6 +89,8 @@ void set_token_operand(token_t* token, char** operand_field, int length)
 			token->operands->tag = STRING;
 			token->operands->operand_data.letters = *current_operand;
 		}
+		current_operand++;
+		line_number++;
 	}
 }
 
@@ -95,6 +99,7 @@ void print_token(token_t* token, int num_operand)
 	printf("%d: opcode: %s\n", token->line_num, token->opcode);
 	for (int i = 0; i < num_operand; ++i)
 	{
+		printf("-------------------------------\n");
 		printf("Printing the %dth operand\n", i);
 		operand_t op = token->operands[i];
 		bool flag = (op.tag == STRING);
