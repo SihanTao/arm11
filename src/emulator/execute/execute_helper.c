@@ -5,10 +5,21 @@
 #include "execute_helper.h"
 
 #include "../utils/tools.h"
+#include "../utils/load_store.h"
+
+static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
+                                  uint32_t operand2, bool *new_flag_c);
 
 value_carry_t rotate(uint32_t target, int rotate_amount)
 {
   value_carry_t result;
+  if (rotate_amount == 0)
+  {
+    result.value = target;
+    result.carry = 0;
+    return result;
+  }
+
   result.value
       = (target << (WORD_SIZE - rotate_amount)) | (target >> rotate_amount);
   result.carry = get_bit(target, rotate_amount - 1);
@@ -43,8 +54,7 @@ value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
   }
   case ASR: // arithmetic shift right
   {
-    // arith_right, the most significant nth bits in result
-    // are the same as 31th bit in t
+    // head in result are the same as 31th bit in target
     uint32_t head
         = get_bit(target, 31) ? ALL_ONE << (WORD_SIZE - shift_amount) : 0;
     result.value = target >> shift_amount | head;
@@ -88,20 +98,17 @@ bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
   }
 }
 
-/*
- * dispatcher for shift and rotate
- * value_out and carry are the output params
- * if carry is setted to NULL, this function will not change carry
- */
 void reg_imm_handle(bitfield *reg, reg_or_imm_t reg_imm, bool is_imm,
                     uint32_t *value_out, bool *carry)
 {
   value_carry_t result;
-  if (is_imm)
+
+  if (is_imm) // is rotated immediate value
   {
+    // arm only rotate value by a multiple of 2
     result = rotate(reg_imm.rot_imm.imm, 2 * reg_imm.rot_imm.amount);
   }
-  else
+  else // is shifted register
   {
     result = shift(to_int(reg[reg_imm.shift_reg.Rm]), reg_imm.shift_reg.val,
                    reg_imm.shift_reg.type);
@@ -112,4 +119,183 @@ void reg_imm_handle(bitfield *reg, reg_or_imm_t reg_imm, bool is_imm,
   {
     *carry = result.carry;
   }
+}
+
+void execute_DP(proc_t instruction, ArmState arm_state)
+{
+  bitfield *reg = arm_state->reg;
+  uint32_t  Rn  = to_int(reg[instruction.Rn]);
+  uint32_t  operand2;
+  bool      new_flag_c;
+
+  // compute operand2, carry out is set to shift barrel carry out
+  reg_imm_handle(reg, instruction.operand2, instruction.iFlag, &operand2,
+                 &new_flag_c);
+
+  uint32_t result
+      = dp_carried_result(instruction.opcode, Rn, operand2, &new_flag_c);
+
+  // update the result if opcode is NOT (TST, TEQ or CMP)
+  if (instruction.opcode != TST && instruction.opcode != TEQ
+      && instruction.opcode != CMP)
+  {
+    reg[instruction.Rd] = to_bf(result);
+  }
+
+  // if set_cond bit is set, change the CPRS flags
+  if (instruction.set_cond)
+  {
+    arm_state->neg   = get_bit(result, 31);
+    arm_state->zero  = result == 0;
+    arm_state->carry = new_flag_c;
+  }
+}
+
+/*
+ * find the result for data processing instruction
+ * `new_flag_c` is a output param, it should accept a carry bit from shift
+ * barrel, and it will update this flag_c according to opcode type
+ * i.e. keep the value if it is a logical operation and change it to
+ * arithmetic carry out if it is a arithmetic carry out
+ */
+static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
+                                  uint32_t operand2, bool *new_flag_c)
+{
+  switch (opcode)
+  {
+  // for logical operations, C is set to the carry out from any shift
+  // operation i.e. by no change
+  case AND:
+    return operand1 & operand2;
+  case EOR:
+    return operand1 ^ operand2;
+  case ORR:
+    return operand1 | operand2;
+  case TST:
+    return operand1 & operand2;
+  case TEQ:
+    return operand1 ^ operand2;
+  case MOV:
+    return operand2;
+  // In arithmetic operations (add, sub, rsb and cmp) the C bit will be set
+  // to the carry out of the bit 31 of the ALU
+
+  // TODO!!!!!!
+  // there will be problems, that I am not sure how unsigned or signed add
+  // and mul performed.
+  case SUB:
+    *new_flag_c = get_bit(operand1, 31)
+                  && get_bit(operand1, 31); // might be a bug here
+    return operand1 - operand2;
+  case RSB:
+    *new_flag_c = 1;
+    return operand2 - operand1;
+  case ADD:
+    *new_flag_c = 1;
+    return operand1 + operand2;
+  case CMP:
+    *new_flag_c = 1;
+    return operand1 - operand2;
+  default:
+    break;
+  }
+}
+
+void execute_TRANS(trans_t instruction, ArmState arm_state)
+{
+  if (instruction.Rn == 15) // pc
+  {
+    perror("Doesn't support to load or store PC! \n");
+    exit(EXIT_FAILURE);
+  }
+
+  bitfield *reg = arm_state->reg;
+  uint32_t  Rn  = to_int(reg[instruction.Rn]);
+  uint32_t  offset;
+
+  // if i bit is set to 0, is immediate value else is shifted register
+  // what a surprise!!!
+  reg_imm_handle(reg, instruction.offset, !instruction.iFlag, &offset, NULL);
+
+  // if is_up is set then offset is added to Rn. Otherwise subtracted from Rn.
+  size_t address_with_offset = (instruction.is_up) ? Rn + offset : Rn - offset;
+  size_t address;
+
+  if (instruction.is_pre)
+  {
+    // pre-indexing does not change the contents of the base register
+    address = address_with_offset;
+  }
+  else // is post indexing
+  {
+    // post-indexing changes the contents of the base register by the offset.
+    address             = Rn;
+    reg[instruction.Rn] = to_bf(address_with_offset);
+  }
+
+  if (instruction.is_load)
+  {
+    reg[instruction.Rd] = load(address, arm_state->memory);
+  }
+  else // is store
+  {
+    store(reg[instruction.Rd], address, arm_state->memory);
+  }
+}
+
+void execute_MUL(mul_t instruction, ArmState arm_state)
+{
+  // pre: PC is not used as operand or destination register
+  //      Rd will not be the same as Rm
+  bitfield *reg    = arm_state->reg;
+  uint32_t  Rm     = to_int(reg[instruction.Rm]);
+  uint32_t  Rs     = to_int(reg[instruction.Rs]);
+  uint32_t  Rn     = to_int(reg[instruction.Rn]);
+  uint32_t  result = Rm * Rs;
+
+  // the accumulate bit is set
+  if (instruction.acc)
+  {
+    result += Rn;
+  }
+
+  // Save the result
+  reg[instruction.Rd] = to_bf(result);
+
+  // If the set_cond bit is set, we need to update the CPSR
+  if (instruction.set_cond)
+  {
+    arm_state->neg  = get_bit(result, 31);
+    arm_state->zero = result == 0;
+  }
+}
+
+void execute_BRANCH(branch_t instruction, ArmState arm_state)
+{
+  uint32_t offset   = to_int(arm_state->reg[instruction.offset]);
+  int      sign_bit = get_bit(offset, 24);
+  uint32_t mask     = 0;
+  uint32_t extended = 0;
+
+  // The offset will take into account the effect of the pipeline (i.e. PC is 8
+  // bytes ahead of the instruction that is being executed). I think it is
+  // kinda hard to write test for this branch instruction. since it is closely
+  // related to pc.
+
+  offset <<= 2;
+
+  if (sign_bit == 0)
+  {
+    mask     = ~(2 ^ 25 + 2 ^ 26);
+    extended = offset & mask;
+  }
+  else
+  {
+    for (int i = 31; i > 24; i--)
+    {
+      mask += 2 ^ i;
+    }
+    extended = offset | mask;
+  }
+  arm_state->pc += extended;
 }
