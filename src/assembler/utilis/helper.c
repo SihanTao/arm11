@@ -1,12 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <stdbool.h>
-
 #include "helper.h"
 
 // check whether 'target' is in the form of immediate value.
-bool is_valid_imm(uint32_t target)
+static bool is_valid_imm(uint32_t target)
 {
   uint32_t mask = 0X000000FF;
   if (target&mask == target) {
