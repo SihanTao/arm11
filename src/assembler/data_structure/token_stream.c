@@ -23,6 +23,9 @@ token_t* tokenize_instruction(char* instruction, int num_line)
 	char* rest = get_opcode(token, instruction);
 	// Set the line number
 	token->line_num = num_line;
+	// Get the operand field
+	int length = comma_count(rest + 1);
+	char** operand_field = split_operand_field(rest);
 
 }
 
@@ -67,4 +70,19 @@ char** split_operand_field(char* rest)
 	}
 
 	return fields;
+}
+
+void set_token_operand(token_t* token, char** operand_field, int length){
+	token->operands = calloc(length + 1, sizeof(operand_t));
+	char **current_operand = operand_field;
+	while (*current_operand != NULL)
+	{
+		if (*current_operand[0] == '#' || *current_operand[0] == '=') {
+			token->operands->tag = NUMBER;
+			token->operands->operand_data.number = strtol (*current_operand + 1, NULL, 0);
+		} else {
+			token->operands->tag = STRING;
+			token->operands->operand_data.letters = *current_operand;
+		}
+	}
 }

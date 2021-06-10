@@ -40,6 +40,16 @@ int main(void){
 		test_string_eq_v(fields[1], "r2", "fields[1] == r2");
 //		print_strings(fields);
 	}
+	printf("Test strtol\n");
+	char eg[] = "0x42";
+	printf("%ld\n", strtol(eg, NULL, 0));
+	char eg1[] = "#3";
+	printf("%ld\n", strtol(eg1+1, NULL, 0));
+	char *field[] = {"0x42","#3"};
+	char **cursor = field;
+	printf("%ld\n", strtol(*cursor, NULL, 0));
+	cursor++;
+	printf("%ld\n", strtol(*cursor+1, NULL, 0));
 
 
 

@@ -5,7 +5,6 @@ typedef enum operand_type
 {
   NUMBER,
   STRING,
-  END_OPERANDS
 } operand_type;
 
 typedef struct operand_t
@@ -33,4 +32,5 @@ extern char* get_opcode(token_t* token, char* instruction);
 extern int comma_count(char* rest);
 extern char** split_operand_field(char* rest);
 extern token_t* tokenize_instruction(char* instruction, int num_line);
+void set_token_operand(token_t* token, char** operand_field, int length);
 #endif // TOKENSTREAM
