@@ -1,13 +1,14 @@
 #include "../utils/types_and_macros.h"
 
-#include "../execute/execute.h"
+#include "../execute/execute_helper.h"
 
 #include "../utils/tools.h"
 #include "../utils/unit_test.h"
+#include "../utils/init_arm_state.h"
 
 int main(void)
 {
-  ArmState arm_state = init_state_for_test();
+  ArmState arm_state = init_state();
 
   add_test("Test for Mul execution");
   {
@@ -50,7 +51,7 @@ int main(void)
                        01,
                        .cond = 1 };
 
-    arm_state         = init_state_for_test();
+    arm_state         = init_state();
     arm_state->reg[1] = to_bf(0xFFFFFFFD); // Rm
     arm_state->reg[2] = to_bf(0xF);        // Rs
     arm_state->reg[4] = to_bf(0);          // Rd
@@ -79,7 +80,7 @@ int main(void)
                        0,
                        .cond = 0 };
 
-    arm_state         = init_state_for_test();
+    arm_state         = init_state();
     arm_state->reg[1] = to_bf(1); // Rm
     arm_state->reg[2] = to_bf(2); // Rs
     arm_state->reg[3] = to_bf(3); // Rn
@@ -109,7 +110,7 @@ int main(void)
                        0,
                        .cond = 0 };
 
-    arm_state         = init_state_for_test();
+    arm_state         = init_state();
     arm_state->reg[1] = to_bf(1); // Rm
     arm_state->reg[2] = to_bf(2); // Rs
     arm_state->reg[3] = to_bf(3); // Rn
@@ -133,7 +134,7 @@ int main(void)
                        0,
                        .cond = 0 };
 
-    arm_state         = init_state_for_test();
+    arm_state         = init_state();
     arm_state->reg[1] = to_bf(0xFFFFFFFD); // Rm
     arm_state->reg[2] = to_bf(0xF);        // Rs
     arm_state->reg[4] = to_bf(0);          // Rd

@@ -75,7 +75,7 @@ typedef enum ins_type
   ZERO
 } ins_type;
 
-typedef enum proc_type
+typedef enum pd_opcode_type
 {
   AND,
   EOR,
@@ -87,7 +87,7 @@ typedef enum proc_type
   CMP,
   ORR,
   MOV
-} proc_type;
+} pd_opcode_type;
 
 typedef enum shift_type
 {
@@ -153,8 +153,8 @@ typedef struct proc_t
   unsigned int Rd : 4;
   unsigned int Rn : 4;
   unsigned int set_cond : 1;
-  unsigned int opcode : 4; // datatype : proc_type
-  unsigned int is_imm : 1; // else is register
+  unsigned int opcode : 4; // datatype : pd_opcode_type
+  unsigned int iFlag : 1; // else is register
   unsigned int : 2;        // not used: 00
   unsigned int cond : 4;
 } proc_t;
@@ -181,7 +181,7 @@ typedef struct trans_t
   unsigned int : 2;         // not used 00
   unsigned int is_up : 1;   // else is down
   unsigned int is_pre : 1;  // else is post
-  unsigned int is_imm : 1;  // else is register
+  unsigned int iFlag : 1;  // 0 -> immediate value; 1 -> register
   unsigned int : 2;         // not used 01
   unsigned int cond : 4;
 } trans_t;

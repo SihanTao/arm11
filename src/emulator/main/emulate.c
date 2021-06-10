@@ -19,7 +19,7 @@ static void     free_pipeline(Pipeline pipeline);
 int main(int argc, char **argv)
 {
   char file_name[] = "I DON'T KNOW";
-  // initialize all states
+
   ArmState states  = init_state(file_name);
   Pipeline next    = init_pipeline();
   Pipeline current = init_pipeline();
@@ -27,12 +27,10 @@ int main(int argc, char **argv)
   if (states == NULL || next == NULL || current == NULL)
   {
     printf("%s", "Error : Running out of memory.");
-    return EXIT_FAILURE;
-    // OS will collect resources
+    exit(EXIT_FAILURE);
   }
 
-  // skip the first two cycles, for performance concern
-  // no looger need to do NULL flag check in fetch and decode
+  // skip the first two cycles
   next->fetched = fetch(states->pc, states->memory);
   FLASH_CYCLE;
   next->fetched = fetch(states->pc, states->memory);
@@ -49,21 +47,17 @@ int main(int argc, char **argv)
     {
       break;
     }
-    if (exit_status == ERROR)
-    {
-      perror("An error found, please check your code!");
-      break;
-    }
     FLASH_CYCLE;
   }
 
-  // collect resources;
   free_state(states);
   free_pipeline(next);
   free_pipeline(current);
   return EXIT_SUCCESS;
 }
 
+
+// TODO : make this a public function (for testing)
 ArmState init_state(char const *file_name)
 {
   ArmState result = (ArmState)malloc(sizeof(arm_state_struct));

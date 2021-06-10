@@ -2,17 +2,16 @@
 #define DECODE
 
 /*
- * decode will initialize an instruction
- * then return an instruction_t with tag
+ * decode will initialize an instruction find the type of instruction then
+ * return an instruction_t with tag and initialize the fields of instruction
  */
-instruction_t decode (bitfield fetched);
+instruction_t decode(bitfield fetched);
 
-void find_type (instruction_t *instruction);
+void find_type(instruction_t *instruction);
 
 /*
- * initialize an instruction to UNDEFINED
- * category.
+ * initialize an instruction to UNDEFINED category.
  */
-instruction_t init_instruction (bitfield fetched);
+instruction_t init_instruction(bitfield fetched);
 
 #endif // DECODE

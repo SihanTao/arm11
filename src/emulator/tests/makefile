@@ -31,18 +31,19 @@ $(DIR_TEST_BIN)/file_loader_test.test: $(DIR_OBJ)/file_loader_test.o
 
 $(DIR_TEST_BIN)/execute_dp_test.test: $(DIR_OBJ)/execute_dp_test.o
 	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute_helper.o \
-	$(DIR_OBJ)/execute.o
+	$(DIR_OBJ)/init_arm_state.o $(DIR_OBJ)/load_store.o
 
 $(DIR_TEST_BIN)/execute_mul_test.test: $(DIR_OBJ)/execute_mul_test.o
-	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute_helper.o\
-  $(DIR_OBJ)/execute.o
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute_helper.o \
+	$(DIR_OBJ)/init_arm_state.o $(DIR_OBJ)/load_store.o
 
 $(DIR_TEST_BIN)/execute_trans_test.test: $(DIR_OBJ)/execute_trans_test.o
-	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute_helper.o\
-  $(DIR_OBJ)/execute.o
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute_helper.o \
+	$(DIR_OBJ)/init_arm_state.o $(DIR_OBJ)/load_store.o
 
 $(DIR_TEST_BIN)/execute_helper_test.test: $(DIR_OBJ)/execute_helper_test.o
-	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute_helper.o\
+	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/execute_helper.o \
+	$(DIR_OBJ)/init_arm_state.o $(DIR_OBJ)/load_store.o
 
 $(DIR_TEST_BIN)/decode_test.test: $(DIR_OBJ)/decode_test.o
 	$(CC) -o $@ $< $(DIR_OBJ)/unit_test.o  $(DIR_OBJ)/tools.o $(DIR_OBJ)/decode.o
