@@ -145,7 +145,7 @@ void execute_DP(proc_t instruction, ArmState arm_state)
   // if set_cond bit is set, change the CPRS flags
   if (instruction.set_cond)
   {
-    arm_state->neg   = get_bit(result, 31);
+    arm_state->neg   = get_bit(result, 31); // TODO : make it a macro SIGN_BIT
     arm_state->zero  = result == 0;
     arm_state->carry = new_flag_c;
   }

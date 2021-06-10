@@ -22,9 +22,9 @@ int main(int argc, char **argv)
 
   NotSure parsed = parse(loaded_file);
 
- // char **result = code_generate(parsed);
-	char ** result;
-	
+ char **result = code_generate(parsed);
+	// char ** result;
+
   write_file(output, result);
 }
 
