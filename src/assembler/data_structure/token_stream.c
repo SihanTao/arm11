@@ -54,17 +54,17 @@ int comma_count(char* rest)
 	return counter;
 }
 
-//char** split_operand_field(char* rest)
-//{
-//	int length = comma_count(rest) + 1;
-//	char** fields = create_string_array(length);
-//
-//	int i = 0;
-//	fields[i] = strtok(rest, ",");
-//	while (fields[i] != NULL)
-//	{
-//		fields[i++] = strtok(NULL, ",");
-//	}
-//
-//	return fields;
-//}
+char** split_operand_field(char* rest)
+{
+	int length = comma_count(rest) + 1;
+	char** fields = create_string_array(length);
+
+	int i = 0;
+	fields[i] = strtok(rest, ",");
+	while (fields[i] != NULL)
+	{
+		fields[i++] = strtok(NULL, ",");
+	}
+
+	return fields;
+}
