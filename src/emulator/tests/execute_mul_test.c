@@ -145,4 +145,6 @@ int main(void)
 
     free(arm_state);
   }
+
+  end_all_tests();
 }

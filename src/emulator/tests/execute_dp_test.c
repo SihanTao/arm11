@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "../utils/types_and_macros.h"
 
 #include "../execute/execute.h"
@@ -22,14 +23,16 @@ int main(void)
             0,
             .cond = 0 };
     arm_state         = init_state_for_test();
-    arm_state->reg[1] = to_bf(0x0000000B); // Rm = 1011
+    arm_state->reg[1] = to_bf(0x0000000B); // Rm = 0b1011
     arm_state->reg[2] = to_bf(0);          // Rd
-    arm_state->reg[3] = to_bf(2);          // Rn = 10
+    arm_state->reg[3] = to_bf(2);          // Rn = 0b10
 
     execute_DP(dp_ins1, arm_state);
 
+    printf("arm_state->reg[2] :>> %p\n,", arm_state->reg[2]); //DELETE_MARK
+
     test_int_v(to_int(arm_state->reg[2]),
-               2, // 10
+               2, // 0b10
                "Rm = 1011, Rn = 10, 1011 becomes 10110, 10110 AND 10, so Rd = "
                "10, set_cond = false S = false is_imm = false");
 
@@ -152,4 +155,6 @@ int main(void)
 
     free(arm_state);
   }
+
+  end_all_tests();
 }
