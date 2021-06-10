@@ -18,6 +18,7 @@ int main(void){
 	add_test("Test count-comma");
 	{
 		char instruction[] = "mov r1,#3";
+		token_t* token = calloc(1, sizeof(token_t));
 		char *rest = get_opcode(token, instruction);
 		test_int_v(comma_count(rest), 1, "comma == 1");
 	}
