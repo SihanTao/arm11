@@ -15,12 +15,12 @@ int main(void){
 		test_string_eq_v(rest, "r1,#3", "rest == r1,#3");
 	}
 
-	add_test("Test count-comma");
+	add_test("Test count num operand");
 	{
 		char instruction[] = "mov r1,#3";
 		token_t* token = calloc(1, sizeof(token_t));
 		char *rest = get_opcode(token, instruction);
-		test_int_v(comma_count(rest), 1, "comma == 1");
+		test_int_v(count_num_operand(rest), 2, "number == 2");
 	}
 
 	add_test("Test split operand field");
@@ -28,7 +28,7 @@ int main(void){
 		char instruction1[] = "mov r1,#3";
 		token_t* token = calloc(1, sizeof(token_t));
 		char *rest = get_opcode(token, instruction1);
-		int length = comma_count(rest) + 1;
+		int length = count_num_operand(rest);
 		char **fields = split_operand_field(rest, length);
 //		print_strings(fields);
 		test_string_eq_v(fields[0], "r1", "fields[0] == r1");
@@ -36,7 +36,7 @@ int main(void){
 
 		char instruction2[] = "cmp r1,r2";
 		char *rest2 = get_opcode(token, instruction2);
-		length = comma_count(rest2) + 1;
+		length = count_num_operand(rest2);
 		fields = split_operand_field(rest2, length);
 		test_string_eq_v(fields[0], "r1", "fields[0] == r1");
 		test_string_eq_v(fields[1], "r2", "fields[1] == r2");

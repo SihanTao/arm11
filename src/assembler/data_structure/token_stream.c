@@ -24,7 +24,7 @@ token_t* tokenize_instruction(char* instruction, int num_line)
 	// Set the line number
 	token->line_num = num_line;
 	// Get the operand field
-	int length = comma_count(rest + 1);
+	int length = count_num_operand(rest);
 	char** operand_field = split_operand_field(rest, length);
 
 }
@@ -42,7 +42,7 @@ char* get_opcode(token_t* token, char* instruction)
  * --> "r1", "#3"
  * */
 
-int comma_count(char* rest)
+int count_num_operand(char* rest)
 {
 	int counter = 0;
 
@@ -54,7 +54,7 @@ int comma_count(char* rest)
 		}
 	}
 
-	return counter;
+	return counter + 1;
 }
 
 char** split_operand_field(char* rest, int length)
@@ -73,7 +73,7 @@ char** split_operand_field(char* rest, int length)
 
 void set_token_operand(token_t* token, char** operand_field, int length)
 {
-	token->operands = calloc(length + 1, sizeof(operand_t));
+	token->operands = calloc(length, sizeof(operand_t));
 	char** current_operand = operand_field;
 	while (*current_operand != NULL)
 	{
