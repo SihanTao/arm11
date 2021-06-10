@@ -8,6 +8,16 @@ typedef enum operand_type
   END_OPERANDS
 } operand_type;
 
+typedef struct operand_t
+{
+	operand_type tag;
+	union
+	{
+		char *letters;
+		int   number;
+	} operand_data;
+} operand_t;
+
 typedef struct token_t
 {
   char *     opcode;
@@ -15,19 +25,10 @@ typedef struct token_t
   operand_t *operands;
 } token_t;
 
-typedef struct operand_t
-{
-  operand_type tag;
-  union
-  {
-    char *letters;
-    int   number;
-  } operand_data;
-} operand_t;
-
 typedef token_t *TokenStream;
 
 // returns if it is the end of token stream
 //extern bool is_end(token_t current);
+extern char* get_opcode(token_t* token, char* instruction);
 extern token_t* tokenize_instruction(char* instruction);
 #endif // TOKENSTREAM
