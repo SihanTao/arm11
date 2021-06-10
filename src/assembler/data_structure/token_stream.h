@@ -32,6 +32,8 @@ extern char* get_opcode(token_t* token, char* instruction);
 extern int count_num_operand(char* rest);
 extern char** split_operand_field(char* rest, int length);
 extern token_t* tokenize_instruction(char* instruction, int num_line);
-void set_token_operand(token_t* token, char** operand_field, int length);
-void print_token(token_t* token, int);
+extern void set_token_operand(token_t* token, char** operand_field, int length);
+extern void print_token(token_t* token, int);
+extern bool is_label_line(char* line)
+
 #endif // TOKENSTREAM

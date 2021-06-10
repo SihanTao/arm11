@@ -110,5 +110,9 @@ void print_token(token_t* token, int num_operand)
 			printf("Number = %d\n", op.operand_data.number);
 		}
 	}
+}
 
+bool is_label_line(char* line)
+{
+	return line[strlen(line) - 1] == ':';
 }
