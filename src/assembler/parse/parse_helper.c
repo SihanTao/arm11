@@ -25,7 +25,9 @@ void preprocess_and_gen_sym_table(char **loaded_file, TokenStream token_stream,
   }
 }
 
-bool is_label_line(char *line) { return false; }
+bool is_label_line(char *line) {
+	return line[strlen(line) - 1] == ':';
+}
 
 NotSure allocate_address(TokenStream token_stream, SymbolTable symbol_table)
 {

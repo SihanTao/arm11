@@ -28,6 +28,6 @@ typedef struct operand_t
 typedef token_t *TokenStream;
 
 // returns if it is the end of token stream
-extern bool is_end(token_t current);
-
+//extern bool is_end(token_t current);
+extern token_t* tokenize_instruction(char* instruction);
 #endif // TOKENSTREAM
