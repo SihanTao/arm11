@@ -25,7 +25,7 @@ token_t* tokenize_instruction(char* instruction, int num_line)
 	token->line_num = num_line;
 	// Get the operand field
 	int length = comma_count(rest + 1);
-	char** operand_field = split_operand_field(rest);
+	char** operand_field = split_operand_field(rest, length);
 
 }
 
@@ -57,9 +57,8 @@ int comma_count(char* rest)
 	return counter;
 }
 
-char** split_operand_field(char* rest)
+char** split_operand_field(char* rest, int length)
 {
-	int length = comma_count(rest) + 1;
 	char** fields = create_string_array(length);
 
 	int i = 0;
