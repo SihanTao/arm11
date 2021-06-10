@@ -1,18 +1,37 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "helper.h"
 
-uint32_t inverse_rotate(uint32_t target, int amount)
+// check whether 'target' is in the form of immediate value.
+bool is_valid_imm(uint32_t target)
 {
-  int result = 0;
-  for (int i = 31; i < 31-amount; i--)
-  {
-    if (get_bit(target, i) == 1)
-    {
-      result += pow(2, (31 - i));
+  uint32_t mask = 0X000000FF;
+  if (target&mask == target) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool compute_imm(uint32_t target, int rotation_amount, uint32_t imm)
+{
+  if (is_valid_imm(target)) {
+    rotation_amount = 0;
+    imm = target;
+    return true;
+  }
+   
+  for (int i=1; i<16; i++) {
+    target = (target << 2) | (target >>30); // rotate left by 2.
+    if (is_valid_imm(target)) {
+      rotation_amount = i;
+      imm = target;
+      return true;
     }
   }
-  return result + (target << amount);
+
+   return false;
 }
