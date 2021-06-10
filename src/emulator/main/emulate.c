@@ -1,27 +1,27 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../utils/types_and_macros.h"
-#include "../utils/tools.h"
 
 #include "emulate.h"
 
-#include "../utils/file_loader.h"
 #include "../decode/decode.h"
 #include "../execute/execute.h"
+#include "../utils/file_loader.h"
+#include "../utils/tools.h"
 
 static bitfield fetch(size_t pc, byte *memory);
 static ArmState init_state(char const *file_name);
-static void free_state(ArmState states);
+static void     free_state(ArmState states);
 static Pipeline init_pipeline(void);
-static void free_pipeline(Pipeline pipeline);
+static void     free_pipeline(Pipeline pipeline);
 
 int main(int argc, char **argv)
 {
   char file_name[] = "I DON'T KNOW";
   // initialize all states
-  ArmState states = init_state(file_name);
-  Pipeline next = init_pipeline();
+  ArmState states  = init_state(file_name);
+  Pipeline next    = init_pipeline();
   Pipeline current = init_pipeline();
   Pipeline temp;
   if (states == NULL || next == NULL || current == NULL)
@@ -42,9 +42,9 @@ int main(int argc, char **argv)
   // pipeline loop
   while (true)
   {
-    next->fetched = fetch(states->pc, states->memory);
-    next->decoded = decode(current->fetched);
-    exit_type exit_status= execute(current->decoded, states);
+    next->fetched         = fetch(states->pc, states->memory);
+    next->decoded         = decode(current->fetched);
+    exit_type exit_status = execute(current->decoded, states);
     if (exit_status == EXIT)
     {
       break;
@@ -72,16 +72,16 @@ ArmState init_state(char const *file_name)
     return NULL;
   }
 
-  result->reg = calloc(NUM_OF_REG, sizeof(bitfield));
+  result->reg    = calloc(NUM_OF_REG, sizeof(bitfield));
   result->memory = calloc(MAX_MEMORY_ADDRESS, sizeof(byte));
   if (result->reg == NULL || result->memory == NULL)
   {
     return NULL;
   }
 
-  result->pc = 0;
-  result->neg = false;
-  result->zero = false;
+  result->pc    = 0;
+  result->neg   = false;
+  result->zero  = false;
   result->carry = false;
   result->ovflw = false;
 
@@ -110,18 +110,12 @@ Pipeline init_pipeline(void)
   result->fetched.byte3 = 0;
   result->fetched.byte4 = 0;
 
-  result->decoded.tag = UNDEFINED;
+  result->decoded.tag    = UNDEFINED;
   result->decoded.word.i = 0;
 
   return result;
 }
 
-void free_pipeline(Pipeline pipeline)
-{
-  free(pipeline);
-}
+void free_pipeline(Pipeline pipeline) { free(pipeline); }
 
-bitfield fetch(size_t pc, byte *memory)
-{
-  return peek(pc, memory);
-}
+bitfield fetch(size_t pc, byte *memory) { return load(pc, memory); }

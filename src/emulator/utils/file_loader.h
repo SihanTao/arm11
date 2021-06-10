@@ -17,7 +17,7 @@
  * - `file_name`, the file is assumed have length of multiple of 4.
  *   Otherwise an error will be raised.
  */
-extern void read_file_to_mem(char const *file_name,
-                             void *write_to, endian_type mode);
+extern void read_file_to_mem (char const *file_name, void *write_to,
+                              endian_type mode);
 
-#endif //FILE_LOADER
+#endif // FILE_LOADER
