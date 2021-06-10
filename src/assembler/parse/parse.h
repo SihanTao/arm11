@@ -3,6 +3,6 @@
 
 typedef int NotSure;
 
-TokenQueue2 parse(char **loaded_file);
+NotSure parse(char **loaded_file);
 
 #endif //PARSE

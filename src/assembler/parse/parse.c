@@ -11,5 +11,5 @@ NotSure parse(char **loaded_file)
 
   preprocess_and_gen_sym_table(loaded_file, token_stream, symbol_table);
 
-  return substitute_in(token_stream, symbol_table);
+  return allocate_address(token_stream, symbol_table);
 }
