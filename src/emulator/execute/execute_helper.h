@@ -2,6 +2,7 @@
 #define EXECUTE_HELPER
 
 #define ALL_ONE (0xffffffff)
+#define BRANCH_PAD_MASK (0xFC000000)
 
 typedef struct value_carry_t
 {

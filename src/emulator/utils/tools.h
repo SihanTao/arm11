@@ -19,10 +19,4 @@ extern void convert_endian_ptr (char *buffer);
 extern bitfield convert_endian (bitfield word);
 extern uint32_t to_int (bitfield b);
 extern bitfield to_bf (uint32_t i);
-
-/*
- * Returns the bitfield stored in that address
- */
-extern bitfield load (size_t address, byte *memory);
-
 #endif

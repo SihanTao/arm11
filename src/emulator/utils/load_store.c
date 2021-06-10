@@ -19,7 +19,7 @@ bitfield load(size_t address, byte *memory)
 
 void store(bitfield target, size_t address, byte *memory)
 {
-    if(address > MAX_MEMORY_ADDRESS - 4 || address < 0)
+  if(address > MAX_MEMORY_ADDRESS - 4 || address < 0)
   {
     perror("Error! Writing to invalid address!");
     exit(EXIT_FAILURE);

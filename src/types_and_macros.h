@@ -56,7 +56,7 @@ typedef enum exit_type
 {
   CONTINUE,
   EXIT,
-  ERROR
+  RESTART_PIPELINE
 } exit_type;
 
 /****************** enums **********************/
