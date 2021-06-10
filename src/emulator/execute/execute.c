@@ -24,7 +24,7 @@ exit_type execute(instruction_t decoded, ArmState arm_state)
       return CONTINUE;
     case BRANCH:
       execute_BRANCH(decoded.word.branch, arm_state);
-      return CONTINUE;
+      return RESTART_PIPELINE;
     case ZERO:
       return EXIT;
     default:

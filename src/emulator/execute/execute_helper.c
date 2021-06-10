@@ -54,10 +54,10 @@ value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
   }
   case ASR: // arithmetic shift right
   {
-    // head in result are the same as 31th bit in target
-    uint32_t head
+    // padding the 31th bit to result value
+    uint32_t padmask
         = get_bit(target, 31) ? ALL_ONE << (WORD_SIZE - shift_amount) : 0;
-    result.value = target >> shift_amount | head;
+    result.value = target >> shift_amount | padmask;
     return result;
   }
   case ROR: // rotate right
@@ -214,9 +214,7 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
   uint32_t  offset;
 
   // if i bit is set to 0, is immediate value else is shifted register
-  // what a surprise!!!
   reg_imm_handle(reg, instruction.offset, !instruction.iFlag, &offset, NULL);
-
   // if is_up is set then offset is added to Rn. Otherwise subtracted from Rn.
   size_t address_with_offset = (instruction.is_up) ? Rn + offset : Rn - offset;
   size_t address;
@@ -274,28 +272,14 @@ void execute_BRANCH(branch_t instruction, ArmState arm_state)
 {
   uint32_t offset   = to_int(arm_state->reg[instruction.offset]);
   int      sign_bit = get_bit(offset, 24);
-  uint32_t mask     = 0;
-  uint32_t extended = 0;
+	offset <<= 2;
 
-  // The offset will take into account the effect of the pipeline (i.e. PC is 8
-  // bytes ahead of the instruction that is being executed). I think it is
-  // kinda hard to write test for this branch instruction. since it is closely
-  // related to pc.
+	// if is negative padding 1s to left
+  if (sign_bit == 1)
+	{
+		offset |= BRANCH_PAD_MASK;
+	}
 
-  offset <<= 2;
-
-  if (sign_bit == 0)
-  {
-    mask     = ~(2 ^ 25 + 2 ^ 26);
-    extended = offset & mask;
-  }
-  else
-  {
-    for (int i = 31; i > 24; i--)
-    {
-      mask += 2 ^ i;
-    }
-    extended = offset | mask;
-  }
-  arm_state->pc += extended;
+	// PC is 8 bytes ahead of the instruction that is being executed
+  arm_state->pc += offset - 8;
 }
