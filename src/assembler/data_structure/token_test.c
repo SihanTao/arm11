@@ -42,6 +42,8 @@ int main(void){
 		test_string_eq_v(fields[1], "r2", "fields[1] == r2");
 //		print_strings(fields);
 	}
+
+
 	printf("Test strtol\n");
 	char eg[] = "0x42";
 	printf("%ld\n", strtol(eg, NULL, 0));
@@ -53,7 +55,14 @@ int main(void){
 	cursor++;
 	printf("%ld\n", strtol(*cursor+1, NULL, 0));
 
-
+	add_test("Test print token:");
+	{
+		operand_t operands[] = {{ .tag = STRING, "r1" },
+								{.tag = NUMBER,.operand_data.number = 3}};
+		token_t token = {.line_num = 0, .opcode = "mov",
+						 .operands = operands};
+		print_token(&token, 2);
+	}
 
 	end_all_tests();
 }

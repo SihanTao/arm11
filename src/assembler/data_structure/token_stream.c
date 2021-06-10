@@ -90,14 +90,20 @@ void set_token_operand(token_t* token, char** operand_field, int length)
 	}
 }
 
-void print_token(token_t* token)
+void print_token(token_t* token, int num_operand)
 {
 	printf("%d: opcode: %s\n", token->line_num, token->opcode);
-	bool flag = (token->operands->tag == STRING);
-	printf("The token tag is: %s\n", flag ? "STRING" : "NUMBER");
-	if (flag) {
-		printf("Letters = %s\n", token->operands->operand_data.letters);
-	} else {
-		printf("Number = %d\n", token->operands->operand_data.number);
+	for (int i = 0; i < num_operand; ++i)
+	{
+		printf("Printing the %dth operand\n", i);
+		operand_t op = token->operands[i];
+		bool flag = (op.tag == STRING);
+		printf("The token tag is: %s\n", flag ? "STRING" : "NUMBER");
+		if (flag) {
+			printf("Letters = %s\n", op.operand_data.letters);
+		} else {
+			printf("Number = %d\n", op.operand_data.number);
+		}
 	}
+
 }
