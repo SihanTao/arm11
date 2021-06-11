@@ -1,8 +1,26 @@
-#include <stdbool.h>
+#include <stdlib.h>
 
 #include "token_stream.h"
 
-bool is_end(token_t current)
+void add_token_stream(token_t* elem, TokenStream stream)
 {
-  return current.opcode == 0;
+  if (stream->head == NULL)
+  {
+    stream->head = elem;
+    stream->tail = elem;
+  }
+
+  stream->tail->next = elem;
 }
+
+TokenStream init_token_stream()
+{
+  return malloc(sizeof(token_stream_t));
+}
+
+void free_token_stream(TokenStream stream)
+{
+  //not sure how strtok work, leave for future
+}
+
+
