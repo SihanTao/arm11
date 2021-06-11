@@ -1,11 +1,11 @@
 #include <stdio.h>
 
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 
 #include "output.h"
 
 #include "../utils/load_store.h"
-#include "../utils/tools.h"
+#include "../../global_utils/tools.h"
 
 static int cpsr_to_int(ArmState arm_state);
 
@@ -19,8 +19,8 @@ void output(char *filename, ArmState arm_state)
   }
 
   int reg_value;
-  int pc_val = arm_state->pc;
-  int CPSR = cpsr_to_int(arm_state);
+  int pc_val  = arm_state->pc;
+  int CPSR    = cpsr_to_int(arm_state);
   int address = 0;
   int memory_val;
 
@@ -36,9 +36,9 @@ void output(char *filename, ArmState arm_state)
   fprintf(file_handle, "PC  :%11u (%010p) \n", pc_val, pc_val);
   fprintf(file_handle, "CPSR:%11u (%010p) \n", CPSR, CPSR);
 
-  //outputs non zero memory
+  // outputs non zero memory
   fprintf(file_handle, "Non-zero memory:\n");
-  while(true)
+  while (true)
   {
     memory_val = to_int(load(address, arm_state->memory));
     if (memory_val == 0)
@@ -56,7 +56,7 @@ void output(char *filename, ArmState arm_state)
 int cpsr_to_int(ArmState arm_state)
 {
   int CPSR = 0;
-    if (arm_state->neg)
+  if (arm_state->neg)
   {
     CPSR |= Nbit;
   }

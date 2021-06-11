@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 
 #include "emulate.h"
 

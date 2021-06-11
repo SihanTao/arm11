@@ -1,4 +1,4 @@
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,7 +6,7 @@
 
 #include "file_loader.h"
 
-#include "../utils/tools.h"
+#include "../../global_utils/tools.h"
 
 void read_file_to_mem(char const *file_name, void *write_to, endian_type mode)
 {

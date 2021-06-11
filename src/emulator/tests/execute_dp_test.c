@@ -1,10 +1,10 @@
 #include <stdio.h>
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 
 #include "../execute/execute_helper.h"
 
 #include "../utils/init_arm_state.h"
-#include "../utils/tools.h"
+#include "../../global_utils/tools.h"
 #include "../utils/unit_test.h"
 
 int main(void)
@@ -20,7 +20,7 @@ int main(void)
             .Rn       = 3,
             .set_cond = false, // CPSR flags not update
             .opcode   = AND,
-            .iFlag   = false, // op2 is a register
+            .iFlag    = false, // op2 is a register
             0,
             .cond = 0 };
     arm_state         = init_state();
@@ -46,7 +46,7 @@ int main(void)
             .Rn       = 3,
             .set_cond = false, // CPSR flags not update
             .opcode   = SUB,
-            .iFlag   = false, // op2 is a register
+            .iFlag    = false, // op2 is a register
             0,
             .cond = 1 };
     arm_state         = init_state();
@@ -71,7 +71,7 @@ int main(void)
             .Rn       = 3,
             .set_cond = true, // CPSR flags update
             .opcode   = TST,
-            .iFlag   = false, // op2 is a register
+            .iFlag    = false, // op2 is a register
             0,
             .cond = 0 };
     arm_state         = init_state();
@@ -107,7 +107,7 @@ int main(void)
             .Rn       = 2,
             .set_cond = false, // CPSR flags not update
             .opcode   = ORR,
-            .iFlag   = true, // op2 is an immediate constant
+            .iFlag    = true, // op2 is an immediate constant
             0,
             .cond = 0 };
     arm_state = init_state();
@@ -129,13 +129,12 @@ int main(void)
     // S = true iFlag = true
     proc_t dp_ins5
         = { .operand2 = { .rot_imm.amount = 2, // * 2, so amount is 4
-                          .rot_imm.imm    = 0x0000001A
-													},
+                          .rot_imm.imm    = 0x0000001A },
             .Rd       = 1,
             .Rn       = 2,
             .set_cond = true, // CPSR flags update
             .opcode   = ADD,
-            .iFlag   = true, // op2 is an immediate constant
+            .iFlag    = true, // op2 is an immediate constant
             0,
             .cond = 0 };
     arm_state = init_state();
@@ -150,7 +149,7 @@ int main(void)
                "11010 becomes 1010..0001, 1010..0001 ADD 10, so Rd = "
                "1010..0011, S = true iFlag = true");
 
-		// TODO : haven't done ALU carry functionality
+    // TODO : haven't done ALU carry functionality
     // // C is set to the carry out of the bit 31 of the ALU
     // // C is set to 0 as the addition does not produced a carry
     // test_true(arm_state->carry);

@@ -1,8 +1,8 @@
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 
 #include "../decode/decode.h"
 
-#include "../utils/tools.h"
+#include "../../global_utils/tools.h"
 #include "../utils/unit_test.h"
 
 int main(void)
@@ -20,15 +20,15 @@ int main(void)
                                      { 0, { 0xe3a02002 } },
                                      { 0, { 0xe3a03003 } } };
 
-    instruction_t* p = instructions;
+    instruction_t *p = instructions;
     find_type(p);
     print_bit(p->word.i);
     test_int_v(p->tag, DATA_PROCESS, "mov r1, #1 == data processing");
     test_int_v(p->word.proc.cond, AL, "mov r1, #1 cond == always");
-    test_int_v(p->word.proc.operand2.rot_imm.imm, 1, "mov r1, #1 oprand2.imm = 1");
+    test_int_v(p->word.proc.operand2.rot_imm.imm, 1,
+               "mov r1, #1 oprand2.imm = 1");
     test_int_v(p->word.proc.operand2.rot_imm.amount, 0, "rotate amount = 0");
     test_int_v(p->word.proc.Rd, 1, "mov r1, #1, Rn == 1");
-
 
     find_type(++p);
     print_bit(p->word.i);
@@ -105,13 +105,13 @@ int main(void)
     //     {0, {0xe3a00002}}, {0, {0xe5902000}}, {0, {0xe1520000}}
     // };
 
-    bitfield instructions_bf[4];
+    bitfield      instructions_bf[4];
     instruction_t res[4];
     for (int i = 0; i < 4; i++)
-      {
-        instructions_bf[i] = instructions[i].word.bf;
-        res[i] = decode(instructions_bf[i]);
-      }
+    {
+      instructions_bf[i] = instructions[i].word.bf;
+      res[i]             = decode(instructions_bf[i]);
+    }
 
     test_int_v(res[0].tag, DATA_PROCESS, "res[0]");
     test_int_v(res[1].tag, BRANCH, "res[0]");

@@ -1,10 +1,10 @@
 #include <stdio.h>
 
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 
 #include "execute_helper.h"
 
-#include "../utils/tools.h"
+#include "../../global_utils/tools.h"
 #include "../utils/load_store.h"
 
 static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,

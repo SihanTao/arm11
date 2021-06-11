@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 #include "tools.h"
 
 void convert_endian_ptr(char *buffer)

@@ -1,9 +1,9 @@
 #include <stdlib.h>
 
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 
 #include "decode.h"
-#include "../utils/tools.h"
+#include "../../global_utils/tools.h"
 
 instruction_t decode(bitfield fetched)
 {
@@ -40,7 +40,7 @@ void find_type(instruction_t *instruction)
   }
   else
   {
-    instruction->tag = DATA_PROCESS;
+    instruction->tag     = DATA_PROCESS;
     instruction->word.bf = convert_endian(instruction->word.bf);
   }
 }
