@@ -1,44 +1,47 @@
-
+#ifndef MNEMONIC
+#define MNEMONIC
 
 typedef enum pd_mnemonic
 {
-  add,
-  sub,
-  rsb,
+  ADD,
+  SUB,
+  RSB,
   AND,
-  eor,
-  orr,
-  mov,
-  tst,
-  teq,
-  cmp
+  EOR,
+  ORR,
+  MOV,
+  TST,
+  TEQ,
+  CMP
 } pd_mnemonic;
 
 typedef enum mul_mnemonic
 {
-  mul,
-  mla
+  MUL,
+  MLA
 } mul_mnemonic;
 
 typedef enum trans_mnemonic
 {
-  ldr,
-  str
+  LDR,
+  STR
 } trans_mnemonic;
 
 typedef enum branch_mnemonic
 {
-  beq,
-  bne,
-  bge,
-  blt,
-  bgt,
-  ble,
-  b
+  BEQ,
+  BNE,
+  BGE,
+  BLT,
+  BGT,
+  BLE,
+  B
 } branch_mnemonic;
 
 typedef enum special_mnemonic
 {
-  lsl,
-  andeq
+  LSL,
+  ANDEQ
 } special_mnemonic;
+
+#endif // MNEMONIC
