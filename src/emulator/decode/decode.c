@@ -5,7 +5,7 @@
 #include "decode.h"
 #include "../../global_utils/tools.h"
 
-instruction_t decode_branch(uint32_t instruction);
+instruction_t decode_branch(uint32_t fetched);
 instruction_t decode_dp(uint32_t fetched);
 instruction_t decode_mul(uint32_t fetched);
 instruction_t decode_trans(uint32_t fetched);
@@ -38,6 +38,23 @@ instruction_t decode(bitfield fetched)
   }
 }
 
+reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched) 
+{
+  reg_or_imm_t result;
+  if (is_imm) 
+  {
+    result.rot_imm.imm = get_bit_range(fetched, 0, 7);
+    result.rot_imm.amount = get_bit_range(fetched, 8, 11);
+    return result;
+  } else 
+  {
+    result.shift_reg.Rm = get_bit_range(fetched, 0, 3);
+    result.shift_reg.type = get_bit_range(fetched, 5, 6);
+    result.shift_reg.val = get_bit_range(fetched, 7, 11);
+    return result;
+  }
+}
+
 instruction_t decode_branch(uint32_t fetched)
 {
   instruction_t result;
@@ -49,23 +66,40 @@ instruction_t decode_branch(uint32_t fetched)
 instruction_t decode_dp(uint32_t fetched)
 {
   instruction_t result;
-  result.word.branch.cond   = get_bit_range(fetched, 28, 31);
-  result.word.branch.offset = get_bit_range(fetched, 0, 23);
+  
+  result.word.proc.cond = get_bit_range(fetched, 28, 31);
+  result.word.proc.iFlag = get_bit(fetched, 25);
+  result.word.proc.opcode = get_bit_range(fetched, 21, 24);
+  result.word.proc.set_cond = get_bit(fetched, 20);
+  result.word.proc.Rn = get_bit_range(fetched, 16, 19);
+  result.word.proc.Rd = get_bit_range(fetched, 12, 15);
+  result.word.proc.operand2 = reg_or_imm_helper(result.word.proc.iFlag, fetched);
   return result;
 }
 
 instruction_t decode_mul(uint32_t fetched)
 {
   instruction_t result;
-  result.word.branch.cond   = get_bit_range(fetched, 28, 31);
-  result.word.branch.offset = get_bit_range(fetched, 0, 23);
+  result.word.mul.cond = get_bit_range(fetched, 28, 31);
+  result.word.mul.acc = get_bit(fetched, 21);
+  result.word.mul.set_cond = get_bit(fetched, 20);
+  result.word.mul.Rd = get_bit_range(fetched, 16, 19);
+  result.word.mul.Rn = get_bit_range(fetched, 12, 15);
+  result.word.mul.Rs = get_bit_range(fetched, 8, 11);
+  result.word.mul.Rm = get_bit_range(fetched, 0, 3);
   return result;
 }
 
 instruction_t decode_trans(uint32_t fetched)
 {
   instruction_t result;
-  result.word.branch.cond   = get_bit_range(fetched, 28, 31);
-  result.word.branch.offset = get_bit_range(fetched, 0, 23);
+  result.word.trans.cond = get_bit_range(fetched, 28, 31);
+  result.word.trans.iFlag = get_bit(fetched, 25);
+  result.word.trans.is_pre = get_bit(fetched, 24);
+  result.word.trans.is_up = get_bit(fetched, 23);
+  result.word.trans.is_load = get_bit(fetched, 20);
+  result.word.trans.Rn = get_bit_range(fetched, 16, 19);
+  result.word.trans.Rd = get_bit_range(fetched, 12, 15);
+  result.word.trans.offset = reg_or_imm_helper(!result.word.trans.iFlag, fetched);
   return result;
 }
