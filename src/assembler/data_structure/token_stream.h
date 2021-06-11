@@ -1,41 +1,41 @@
 #ifndef TOKENSTREAM
 #define TOKENSTREAM
-#include <stdbool.h>
 
 typedef enum operand_type
 {
-	NUMBER,
-	STRING,
+  NUMBER,
+  STRING,
 } operand_type;
 
 typedef struct operand_t
 {
-	operand_type tag;
-	union
-	{
-		char* letters;
-		int number;
-	} operand_data;
+  operand_type tag;
+  union
+  {
+    char *letters;
+    int   number;
+  } operand_data;
 } operand_t;
 
 typedef struct token_t
 {
-	char* opcode;
-	int line_num;
-	int num_operand;
-	operand_t* operands;
+  char *     opcode;
+  int        real_address;
+  int        num_operand;
+  operand_t *operands;
+  token_t *  next;
 } token_t;
 
-typedef token_t* TokenStream;
+typedef struct token_stream_t
+{
+  token_t *head;
+  token_t *tail;
+} token_stream_t;
 
-// returns if it is the end of token stream
-//extern bool is_end(token_t current);
-extern char* get_opcode(token_t* token, char* instruction);
-extern int count_num_operand(char* rest);
-extern char** split_operand_field(char* rest, int length);
-extern token_t* tokenize_instruction(char* instruction, int num_line);
-extern void set_token_operand(token_t* token, char** operand_field, int length);
-extern void print_token(token_t* token);
-extern bool is_label_line(char* line);
+typedef token_stream_t *TokenStream;
+
+extern void        add_token_stream(token_t *elem, TokenStream stream);
+extern TokenStream init_token_stream();
+void               free_token_stream(TokenStream stream);
 
 #endif // TOKENSTREAM
