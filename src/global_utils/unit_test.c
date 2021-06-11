@@ -58,11 +58,6 @@ void test_eq_v (void const *got, void const *expect, size_t size,
   printf ("%s \n", msg);
 }
 
-void test_string_eq_v(const char *got, const char *expect, const char* msg){
-	test_true (strcmp(got, expect) == 0);
-}
-
-
 void test_int (int got, int expect) { test_true (got == expect); }
 
 void test_double (double got, double expect) { test_true (got == expect); }

@@ -1,8 +1,8 @@
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 
 #include "../execute/execute_helper.h"
 
-#include "../utils/tools.h"
+#include "../../global_utils/tools.h"
 #include "../utils/unit_test.h"
 #include "../utils/init_arm_state.h"
 

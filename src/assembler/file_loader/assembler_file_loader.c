@@ -15,23 +15,6 @@
  */
 char** create_string_array(int line)
 {
-//	char** new = calloc(line, sizeof(char*));
-//	if (!new)
-//	{
-//		perror("Fail to allocate memory in create_string_array()");
-//		exit(EXIT_FAILURE);
-//	}
-//
-//	for (int i = 0; i < line; ++i)
-//	{
-//		new[i] = calloc(1, sizeof(char) * MAX_LINE_LENGTH);
-//		if (!new[i])
-//		{
-//			perror("Fail to allocate memory in create_string_array(), new[i]");
-//			exit(EXIT_FAILURE);
-//		}
-//	}
-//	return new;
 	char** new = malloc(line * sizeof(char*));
 	if (!new)
 	{

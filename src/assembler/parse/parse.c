@@ -6,10 +6,14 @@
 
 NotSure parse(char **loaded_file)
 {
-  TokenStream token_stream; // = init_token_stream();
-  SymbolTable symbol_table; //= init_symbol_table();
+  TokenStream token_stream = init_token_stream();
+  SymbolTable symbol_table = init_symbol_table();
 
   preprocess_and_gen_sym_table(loaded_file, token_stream, symbol_table);
 
-  return allocate_address(token_stream, symbol_table);
+  allocate_address(token_stream, symbol_table);
+
+  free_symbol_table(symbol_table);
+
+  return token_stream;
 }

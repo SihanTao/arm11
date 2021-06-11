@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../utils/types_and_macros.h"
+#include "../../global_utils/types_and_macros.h"
 
 #include "emulate.h"
 
@@ -95,7 +95,6 @@ single_pipeline_t *init_single_pipeline(void)
   result->fetched.byte4 = 0;
 
   result->decoded.tag    = UNDEFINED;
-  result->decoded.word.i = 0;
 
   return result;
 }
