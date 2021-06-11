@@ -86,6 +86,7 @@ char** split_operand_field(char* rest, int length)
 void set_token_operand(token_t* token, char** operand_field, int length)
 {
 	token->operands = calloc(length, sizeof(operand_t));
+	token->num_operand = length;
 	int num = 0;
 	char** current_operand = operand_field;
 	while (*current_operand != NULL)
@@ -107,10 +108,10 @@ void set_token_operand(token_t* token, char** operand_field, int length)
 
 }
 
-void print_token(token_t* token, int num_operand)
+void print_token(token_t* token)
 {
 	printf("%d: opcode: %s\n", token->line_num, token->opcode);
-	for (int i = 0; i < num_operand; ++i)
+	for (int i = 0; i < token->num_operand; ++i)
 	{
 		printf("-------------------------------\n");
 		printf("Printing the %dth operand\n", i);

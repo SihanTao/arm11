@@ -60,8 +60,9 @@ int main(void){
 		operand_t operands[] = {{ .tag = STRING, "r1" },
 								{.tag = NUMBER,.operand_data.number = 3}};
 		token_t token = {.line_num = 0, .opcode = "mov",
-						 .operands = operands};
-		print_token(&token, 2);
+						 .operands = operands,
+						 .num_operand = 2};
+		print_token(&token);
 	}
 
 	add_test("Test set_token_operand:");
@@ -87,19 +88,19 @@ int main(void){
 			"mov r1,#1", "cmp r1,r2", "beq foo", "mov r3,#3", "foo:"
 		};
 		token_t* token = tokenize_instruction(instructions[0], 0);
-		print_token(token, 2);
+		print_token(token);
 
 		token = tokenize_instruction(instructions[1], 1);
-		print_token(token, 2);
+		print_token(token);
 
 		token = tokenize_instruction(instructions[2], 2);
-		print_token(token, 1);
+		print_token(token);
 
 		token = tokenize_instruction(instructions[3], 3);
-		print_token(token, 2);
+		print_token(token);
 
 		token = tokenize_instruction(instructions[4], 4);
-		print_token(token, 0);
+		print_token(token);
 
 	}
 	end_all_tests();
