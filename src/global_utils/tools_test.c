@@ -1,9 +1,10 @@
 #include <stdbool.h>
 
-#include "tools.h"
 #include "types_and_macros.h"
 
-#include "../../emulator/utils/unit_test.h"
+#include "tools.h"
+
+#include "unit_test.h"
 
 int main(void)
 {
@@ -21,7 +22,7 @@ int main(void)
     bool value = 0;
     int position = 0;
     set_bit(dest, value, position);
-    test_int_v(*dest, 0b1000, "result is 0b1000");	  
+    test_int_v(*dest, 0b1000, "result is 0b1000");
   }
 
   add_test("test set_bit_range");

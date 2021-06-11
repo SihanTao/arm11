@@ -1,4 +1,5 @@
 #include "types_and_macros.h"
+
 #include "tools.h"
 
 void convert_endian_ptr(char *buffer)
@@ -57,29 +58,36 @@ bitfield to_bf(uint32_t i)
   return *result;
 }
 
-int get_bit_range(int target,int start,int end)
+int get_bit_range(int target, int start, int end)
 {
   int length = end - start + 1;
-  int mask = 0;
-  for (int i=0; i<length; i++) {
+  int mask   = 0;
+  for (int i = 0; i < length; i++)
+  {
     mask += pow(2, i);
   }
-  return (target >> start) & mask;	
+  return (target >> start) & mask;
 }
 
-void set_bit(int* dest, bool value, int position) {
-  if (get_bit(*dest, position)) {
-    if (!value) {
+void set_bit(int *dest, bool value, int position)
+{
+  if (get_bit(*dest, position))
+  {
+    if (!value)
+    {
       *dest -= pow(2, position);
     }
-  } else if (value) {
+  }
+  else if (value)
+  {
     *dest += pow(2, position);
   }
 }
 
-void set_bit_range(int* dest, int src, int start, int end)
+void set_bit_range(int *dest, int src, int start, int end)
 {
-  for (int i=start; i<=src; i++) {
+  for (int i = start; i <= src; i++)
+  {
     set_bit(dest, get_bit(src, i), i);
   }
 }
