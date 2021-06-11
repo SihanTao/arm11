@@ -1,12 +1,29 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "../data_structure/token_stream.h"
+
 #include "../../global_utils/types_and_macros.h"
 
 
-uint32_t to_bcode_mov(cur_token)
+uint32_t to_bcode_mov(Token cur_token)
 {
+  instruction_t intermidiate_rep;
 
+  // retrive information from cur_token
+  // initialize intermidiate_rep
+  // call encode_DP
+  
+  intermidiate_rep.tag = DATA_PROCESS;
+  intermidiate_rep.word.proc.cond = ?;
+intermidiate_rep.word.proc.iFlag ;
+intermidiate_rep.word.proc.opcode;
+intermidiate_rep.word.proc.operand2;
+intermidiate_rep.word.proc.Rd;
+intermidiate_rep.word.proc.Rn;
+intermidiate_rep.word.proc.set_cond;
+
+  return encode_DP(intermidiate_rep);
 }
 
 bitfield encode_DP(proc_t instruction)
