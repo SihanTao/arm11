@@ -114,7 +114,7 @@ typedef enum cond_type
   AL       // always
 } cond_type;
 
-typedef enum register_t
+typedef enum no_reg_t
 {
   R1 = 1,
   R2,
@@ -128,7 +128,7 @@ typedef enum register_t
   R10,
   R11,
   R12,
-} register_t;
+} no_reg_t;
 
 /************** components for words ***********************/
 
@@ -136,7 +136,7 @@ typedef struct shift_reg_t
 {
   int val;  // amount of shifting
   shift_type type; // datatype : shift type
-  register_t Rm;
+  no_reg_t Rm;
 } shift_reg_t;
 
 typedef struct rot_imm_t
@@ -165,8 +165,8 @@ typedef struct bitfield
 typedef struct proc_t
 {
   reg_or_imm_t operand2;
-  register_t Rd;
-  register_t Rn;
+  no_reg_t Rd;
+  no_reg_t Rn;
   bool set_cond;
   pd_opcode_type opcode; // datatype : pd_opcode_type
   bool iFlag; // else is register
@@ -175,10 +175,10 @@ typedef struct proc_t
 
 typedef struct mul_t
 {
-  register_t Rm;
-  register_t Rs;
-  register_t Rn;
-  register_t Rd;
+  no_reg_t Rm;
+  no_reg_t Rs;
+  no_reg_t Rn;
+  no_reg_t Rd;
   bool set_cond;
   bool acc;
   cond_type cond;
@@ -187,8 +187,8 @@ typedef struct mul_t
 typedef struct trans_t
 {
   reg_or_imm_t offset;
-  register_t Rd;
-  register_t Rn;
+  no_reg_t Rd;
+  no_reg_t Rn;
   bool is_load; // else is store
   bool is_up;   // else is down
   bool is_pre;  // else is post
