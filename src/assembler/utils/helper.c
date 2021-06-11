@@ -5,7 +5,7 @@
 static bool is_valid_imm(uint32_t target)
 {
   uint32_t mask = 0X000000FF;
-  if (target&mask == target) {
+  if ((target&mask) == target) {
     return true;
   } else {
     return false;
