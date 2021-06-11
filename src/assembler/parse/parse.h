@@ -1,8 +1,11 @@
 #ifndef PARSE
 #define PARSE
 
-typedef int NotSure;
+#define ADDRESS_INTERVAL (4)
 
-NotSure parse(char **loaded_file);
+extern parse(char **loaded_file, TokenStream token_stream,
+             SymbolTable symbol_table);
 
-#endif //PARSE
+extern bool is_label_line(char *line);
+
+#endif // PARSE

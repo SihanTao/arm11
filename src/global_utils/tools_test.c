@@ -18,21 +18,25 @@ int main(void)
 
   add_test("test set_bit");
   {
-    int *dest = {0b1001};
+    int *dest = (int *) malloc(sizeof(int));
+    *dest = 0b1001;
     bool value = 0;
-    int position = 0;
+    int position = 3;
     set_bit(dest, value, position);
-    test_int_v(*dest, 0b1000, "result is 0b1000");
+    test_int_v(*dest, 0b0001, "result is 0b1000");
+    free(dest);
   }
 
   add_test("test set_bit_range");
   {
-    int *dest = {0b011101001};
-    int src = 0000;
+    int *dest = (int *) malloc(sizeof(int));
+    *dest = 0b011101001;
+    int src = 0b0000;
     int start = 0;
     int end = 3;
-    set_bit_range(dest, src,start, end);
+    set_bit_range(dest, src, start, end);
     test_int_v(*dest, 0b011100000, "result is 0b011100000");
+    free(dest);
   }
 
   end_all_tests();

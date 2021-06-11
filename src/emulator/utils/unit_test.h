@@ -27,6 +27,7 @@ extern void test_long (long got, long expect);
 extern void test_true (bool target);
 extern void test_false (bool target);
 extern void test_eq (void const *got, void const *expect, size_t size);
+extern void test_string_eq_v(const char *got, const char *expect, const char* msg);
 extern void add_test (char const *test_name);
 extern void end_all_tests (void);
 

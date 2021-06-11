@@ -86,7 +86,7 @@ void set_bit(int *dest, bool value, int position)
 
 void set_bit_range(int *dest, int src, int start, int end)
 {
-  for (int i = start; i <= src; i++)
+  for (int i = start; i <= end; i++)
   {
     set_bit(dest, get_bit(src, i), i);
   }

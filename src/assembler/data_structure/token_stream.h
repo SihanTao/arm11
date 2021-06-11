@@ -5,15 +5,7 @@ typedef enum operand_type
 {
   NUMBER,
   STRING,
-  END_OPERANDS
 } operand_type;
-
-typedef struct token_t
-{
-  char *     opcode;
-  int        line_num;
-  operand_t *operands;
-} token_t;
 
 typedef struct operand_t
 {
@@ -25,9 +17,31 @@ typedef struct operand_t
   } operand_data;
 } operand_t;
 
-typedef token_t *TokenStream;
+typedef struct token_t
+{
+  char *     opcode;
+  int        real_address;
+  int        num_operand;
+  operand_t *operands;
+  token_t *  next;
+} token_t;
 
-// returns if it is the end of token stream
-extern bool is_end(token_t current);
+typedef token_t *Token;
+
+/*
+ * token_t**
+ *
+ * */
+typedef struct token_stream_t
+{
+  Token head;
+  Token tail;
+} token_stream_t;
+
+typedef token_stream_t *TokenStream;
+
+extern void        add_token_stream(token_t *elem, TokenStream stream);
+extern TokenStream init_token_stream();
+void               free_token_stream(TokenStream stream);
 
 #endif // TOKENSTREAM
