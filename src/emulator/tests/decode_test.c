@@ -24,6 +24,11 @@ int main(void)
     find_type(p);
     print_bit(p->word.i);
     test_int_v(p->tag, DATA_PROCESS, "mov r1, #1 == data processing");
+    test_int_v(p->word.proc.cond, AL, "mov r1, #1 cond == always");
+    test_int_v(p->word.proc.operand2.rot_imm.imm, 1, "mov r1, #1 oprand2.imm = 1");
+    test_int_v(p->word.proc.operand2.rot_imm.amount, 0, "rotate amount = 0");
+    test_int_v(p->word.proc.Rd, 1, "mov r1, #1, Rn == 1");
+
 
     find_type(++p);
     print_bit(p->word.i);
