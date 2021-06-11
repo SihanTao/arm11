@@ -72,7 +72,12 @@ int main(void){
 		int length = count_num_operand(rest);
 		char **fields = split_operand_field(rest, length);
 		set_token_operand(token, fields, length);
-		print_token(token, length);
+//		print_token(token, length);
+		operand_t op1 = token->operands[0];
+		operand_t op2 = token->operands[1];
+//		printf("%s\n", op1.operand_data.letters);
+		test_string_eq_v(op1.operand_data.letters, "r1", " ");
+		test_int_v(token->operands[1].operand_data.number, 3, "");
 	}
 
 	add_test("Test tokenize instruction");

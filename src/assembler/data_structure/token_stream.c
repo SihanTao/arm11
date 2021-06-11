@@ -86,24 +86,25 @@ char** split_operand_field(char* rest, int length)
 void set_token_operand(token_t* token, char** operand_field, int length)
 {
 	token->operands = calloc(length, sizeof(operand_t));
-	int line_number = 0;
+	int num = 0;
 	char** current_operand = operand_field;
 	while (*current_operand != NULL)
 	{
-//		token->line_num = line_number;
+		operand_t op = token->operands[num];
 		if (*current_operand[0] == '#' || *current_operand[0] == '=')
 		{
-			token->operands->tag = NUMBER;
-			token->operands->operand_data.number = strtol(*current_operand + 1, NULL, 0);
+			token->operands[num].tag = NUMBER;
+			token->operands[num].operand_data.number = strtol(*current_operand + 1, NULL, 0);
 		}
 		else
 		{
-			token->operands->tag = STRING;
-			token->operands->operand_data.letters = *current_operand;
+			token->operands[num].tag = STRING;
+			token->operands[num].operand_data.letters = *current_operand;
 		}
 		current_operand++;
-		line_number++;
+		num++;
 	}
+
 }
 
 void print_token(token_t* token, int num_operand)
