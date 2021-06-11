@@ -10,6 +10,7 @@
 #include "../utils/file_loader.h"
 #include "../utils/init_arm_state.h"
 #include "../utils/load_store.h"
+#include "../utils/output.h"
 
 static bitfield           fetch(size_t pc, byte *memory);
 static void               free_all(ArmState arm_state, pipelines_t pipelines);
@@ -21,7 +22,7 @@ void preheat_pipeline(ArmState arm_state, pipelines_t pipelines);
 
 int main(int argc, char **argv)
 {
-  char *file_name = argv[1];
+  char *file_name = "add01";
 
   ArmState arm_state = init_state();
   read_file_to_mem(file_name, arm_state->memory, LITTLE);
@@ -49,6 +50,8 @@ int main(int argc, char **argv)
     flash_cycle(&arm_state->pc, pipelines);
   }
 
+  output("something", arm_state);
+
   free_all(arm_state, pipelines);
   return EXIT_SUCCESS;
 }
@@ -66,7 +69,7 @@ void flash_cycle(size_t *pc, pipelines_t pipelines)
   temp               = *pipelines.current;
   *pipelines.current = *pipelines.next;
   *pipelines.next    = temp;
-  *pc                = *pc + 1;
+  *pc                = *pc + 4;
 }
 
 void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)

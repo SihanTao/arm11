@@ -13,7 +13,6 @@
 int main(void)
 {
   ArmState arm_state = init_state();
-  byte *memory = arm_state->memory;
 
   add_test("Test for Trans execution");
   {
@@ -39,14 +38,14 @@ int main(void)
     test_int_v(to_int(arm_state->reg[2]), 40,
                "post indexing, base register value is changed");
 
-    test_int_v(to_int(load(51, memory)), 0xFFFFABCD, 
+    test_int_v(to_int(load(51, arm_state->memory)), 0xFFFFABCD,
               "STR Rd, [Rn] #offset, all false");
 
     free(arm_state);
-    
+
     // condition is set
     trans_t trans_ins2 = { .offset  = { .rot_imm.imm    = 0x0000000B, // 1011
-                                        .rot_imm.amount = 0 }, //offset = 11 
+                                        .rot_imm.amount = 0 }, //offset = 11
                            .Rd      = 1,
                            .Rn      = 2,
                            .is_load = false, // str
@@ -67,14 +66,14 @@ int main(void)
     test_int_v(to_int(arm_state->reg[2]), 40,
                "post indexing, base register value is changed");
 
-    test_int_v(to_int(load(51, memory)), 0xFFFFABCD, 
+    test_int_v(to_int(load(51, arm_state->memory)), 0xFFFFABCD,
                "STR Rd, [Rn] #offset, all false");
 
     free(arm_state);
 
     // is_load = true is_up = false is_pre = false iFlag = false
-    trans_t trans_ins3 = { .offset  = { .rot_imm.imm = 0x0000001A, 
-                                        .rot_imm.amount = 0 }, //offset = 26
+    trans_t trans_ins3 = { .offset  = { .rot_imm.imm = 0x00000018,
+                                        .rot_imm.amount = 0 }, //offset = 24
                            .Rd      = 1,
                            .Rn      = 2,
                            .is_load = true, // load
@@ -85,28 +84,29 @@ int main(void)
                            01,
                            .cond = 0 };
     arm_state         = init_state();
-    arm_state->reg[1] = to_bf(30); // Rd
-    arm_state->reg[2] = to_bf(46); // Rn
+    arm_state->reg[1] = to_bf(0); // Rd
+    arm_state->reg[2] = to_bf(72); // Rn
 
+    store(to_bf(0xFFFFABCD), 72, arm_state->memory);
     execute_TRANS(trans_ins3, arm_state);
 
-    test_int_v(to_int(arm_state->reg[2]), 20, 
+    test_int_v(to_int(arm_state->reg[2]), 48,
                "post indexing, base register value is changed");
-    test_int_v(to_int(load(30, memory)), 46,
+    test_int_v(to_int(arm_state->reg[1]), 0xFFFFABCD,
                "LDR Rd, [Rn], #offset, is_load = true"
                "is_up = false is_pre = false iFlag = false");
 
     free(arm_state);
 
     // is_load = false is_up = true is_pre = false iFlag = false
-    trans_t trans_ins4 = { .offset  = { .rot_imm.imm = 0xC, 
+    trans_t trans_ins4 = { .offset  = { .rot_imm.imm = 0xC,
                                         .rot_imm.amount = 1}, //offset = 3
-                           .Rd      = 1, 
-                           .Rn      = 2, 
-                           .is_load = false, // store 0, 
+                           .Rd      = 1,
+                           .Rn      = 2,
+                           .is_load = false, // store 0,
                            .is_up  =
-                           true,  // add 
-                           .is_pre = false, // post 
+                           true,  // add
+                           .is_pre = false, // post
                            .iFlag  = false, // iFlag 01,
                            .cond = 0 };
     arm_state         = init_state();
@@ -115,22 +115,22 @@ int main(void)
 
     execute_TRANS(trans_ins4, arm_state);
 
-    test_int_v(to_int(arm_state->reg[2]), 13, 
+    test_int_v(to_int(arm_state->reg[2]), 13,
                "post indexing, base register value is changed");
-    test_int_v(to_int(load(10, memory)), 0xFFFFABC1,
-               "STR Rd, [Rn], #offset, is_load =false " 
+    test_int_v(to_int(load(10, arm_state->memory)), 0xFFFFABC1,
+               "STR Rd, [Rn], #offset, is_load =false "
                "is_up = true is_pre = false iFlag = false");
 
     free(arm_state);
 
     // is_load = false is_up = false is_pre = true iFlag = false
-    trans_t trans_ins5 = { .offset  = { .rot_imm.imm = 0xC, 
+    trans_t trans_ins5 = { .offset  = { .rot_imm.imm = 0xC,
                                         .rot_imm.amount = 1}, //offset = 3
-                           .Rd      = 1, 
-                           .Rn      = 2, 
+                           .Rd      = 1,
+                           .Rn      = 2,
                            .is_load = false, // store 0, .is_up  =
-                           false, // sub 
-                           .is_pre = true,  // pre 
+                           false, // sub
+                           .is_pre = true,  // pre
                            .iFlag  = false, // iFlag 01,
                            .cond = 0 };
     arm_state         = init_state();
@@ -139,8 +139,8 @@ int main(void)
 
     execute_TRANS(trans_ins5, arm_state);
 
-    test_int_v(to_int(load(10, memory)), 0xFFFFABC5,
-                       "STR Rd, [Rn, #offset], is_load = false " 
+    test_int_v(to_int(load(10, arm_state->memory)), 0xFFFFABC5,
+                       "STR Rd, [Rn, #offset], is_load = false "
                        "is_up = false is_pre = true iFlag = false");
 
     free(arm_state);

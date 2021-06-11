@@ -114,20 +114,35 @@ typedef enum cond_type
   AL       // always
 } cond_type;
 
+typedef enum no_reg_t
+{
+  R1 = 1,
+  R2,
+  R3,
+  R4,
+  R5,
+  R6,
+  R7,
+  R8,
+  R9,
+  R10,
+  R11,
+  R12,
+} no_reg_t;
+
 /************** components for words ***********************/
 
 typedef struct shift_reg_t
 {
-  unsigned int val : 5;  // amount of shifting
-  unsigned int type : 2; // datatype : shift type
-  unsigned int : 1;      // not used: 0.
-  unsigned int Rm : 4;
+  int val;  // amount of shifting
+  shift_type type; // datatype : shift type
+  no_reg_t Rm;
 } shift_reg_t;
 
 typedef struct rot_imm_t
 {
-  unsigned int amount : 4; // amount of rotation
-  unsigned int imm : 8;    // target that rotation applied on
+  int amount; // amount of rotation
+  int imm;    // target that rotation applied on
 } rot_imm_t;
 
 typedef union reg_or_imm_t
@@ -141,56 +156,50 @@ typedef union reg_or_imm_t
 // represents word in memory and registers
 typedef struct bitfield
 {
-  unsigned int byte4 : 8;
-  unsigned int byte3 : 8;
-  unsigned int byte2 : 8;
-  unsigned int byte1 : 8;
+  byte byte4;
+  byte byte3;
+  byte byte2;
+  byte byte1;
 } bitfield;
 
 typedef struct proc_t
 {
   reg_or_imm_t operand2;
-  unsigned int Rd : 4;
-  unsigned int Rn : 4;
-  unsigned int set_cond : 1;
-  unsigned int opcode : 4; // datatype : pd_opcode_type
-  unsigned int iFlag : 1; // else is register
-  unsigned int : 2;        // not used: 00
-  unsigned int cond : 4;
+  no_reg_t Rd;
+  no_reg_t Rn;
+  bool set_cond;
+  pd_opcode_type opcode; // datatype : pd_opcode_type
+  bool iFlag; // else is register
+  cond_type cond;
 } proc_t;
 
 typedef struct mul_t
 {
-  unsigned int Rm : 4;
-  unsigned int : 4; // not used:1001
-  unsigned int Rs : 4;
-  unsigned int Rn : 4;
-  unsigned int Rd : 4;
-  unsigned int set_cond : 1;
-  unsigned int acc : 1;
-  unsigned int : 6; // not used:0000
-  unsigned int cond : 4;
+  no_reg_t Rm;
+  no_reg_t Rs;
+  no_reg_t Rn;
+  no_reg_t Rd;
+  bool set_cond;
+  bool acc;
+  cond_type cond;
 } mul_t;
 
 typedef struct trans_t
 {
   reg_or_imm_t offset;
-  unsigned int Rd : 4;
-  unsigned int Rn : 4;
-  unsigned int is_load : 1; // else is store
-  unsigned int : 2;         // not used 00
-  unsigned int is_up : 1;   // else is down
-  unsigned int is_pre : 1;  // else is post
-  unsigned int iFlag : 1;  // 0 -> immediate value; 1 -> register
-  unsigned int : 2;         // not used 01
-  unsigned int cond : 4;
+  no_reg_t Rd;
+  no_reg_t Rn;
+  bool is_load; // else is store
+  bool is_up;   // else is down
+  bool is_pre;  // else is post
+  bool iFlag;  // 0 -> immediate value; 1 -> register
+  cond_type cond;
 } trans_t;
 
 typedef struct branch_t
 {
-  unsigned int offset : 24;
-  unsigned int : 4; // not used 1010
-  unsigned int cond : 4;
+  int offset ;
+  cond_type cond;
 } branch_t;
 
 /************************** tagged instruction *************************/
@@ -204,8 +213,6 @@ typedef struct
   enum ins_type tag;
   union
   {
-    uint32_t i;
-    bitfield bf;
     proc_t proc;
     mul_t mul;
     trans_t trans;

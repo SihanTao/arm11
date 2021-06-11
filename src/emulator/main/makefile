@@ -11,7 +11,10 @@ DIR_OBJ = ../../../obj
 SRC = $(wildcard $(DIR_SRC)/*.c)
 OBJ = $(patsubst %.c,${DIR_OBJ}/%.o,$(notdir ${SRC}))
 
-all: $(OBJ)
+compile: $(OBJ)
+
+main: $(wildcard $(DIR_OBJ)/*.o)
+	$(CC) -o main $(wildcard $(DIR_OBJ)/*.o)
 
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.c
 	$(CC) $(CFLAGS) -c  $< -o $@

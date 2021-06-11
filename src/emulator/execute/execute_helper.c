@@ -10,6 +10,8 @@
 static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
                                   uint32_t operand2, bool *new_flag_c);
 
+bool is_neg(uint32_t val) { return get_bit(val, 31); }
+
 value_carry_t rotate(uint32_t target, int rotate_amount)
 {
   value_carry_t result;
@@ -93,8 +95,9 @@ bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
   case AL:
     return true;
   default:
-    perror("Internal error! unknown cond type!");
-    exit(EXIT_FAILURE);
+    return true;
+    // perror("Internal error! unknown cond type!");
+    // exit(EXIT_FAILURE);
   }
 }
 
@@ -161,6 +164,7 @@ void execute_DP(proc_t instruction, ArmState arm_state)
 static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
                                   uint32_t operand2, bool *new_flag_c)
 {
+  uint32_t result;
   switch (opcode)
   {
   // for logical operations, C is set to the carry out from any shift
@@ -184,18 +188,21 @@ static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
   // there will be problems, that I am not sure how unsigned or signed add
   // and mul performed.
   case SUB:
-    *new_flag_c = get_bit(operand1, 31)
-                  && get_bit(operand1, 31); // might be a bug here
-    return operand1 - operand2;
+    result      = operand1 - operand2;
+    *new_flag_c = (is_neg(operand1) == is_neg(operand2)) != is_neg(result);
+    return result;
   case RSB:
-    *new_flag_c = 1;
-    return operand2 - operand1;
+    result      = operand2 - operand1;
+    *new_flag_c = (is_neg(operand1) == is_neg(operand2)) != is_neg(result);
+    return result;
   case ADD:
-    *new_flag_c = 1;
-    return operand1 + operand2;
+    result      = operand1 + operand2;
+    *new_flag_c = (is_neg(operand1) == is_neg(operand2)) != is_neg(result);
+    return result;
   case CMP:
-    *new_flag_c = 1;
-    return operand1 - operand2;
+    result      = operand1 - operand2;
+    *new_flag_c = (is_neg(operand1) == is_neg(operand2)) != is_neg(result);
+    return result;
   default:
     break;
   }
@@ -272,14 +279,14 @@ void execute_BRANCH(branch_t instruction, ArmState arm_state)
 {
   uint32_t offset   = to_int(arm_state->reg[instruction.offset]);
   int      sign_bit = get_bit(offset, 24);
-	offset <<= 2;
+  offset <<= 2;
 
-	// if is negative padding 1s to left
+  // if is negative padding 1s to left
   if (sign_bit == 1)
-	{
-		offset |= BRANCH_PAD_MASK;
-	}
+  {
+    offset |= BRANCH_PAD_MASK;
+  }
 
-	// PC is 8 bytes ahead of the instruction that is being executed
+  // PC is 8 bytes ahead of the instruction that is being executed
   arm_state->pc += offset - 8;
 }
