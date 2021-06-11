@@ -88,6 +88,6 @@ void set_bit_range(uint32_t *dest, int src, int start, int end)
 {
   for (int i = start; i <= end; i++)
   {
-	  set_bit(dest, get_bit(src, i), i);
+    set_bit(dest, get_bit(src, i), i);
   }
 }
