@@ -26,10 +26,16 @@ typedef struct token_t
   token_t *  next;
 } token_t;
 
+typedef token_t *Token;
+
+/*
+ * token_t**
+ *
+ * */
 typedef struct token_stream_t
 {
-  token_t *head;
-  token_t *tail;
+  Token head;
+  Token tail;
 } token_stream_t;
 
 typedef token_stream_t *TokenStream;

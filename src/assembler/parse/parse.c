@@ -1,19 +1,36 @@
+#include <stdbool.h>
+#include <stdlib.h>
+
 #include "../data_structure/token_stream.h"
 #include "../data_structure/symbol_table.h"
 
 #include "parse.h"
-#include "../parse/parse_helper.h"
+#include "../parse/tokenize.h"
 
-NotSure parse(char **loaded_file)
+static bool is_label_line(char *line);
+
+parse(char **loaded_file, TokenStream token_stream, SymbolTable symbol_table)
 {
   TokenStream token_stream = init_token_stream();
   SymbolTable symbol_table = init_symbol_table();
 
-  preprocess_and_gen_sym_table(loaded_file, token_stream, symbol_table);
-
-  allocate_address(token_stream, symbol_table);
-
-  free_symbol_table(symbol_table);
-
-  return token_stream;
+ char *line;
+  int   address;
+  for (int i = 0; loaded_file[i] != NULL; i++)
+  {
+    line = loaded_file[i];
+    if (is_label_line(line))
+    {
+      // corresponding to the address of next instruction
+      add_symbol_table(line, address + ADDRESS_INTERVAL, symbol_table);
+    }
+    else
+    {
+      tokenize(line, address, token_stream);
+      address += ADDRESS_INTERVAL;
+    }
+  }
 }
+
+
+bool is_label_line(char *line) { return line[strlen(line) - 1] == ':'; }

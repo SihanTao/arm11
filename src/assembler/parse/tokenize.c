@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <string.h>
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "../data_structrure/token_stream.h"
 
 #include "tokenize.h"
@@ -24,6 +25,9 @@ void tokenize(char *line, int address, TokenStream token_stream)
   add_token_stream(token_ptr, token_stream);
 }
 
+/*
+ *
+ * */
 char *get_opcode(token_t *token, char *instruction)
 {
   char *rest;

@@ -1,4 +1,4 @@
-#include "token_stream.h"
+#include "../data_structure/token_stream.h"
 #include "../../emulator/utils/unit_test.h"
 #include <stdio.h>
 #include "../file_loader/assembler_file_loader.h"
