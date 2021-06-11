@@ -1,8 +1,3 @@
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
 #include "types_and_macros.h"
 #include "tools.h"
 
