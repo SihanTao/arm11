@@ -40,3 +40,27 @@ instruction_t decode_branch(uint32_t instruction)
   result.word.branch.offset = get_bit_range(instruction, 0, 23);
   return result;
 }
+
+instruction_t decode_dp(uint32_t instruction)
+{
+  instruction_t result;
+  result.word.branch.cond   = get_bit_range(instruction, 28, 31);
+  result.word.branch.offset = get_bit_range(instruction, 0, 23);
+  return result;
+}
+
+instruction_t decode_mul(uint32_t instruction)
+{
+  instruction_t result;
+  result.word.branch.cond   = get_bit_range(instruction, 28, 31);
+  result.word.branch.offset = get_bit_range(instruction, 0, 23);
+  return result;
+}
+
+instruction_t decode_trans(uint32_t instruction)
+{
+  instruction_t result;
+  result.word.branch.cond   = get_bit_range(instruction, 28, 31);
+  result.word.branch.offset = get_bit_range(instruction, 0, 23);
+  return result;
+}
