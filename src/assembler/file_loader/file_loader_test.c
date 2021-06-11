@@ -1,5 +1,5 @@
 #include "assembler_file_loader.h"
-#include "../../emulator/utils/unit_test.h"
+#include "../../global_utils/unit_test.h"
 #include <assert.h>
 #include <string.h>
 
