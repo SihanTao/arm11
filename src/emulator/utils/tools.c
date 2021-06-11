@@ -40,7 +40,6 @@ void print_bit(uint32_t i)
 int get_bit(uint32_t i, int k) { return (i & (1 << k)) >> k; }
 
 // It can perform some conditional big-endian convertion before return
-// Todo : test it if the endian is big!
 uint32_t to_int(bitfield bf)
 {
   if (TARGET_MACHINE_ENDIAN == BIG)

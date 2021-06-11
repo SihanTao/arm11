@@ -28,11 +28,14 @@ clean:
 	rm -f $(DIR_TEST_BIN)/*.test
 	rm -f $(DIR_OBJ)/*.o
 
+link:
+	cd $(DIR_EM_MAIN); make main
+
 compile_all: mkfolders
 	cd $(DIR_EM_UTILS); make
 	cd $(DIR_EM_DECODE); make
 	cd $(DIR_EM_EXECUTE); make
-	cd $(DIR_EM_MAIN); make
+	cd $(DIR_EM_MAIN); make compile
 
 mkfolders: bin obj test_bin
 

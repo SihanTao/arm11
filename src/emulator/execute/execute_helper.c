@@ -93,8 +93,9 @@ bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
   case AL:
     return true;
   default:
-    perror("Internal error! unknown cond type!");
-    exit(EXIT_FAILURE);
+    return true;
+    // perror("Internal error! unknown cond type!");
+    // exit(EXIT_FAILURE);
   }
 }
 
