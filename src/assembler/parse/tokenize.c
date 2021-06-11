@@ -1,7 +1,8 @@
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 
-#include "../data_structrure/token_stream.h"
+#include "../data_structure/token_stream.h"
 
 #include "tokenize.h"
 
@@ -16,12 +17,57 @@ void tokenize(char *line, int address, TokenStream token_stream)
 
   token_ptr->real_address = address;
 
-  char *rest = get_opcode(token_ptr, line);
+  char * rest          = get_opcode(token_ptr, line);
   int    length        = count_num_operand(rest);
   char **operand_field = split_operand_field(rest, length);
   set_token_operand(token_ptr, operand_field, length);
 
   add_token_stream(token_ptr, token_stream);
+}
+
+bool trim(char **start_pos, char until, char *before)
+{
+  int   i;
+  char *string = *start_pos;
+  for (i = 0; string[i] != '\0'; i++)
+  {
+    if (string[i] == until)
+    {
+      before = malloc(i);
+      strncpy(before, string, i);
+      *start_pos = *start_pos + i + 1;
+      return true;
+    }
+  }
+  before = malloc(i);
+  strncpy(before, string, i);
+  return false;
+}
+
+void tokenize(char *line, int address, TokenStream tokenstream)
+{
+  Token token = calloc(1, sizeof(token_t));
+  if (token == NULL)
+  {
+    perror("Fail to allocate memory in tokenize_instruction");
+    exit(EXIT_FAILURE);
+  }
+
+  token->real_address = address;
+  int count;
+
+  char **start_pos = &line;
+  char * string_ptr;
+  bool   is_continue = true;
+
+  trim(start_pos, ' ', token->opcode);
+
+  operand_t *cur_operand = token->operands;
+  for (int count = 0; is_continue; count++)
+  {
+    is_continue = trim(start_pos, ',', string_ptr);
+    handle_num_or_string(string_ptr, cur_operand);
+  }
 }
 
 char *get_opcode(token_t *token, char *instruction)
@@ -91,23 +137,23 @@ void set_token_operand(token_t *token, char **operand_field, int length)
   }
 }
 
-void print_token(token_t* token)
+void print_token(token_t *token)
 {
-	printf("%d: opcode: %s\n", token->real_address, token->opcode);
-	for (int i = 0; i < token->num_operand; ++i)
-	{
-		printf("-------------------------------\n");
-		printf("Printing the %dth operand\n", i);
-		operand_t op = token->operands[i];
-		bool flag = (op.tag == STRING);
-		printf("The token tag is: %s\n", flag ? "STRING" : "NUMBER");
-		if (flag)
-		{
-			printf("Letters = %s\n", op.operand_data.letters);
-		}
-		else
-		{
-			printf("Number = %d\n", op.operand_data.number);
-		}
-	}
+  printf("%d: opcode: %s\n", token->real_address, token->opcode);
+  for (int i = 0; i < token->num_operand; ++i)
+  {
+    printf("-------------------------------\n");
+    printf("Printing the %dth operand\n", i);
+    operand_t op   = token->operands[i];
+    bool      flag = (op.tag == STRING);
+    printf("The token tag is: %s\n", flag ? "STRING" : "NUMBER");
+    if (flag)
+    {
+      printf("Letters = %s\n", op.operand_data.letters);
+    }
+    else
+    {
+      printf("Number = %d\n", op.operand_data.number);
+    }
+  }
 }
