@@ -1,9 +1,11 @@
 #ifndef GLOBAL_TOOLS
 #define GLOBAL_TOOLS
 
+# include <stdbool.h>
+
 #define INT_BIT_LENGTH 32
 // target = 0b011101001 start = 0 end = 3
-// returns : 0b1001
+// returns : 0b011101001
 int get_bit_range(int target,int start,int end);
 
 // dest = 101001000101 src = 10001 start = 0 end = 5
