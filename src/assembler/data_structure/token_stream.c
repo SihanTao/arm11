@@ -20,7 +20,21 @@ TokenStream init_token_stream()
 
 void free_token_stream(TokenStream stream)
 {
-  //not sure how strtok work, leave for future
+  free_token(stream->head);
 }
 
+void free_token(Token token)
+{
+  if (token == NULL)
+  {
+    return;
+  }
 
+  for (int i = 0; i < token->num_operand; i++)
+  {
+    free(token->operands + i);
+  }
+  
+  free_token(token->next);
+  free(token);
+}
