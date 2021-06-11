@@ -60,14 +60,15 @@ int get_bit_range(int target, int start, int end)
   return (target >> start) & mask;
 }
 
-void set_bit(int *dest, bool value, int position)
+//
+void set_bit(uint32_t *dest, bool value, int position)
 {
   assert(position <= MAX_BIT_INDEX && position >= 0);
   uint32_t mask = 1 << position;
   *dest         = value ? *dest | mask : *dest & ~mask;
 }
 
-void set_bit_range(int *dest, int src, int start, int end)
+void set_bit_range(uint32_t *dest, int src, int start, int end)
 {
   assert(start <= MAX_BIT_INDEX && start >= 0);
   assert(start < end);

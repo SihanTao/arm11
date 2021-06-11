@@ -1,4 +1,5 @@
 #include "symbol_table.h"
+#include "../../global_utils/unit_test.h"
 
 int main(void)
 {
