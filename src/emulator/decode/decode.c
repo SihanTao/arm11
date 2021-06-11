@@ -5,50 +5,67 @@
 #include "decode.h"
 #include "../../global_utils/tools.h"
 
+instruction_t decode_branch(uint32_t instruction);
+instruction_t decode_dp(uint32_t fetched);
+instruction_t decode_mul(uint32_t fetched);
+instruction_t decode_trans(uint32_t fetched);
+
 instruction_t decode(bitfield fetched)
 {
-  instruction_t decode = init_instruction(fetched);
-  find_type(&decode);
-  return decode;
-}
-
-void find_type(instruction_t *instruction)
-{
-  // TODO : 1. handle ZERO instruction
-  //        2. default case : tag undefined
-
-  uint32_t n = instruction->word.i;
-  if (get_bit(n, 27))
+  uint32_t fetched_val;
+  if (fetched_val == 0)
   {
-    instruction->tag = BRANCH;
-    // instruction->word.bf = convert_endian(instruction->word.bf);
+    instruction_t result;
+    result.tag = ZERO;
+    return result;
   }
-  else if (get_bit(n, 26))
+  if (get_bit(fetched_val, 27))
   {
-    instruction->tag = TRANS;
-    // instruction->word.bf = convert_endian(instruction->word.bf);
+    return decode_branch(fetched_val);
   }
-  else if (get_bit(n, 25))
+  else if (get_bit(fetched_val, 26))
   {
-    instruction->tag = DATA_PROCESS; // the case with op2 an immediate value
-    // instruction->word.bf = convert_endian(instruction->word.bf);
+    return decode_trans(fetched_val);
   }
-  else if (get_bit(n, 4) && get_bit(n, 7))
+  else if (get_bit_range(fetched_val, 22, 27) == 0
+           && get_bit_range(fetched_val, 4, 7) == 0x9)
   {
-    instruction->tag = MUL;
-    // instruction->word.bf = convert_endian(instruction->word.bf);
+    return decode_mul(fetched_val);
   }
   else
   {
-    instruction->tag     = DATA_PROCESS;
-    instruction->word.bf = convert_endian(instruction->word.bf);
+    return decode_dp(fetched_val);
   }
 }
 
-instruction_t init_instruction(bitfield fetched)
+instruction_t decode_branch(uint32_t fetched)
 {
-  instruction_t init;
-  init.tag     = UNDEFINED;
-  init.word.bf = fetched;
-  return init;
+  instruction_t result;
+  result.word.branch.cond   = get_bit_range(fetched, 28, 31);
+  result.word.branch.offset = get_bit_range(fetched, 0, 23);
+  return result;
+}
+
+instruction_t decode_dp(uint32_t fetched)
+{
+  instruction_t result;
+  result.word.branch.cond   = get_bit_range(fetched, 28, 31);
+  result.word.branch.offset = get_bit_range(fetched, 0, 23);
+  return result;
+}
+
+instruction_t decode_mul(uint32_t fetched)
+{
+  instruction_t result;
+  result.word.branch.cond   = get_bit_range(fetched, 28, 31);
+  result.word.branch.offset = get_bit_range(fetched, 0, 23);
+  return result;
+}
+
+instruction_t decode_trans(uint32_t fetched)
+{
+  instruction_t result;
+  result.word.branch.cond   = get_bit_range(fetched, 28, 31);
+  result.word.branch.offset = get_bit_range(fetched, 0, 23);
+  return result;
 }

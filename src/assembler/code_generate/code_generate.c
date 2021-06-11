@@ -23,7 +23,7 @@ void code_generate(TokenStream token_stream)
 
 uint32_t to_bcode_mov(cur_token)
 {
-  
+
 }
 
 bitfield encode_DP(proc_t instruction)
