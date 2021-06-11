@@ -10,7 +10,7 @@ int get_bit_range(int target,int start,int end);
 // dest = 101001010001
 void set_bit_range(int* dest, int src, int start, int end);
 
-void set_bit(int* dest, int position, bool value);
+void set_bit(int* dest, bool value, int position);
 
 
 #endif //GLOBAL_TOOLS
