@@ -1,9 +1,9 @@
 #include <string.h>
 #include <stdio.h>
 
-# include "../utils/types_and_macros.h"
+#include "../utils/types_and_macros.h"
 
-# include "load_store.h"
+#include "load_store.h"
 
 bitfield load(size_t address, byte *memory)
 {

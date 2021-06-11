@@ -1,4 +1,5 @@
 #include "helper.h"
+#include <stdint.h>
 
 // check whether 'target' is in the form of immediate value.
 static bool is_valid_imm(uint32_t target)
