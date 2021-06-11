@@ -69,7 +69,7 @@ int get_bit_range(int target, int start, int end)
   return (target >> start) & mask;
 }
 
-void set_bit(int *dest, bool value, int position)
+void set_bit(uint32_t *dest, bool value, int position)
 {
   if (get_bit(*dest, position))
   {
@@ -84,10 +84,10 @@ void set_bit(int *dest, bool value, int position)
   }
 }
 
-void set_bit_range(int *dest, int src, int start, int end)
+void set_bit_range(uint32_t *dest, int src, int start, int end)
 {
   for (int i = start; i <= end; i++)
   {
-    set_bit(dest, get_bit(src, i), i);
+	  set_bit(dest, get_bit(src, i), i);
   }
 }

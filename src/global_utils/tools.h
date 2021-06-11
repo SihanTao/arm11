@@ -15,9 +15,9 @@ int get_bit_range(int target,int start,int end);
 
 // dest = 101001000101 src = 10001 start = 0 end = 5
 // dest = 101001010001
-void set_bit_range(int* dest, int src, int start, int end);
+void set_bit_range(uint32_t * dest, int src, int start, int end);
 
-void set_bit(int* dest, bool value, int position);
+void set_bit(uint32_t * dest, bool value, int position);
 
 /*
  * Print the bit representation
