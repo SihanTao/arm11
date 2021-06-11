@@ -8,7 +8,12 @@
 
 #include <stdbool.h>
 
-#define INT_BIT_LENGTH 32
+#define ALL_ONE (0xFFFFFFFF)
+#define ALL_ZERO (0x0)
+
+
+#define MAX_BIT_INDEX (31)
+
 // target = 0b011101001 start = 0 end = 3
 // returns : 0b011101001
 int get_bit_range(int target,int start,int end);

@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "types_and_macros.h"
 
 #include "tools.h"
@@ -25,17 +27,6 @@ bitfield convert_endian(bitfield word)
   return word;
 }
 
-void print_bit(uint32_t i)
-{
-  for (int k = INT_BIT_LENGTH - 1; k >= 0; k--)
-  {
-    printf("%d", get_bit(i, k));
-  }
-  printf("\n");
-}
-
-int get_bit(uint32_t i, int k) { return (i & (1 << k)) >> k; }
-
 // It can perform some conditional big-endian convertion before return
 uint32_t to_int(bitfield bf)
 {
@@ -58,36 +49,29 @@ bitfield to_bf(uint32_t i)
   return *result;
 }
 
+int get_bit(uint32_t i, int k) { return (i & (1 << k)) >> k; }
+
 int get_bit_range(int target, int start, int end)
 {
-  int length = end - start + 1;
-  int mask   = 0;
-  for (int i = 0; i < length; i++)
-  {
-    mask += pow(2, i);
-  }
+  assert(start <= MAX_BIT_INDEX && start >= 0);
+  assert(start < end);
+  int      length = end - start + 1;
+  uint32_t mask   = ALL_ONE >> (MAX_BIT_INDEX - length);
   return (target >> start) & mask;
 }
 
 void set_bit(int *dest, bool value, int position)
 {
-  if (get_bit(*dest, position))
-  {
-    if (!value)
-    {
-      *dest -= pow(2, position);
-    }
-  }
-  else if (value)
-  {
-    *dest += pow(2, position);
-  }
+  assert(position <= MAX_BIT_INDEX && position >= 0);
+  uint32_t mask = 1 << position;
+  *dest         = value ? *dest | mask : *dest & ~mask;
 }
 
 void set_bit_range(int *dest, int src, int start, int end)
 {
-  for (int i = start; i <= end; i++)
-  {
-    set_bit(dest, get_bit(src, i), i);
-  }
+  assert(start <= MAX_BIT_INDEX && start >= 0);
+  assert(start < end);
+  int      length   = end - start + 1;
+  uint32_t selector = ~((ALL_ONE >> (MAX_BIT_INDEX - length)) << start);
+  *dest             = (*dest & selector) | (src << start);
 }
