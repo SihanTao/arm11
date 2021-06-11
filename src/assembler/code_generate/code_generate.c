@@ -2,6 +2,9 @@
 
 #include "../global_utils/types_and_macros.h"
 
+
+// token_t -> instruction
+
 bitfield encode_DP(proc_t instruction)
 {
   uint32_t result = 0;
