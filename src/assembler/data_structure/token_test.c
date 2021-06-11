@@ -83,6 +83,23 @@ int main(void){
 	add_test("Test tokenize instruction");
 	{
 		// example: beq01.s
+		char instructions[][10] = {
+			"mov r1,#1", "cmp r1,r2", "beq foo", "mov r3,#3", "foo:"
+		};
+		token_t* token = tokenize_instruction(instructions[0], 0);
+		print_token(token, 2);
+
+		token = tokenize_instruction(instructions[1], 1);
+		print_token(token, 2);
+
+		token = tokenize_instruction(instructions[2], 2);
+		print_token(token, 1);
+
+		token = tokenize_instruction(instructions[3], 3);
+		print_token(token, 2);
+
+		token = tokenize_instruction(instructions[4], 4);
+		print_token(token, 0);
 
 	}
 	end_all_tests();
