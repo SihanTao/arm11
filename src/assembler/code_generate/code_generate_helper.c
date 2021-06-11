@@ -8,12 +8,12 @@
 
 uint32_t to_bcode_mov(Token cur_token)
 {
-  instruction_t intermidiate_rep;
+  proc_t intermidiate_rep;
 
   // retrive information from cur_token
   // initialize intermidiate_rep
   // call encode_DP
-  
+
   intermidiate_rep.tag = DATA_PROCESS;
   intermidiate_rep.word.proc.cond = ?;
 intermidiate_rep.word.proc.iFlag ;
