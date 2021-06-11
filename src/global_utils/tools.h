@@ -1,7 +1,12 @@
 #ifndef GLOBAL_TOOLS
 #define GLOBAL_TOOLS
 
-# include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+
+#include <stdbool.h>
 
 #define INT_BIT_LENGTH 32
 // target = 0b011101001 start = 0 end = 3
