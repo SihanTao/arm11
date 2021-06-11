@@ -4,8 +4,8 @@
 typedef struct symbol_node_t {
 	char * symbol_data;
 	int address_to_next_ins;
-	symbol_node_t * left;
-	symbol_node_t * right;
+	struct symbol_node_t * left;
+	struct symbol_node_t * right;
 } symbol_node_t;
 
 typedef struct symbol_table_t {
