@@ -8,9 +8,9 @@
 
 #include "../../global_utils/unit_test.h"
 
-void print_token(token_t *token)
+void print_token(Token token)
 {
-  printf("opcode: %s\n", token->opcode);
+  printf("opcode: %s, operand_num = %d\n", token->opcode, token->num_of_operands);
   operand_t *cur_operand = token->operands;
   while (cur_operand != NULL)
   {
@@ -66,23 +66,23 @@ int main(void)
 
     token_t *token = tokenize(string);
     print_token(tokenize(string));
-    free_token(token);
+    // free_token(token);
 
     token = tokenize(instructions[0]);
     print_token(token);
-    free_token(token);
+    // free_token(token);
 
     token = tokenize(instructions[1]);
     print_token(token);
-    free_token(token);
+    // free_token(token);
 
     token = tokenize(instructions[2]);
     print_token(token);
-    free_token(token);
+    // free_token(token);
 
     token = tokenize(instructions[3]);
     print_token(token);
-    free_token(token);
+    // free_token(token);
   }
   end_all_tests();
 }
