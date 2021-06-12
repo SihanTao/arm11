@@ -1,10 +1,40 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "code_generate_helper.h"
 #include "../data_structure/token_stream.h"
 #include "../../global_utils//tools.h"
 #include "../../global_utils/types_and_macros.h"
 
+SymbolTable create_mnemonic_table()
+{
+	SymbolTable new_table = init_symbol_table();
+	add_symbol_table("andeq", ANDEQ, new_table);
+	add_symbol_table("lsl", LSL, new_table);
+	add_symbol_table("add", ADD, new_table);
+	add_symbol_table("sub", SUB, new_table);
+	add_symbol_table("rsb", RSB, new_table);
+	add_symbol_table("and", AND, new_table);
+	add_symbol_table("eor", EOR, new_table);
+	add_symbol_table("orr", ORR, new_table);
+	add_symbol_table("mov", MOV, new_table);
+	add_symbol_table("tst", TST, new_table);
+	add_symbol_table("teq", TEQ, new_table);
+	add_symbol_table("cmp", CMP, new_table);
+	add_symbol_table("mul", MUL, new_table);
+	add_symbol_table("mla", MLA, new_table);
+	add_symbol_table("ldr", LDR, new_table);
+	add_symbol_table("str", STR, new_table);
+	add_symbol_table("beq", BEQ, new_table);
+	add_symbol_table("bne", BNE, new_table);
+	add_symbol_table("bge", BGE, new_table);
+	add_symbol_table("blt", BLT, new_table);
+	add_symbol_table("bgt", BGT, new_table);
+	add_symbol_table("ble", BLE, new_table);
+	add_symbol_table("b", B, new_table);
+
+	return new_table;
+}
 
 uint32_t to_bcode_mov(Token cur_token)
 {
