@@ -100,7 +100,9 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode)
 	  int op2 = operand.operand_data.number;
 	  int* rotate_amount;
     int* imm;
-    reverse_rotate()
+    reverse_rotate(op2, rotate_amount, imm);
+    instruction->word.proc.operand2.rot_imm.imm = *imm;
+    instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
 
   }
   else if (strcmp(token->opcode, "sub") == 0) 
