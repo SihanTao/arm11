@@ -38,11 +38,6 @@ SymbolTable create_mnemonic_table()
 	return new_table;
 }
 
-SymbolTable create_dpi_table()
-{
-	add
-}
-
 uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 {
 	SymbolTable mnemonic_table = create_mnemonic_table();
@@ -88,131 +83,127 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode)
 	instruction->word.proc.cond = AL;
 	instruction->word.proc.opcode = opcode;
 
-  if (strcmp(token->opcode, "add") == 0) 
+  switch (instruction->word.proc.opcode)
   {
-    operand_t operand = token->operands[0];
-    instruction->word.proc.Rn = operand.operand_data.number;
-	  operand = operand.next;
+  case ADD:
+  case EOR:
+  case SUB:
+  case RSB:
+  case AND:
+  case ORR:
+    instruction->word.proc.set_cond = 0;
+    instruction->word.proc.Rd = token->operands[0].operand_data.number;
+	  instruction->word.proc.Rn = token->operands[1].operand_data.number;
 
-	  instruction->word.proc.Rd = operand.operand_data.number;
-    operand = operand.next;
-
-	  int op2 = operand.operand_data.number;
+	  int op2 = token->operands[2].operand_data.number;
 	  int* rotate_amount;
     int* imm;
     reverse_rotate(op2, rotate_amount, imm);
     instruction->word.proc.operand2.rot_imm.imm = *imm;
     instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
 
-  }
-  else if (strcmp(token->opcode, "sub") == 0) 
-  {
+    break;
 
-  }
-  else if (strcmp(token->opcode, "rsb") == 0)
-  {
+  case MOV:
+    instruction->word.proc.set_cond = 0;
+    instruction->word.proc.Rd = token->operands[0].operand_data.number;
 
-  }
-  else if (strcmp(token->opcode, "and") == 0)
-  {
+	  int op2 = token->operands[1].operand_data.number;
+	  int* rotate_amount;
+    int* imm;
+    reverse_rotate(op2, rotate_amount, imm);
+    instruction->word.proc.operand2.rot_imm.imm = *imm;
+    instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
 
-  }
-  else if (strcmp(token->opcode, "eor") == 0) 
-  {
+    break;
 
-  }
-  else if (strcmp(token->opcode, "orr") == 0)
-  {
+  case TST:
+  case TEQ:
+  case CMP:
+    instruction->word.proc.set_cond = 1;
+    instruction->word.proc.Rn = token->operands[0].operand_data.number;
 
-  }
-  else if (strcmp(token->opcode, "mov") == 0)
-  {
+	  int op2 = token->operands[1].operand_data.number;
+	  int* rotate_amount;
+    int* imm;
+    reverse_rotate(op2, rotate_amount, imm);
+    instruction->word.proc.operand2.rot_imm.imm = *imm;
+    instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
 
-  }
-  else if (strcmp(token->opcode, "tst") == 0)
-  {
-
-  }
-  else if (strcmp(token->opcode, "teq") == 0)
-  {
-
-  }
-  else if (strcmp(token->opcode, "cmp") == 0)
-  {
-
+    break;
   }
 }
 
-void token_to_mul(Token token, instruction_t* instruction)
-{
-	instruction->tag = MULITIPLY;
-	instruction->word.mul.cond = AL;
-	operand_t operand = token->operands;
-	instruction->word.mul.Rd = operand.operand_data.number;
-	operand = operand.next;
+// void token_to_mul(Token token, instruction_t* instruction)
+// {
+// 	instruction->tag = MULITIPLY;
+// 	instruction->word.mul.cond = AL;
+// 	operand_t operand = token->operands;
+// 	instruction->word.mul.Rd = operand.operand_data.number;
+// 	operand = operand.next;
 
-	instruction->word.mul.Rm = operand.operand_data.number;
-	operand = operand.next;
+// 	instruction->word.mul.Rm = operand.operand_data.number;
+// 	operand = operand.next;
 
-	instruction->word.mul.Rs = operand.operand_data.number;
+// 	instruction->word.mul.Rs = operand.operand_data.number;
 
-	if (strcmp(token->opcode, "mul") == 0)
-	{
-		instruction->word.mul.Rn = 0;
-		instruction->word.mul.acc = 0;
-	}
-	else if (strcmp(token->opcode, "mla") == 0)
-	{
-		operand = operand.next;
-		instruction->word.mul.Rn = operand.operand_data.number;
-		instruction->word.mul.acc = 1;
-	}
-}
+// 	if (strcmp(token->opcode, "mul") == 0)
+// 	{
+// 		instruction->word.mul.Rn = 0;
+// 		instruction->word.mul.acc = 0;
+// 	}
+// 	else if (strcmp(token->opcode, "mla") == 0)
+// 	{
+// 		operand = operand.next;
+// 		instruction->word.mul.Rn = operand.operand_data.number;
+// 		instruction->word.mul.acc = 1;
+// 	}
+// }
 
-void token_to_trans(Token token, instruction_t* instruction)
-{
-	instruction->tag = TRANS;
-	if (strcmp(token->opcode, "ldr") == 0)
-	{
-		instruction->word.trans.is_load = 1;
-		operand_t op = token->operands;
-		instruction->word.trans.Rd = op.operand_data.number;
-		op = op.next; // op is the <address> now
+// void token_to_trans(Token token, instruction_t* instruction)
+// {
+// 	instruction->tag = TRANS;
+// 	if (strcmp(token->opcode, "ldr") == 0)
+// 	{
+// 		instruction->word.trans.is_load = 1;
+// 		operand_t op = token->operands;
+// 		instruction->word.trans.Rd = op.operand_data.number;
+// 		op = op.next; // op is the <address> now
 
-		if (op.tag == NUMBER)
-		{
-			// <=expression>
-			int expression = op.operand_data.number;
-			if (expression < 0xFF)
-			{
-//				Token mov_token =
-				instruction->tag = DATA_PROCESS;
-				instruction->word.proc.opcode = MOV;
-				// TODO: convert to a mov token
-			}
-			else
-			{
-				instruction->word.trans.is_up = 1;
-				instruction->word.trans.offset = 0;
-				//todo: get current location and new one( op.dddd)
-				instruction->word.trans.is_pre = 1;
-			}
-		}
-		else
-		{
-			// pre_indexed address specification
-			/* At this point, op.tag = STRING, op.letters contains the following case
-			 * case 1: [Rn] strlen = 4 ([R1]) or 5 ([R11], [R12])
-			 * case 2: [Rn, <#expression>] strlen > 5([R1,#..])
-			 * */
-			if (strlen(op.operand_data.letters) > 5) {
+// 		if (op.tag == NUMBER)
+// 		{
+// 			// <=expression>
+// 			int expression = op.operand_data.number;
+// 			if (expression < 0xFF)
+// 			{
+// //				Token mov_token =
+// 				instruction->tag = DATA_PROCESS;
+// 				instruction->word.proc.opcode = MOV;
+// 				// TODO: convert to a mov token
+// 			}
+// 			else
+// 			{
+// 				instruction->word.trans.is_up = 1;
+// 				instruction->word.trans.offset = 0;
+// 				//todo: get current location and new one( op.dddd)
+// 				instruction->word.trans.is_pre = 1;
+// 			}
+// 		}
+// 		else
+// 		{
+// 			// pre_indexed address specification
+// 			/* At this point, op.tag = STRING, op.letters contains the following case
+// 			 * case 1: [Rn] strlen = 4 ([R1]) or 5 ([R11], [R12])
+// 			 * case 2: [Rn, <#expression>] strlen > 5([R1,#..])
+// 			 * */
+// 			if (strlen(op.operand_data.letters) > 5) {
 
-			} else {
+// 			} else {
 
-			}
-		}
-	}
-}
+// 			}
+// 		}
+// 	}
+// }
 uint32_t to_bcode_mov(Token cur_token)
 {
 	proc_t intermidiate_rep;
