@@ -10,7 +10,7 @@
 
 static bool is_label_line(char *line);
 
-parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table)
+void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table)
 {
   FILE *f_handle = fopen(file_name, "r");
   if (!f_handle)
