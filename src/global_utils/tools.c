@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h>
 
 #include "types_and_macros.h"
 
@@ -34,14 +35,16 @@ uint32_t to_int(bitfield bf)
   {
     bf = convert_endian(bf);
   }
-  uint32_t *result = (uint32_t *)&bf;
+  uint32_t *result;
+  memcpy(result, &bf, sizeof(uint32_t));
   return *result;
 }
 
 // It can perform some conditional big-endian convertion before return
 bitfield to_bf(uint32_t i)
 {
-  bitfield *result = (bitfield *)&i;
+  bitfield *result;
+  memcpy(result, &i, sizeof(bitfield));
   if (TARGET_MACHINE_ENDIAN == BIG)
   {
     *result = convert_endian(*result);
@@ -55,8 +58,8 @@ int get_bit_range(int target, int start, int end)
 {
   assert(start <= MAX_BIT_INDEX && start >= 0);
   assert(start < end);
-  int      length = end - start;
-  uint32_t mask   = ALL_ONE >> (MAX_BIT_INDEX - length);
+  int      length = end - start + 1;
+  uint32_t mask   = ALL_ONE >> (WORD_BIT_LENGTH - length);
   return (target >> start) & mask;
 }
 
@@ -72,6 +75,6 @@ void set_bit_range(uint32_t *dest, int src, int start, int end)
   assert(start <= MAX_BIT_INDEX && start >= 0);
   assert(start < end);
   int      length   = end - start + 1;
-  uint32_t selector = ~((ALL_ONE >> (MAX_BIT_INDEX - length)) << start);
+  uint32_t selector = ~((ALL_ONE >> (WORD_BIT_LENGTH - length)) << start);
   *dest             = (*dest & selector) | (src << start);
 }

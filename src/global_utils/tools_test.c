@@ -16,8 +16,8 @@ int main(void)
     test_int_v(get_bit_range(target, start, end), 0b1001, "result is 0b1001");
     test_int_v(get_bit_range(target, 1, 3), 0b100, "result is 0b100");
 
-    int cond = 0xe3a01001;
-    test_int_v(get_bit_range(cond, 28, 31), 0b1110, "result is 0b1110");
+    int cond = 0xe0001001;
+    test_int_v(get_bit_range(cond, 28, 31), 0xe, "result is 0b1110");
   }
 
   add_test("test set_bit");
@@ -28,6 +28,12 @@ int main(void)
     int  position = 3;
     set_bit(dest, value, position);
     test_int_v(*dest, 0b0001, "result is 0b1000");
+
+    printf("ALL_ONE << 31 :>> %p\n,", ALL_ONE >> 28); //DpLETE_MARK
+
+    *dest = 0x0;
+    set_bit(dest, 1, 4);
+    test_int(*dest, 0x10);
     free(dest);
   }
 
@@ -41,6 +47,9 @@ int main(void)
     set_bit_range(dest, src, start, end);
     test_int_v(*dest, 0b011100000, "result is 0b011100000");
     set_bit_range(dest, 0b1111, 4, 7);
+    test_int_v(*dest, 0xF0, "result is 0b011111100");
+    *dest = 0x0;
+       set_bit_range(dest, 0b1111, 4, 7);
     test_int_v(*dest, 0xF0, "result is 0b011111100");
     free(dest);
   }

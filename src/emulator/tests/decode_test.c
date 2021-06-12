@@ -2,7 +2,7 @@
 
 #include "../decode/decode.h"
 
-#include "../utils/tools.h"
+#include "../../global_utils/tools.h"
 #include "../utils/unit_test.h"
 
 int main(void)
@@ -17,6 +17,7 @@ int main(void)
      */
 
     bitfield fetched[] = { 0xe3a01001, 0xea000000, 0xe3a02002, 0xe3a03003 };
+    printf("fetched[0] :>> %p\n,",  0xe3a01001); //DELETE_MARK
 
     instruction_t instruction1 = decode(fetched[0]);
     test_int_v(instruction1.tag, DATA_PROCESS, "mov r1, #1 == data processing");
