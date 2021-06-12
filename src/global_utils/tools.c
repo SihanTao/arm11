@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <string.h>
 
 #include "types_and_macros.h"
 
@@ -35,16 +34,15 @@ uint32_t to_int(bitfield bf)
   {
     bf = convert_endian(bf);
   }
-  uint32_t *result;
-  memcpy(result, &bf, sizeof(uint32_t));
+  uint32_t *result = (uint32_t *)&bf;
+  printf("*result :>> %p\n,", *result); //DELETE_MARK
   return *result;
 }
 
 // It can perform some conditional big-endian convertion before return
 bitfield to_bf(uint32_t i)
 {
-  bitfield *result;
-  memcpy(result, &i, sizeof(bitfield));
+  bitfield *result = (bitfield *)&i;
   if (TARGET_MACHINE_ENDIAN == BIG)
   {
     *result = convert_endian(*result);
