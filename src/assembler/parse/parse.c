@@ -9,7 +9,7 @@
 
 static bool is_label_line(char *line);
 
-parse(char **loaded_file, TokenStream token_stream, SymbolTable symbol_table)
+void parse(char **loaded_file, TokenStream token_stream, SymbolTable symbol_table)
 {
   TokenStream token_stream = init_token_stream();
   SymbolTable symbol_table = init_symbol_table();

@@ -7,7 +7,7 @@
 
 static operand_t *get_label_ptr(Token token, SymbolTable symbol_table);
 
-void       allocate_address(Token token, SymbolTable symbol_table)
+void allocate_address(Token token, SymbolTable symbol_table)
 {
   operand_t *label_operand_ptr;
   int        address;
@@ -18,7 +18,7 @@ void       allocate_address(Token token, SymbolTable symbol_table)
   {
     address = find_symbol_table(label_operand_ptr->operand_data.letters,
                                 symbol_table);
-    label_operand_ptr->tag = NUMBER;
+    label_operand_ptr->tag                 = NUMBER;
     label_operand_ptr->operand_data.number = address;
   }
   return;
