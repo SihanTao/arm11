@@ -21,9 +21,8 @@ typedef struct operand_t
 typedef struct token_t
 {
   char *     opcode;
-  int        real_address;
   operand_t *operands;
-  token_t *  next;
+  struct token_t *  next;
 } token_t;
 
 /*
