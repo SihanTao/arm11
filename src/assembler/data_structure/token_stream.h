@@ -15,14 +15,14 @@ typedef struct operand_t
     char *letters;
     int   number;
   } operand_data;
-  struct  operand_t* next;
+  struct operand_t *next;
 } operand_t;
 
 typedef struct token_t
 {
-  char *     opcode;
-  operand_t *operands;
-  struct token_t *  next;
+  char *          opcode;
+  operand_t *     operands;
+  struct token_t *next;
 } token_t;
 
 /*
@@ -48,7 +48,8 @@ typedef token_stream_t *TokenStream;
 
 extern void        add_token_stream(token_t *elem, TokenStream stream);
 extern TokenStream init_token_stream();
-extern Token       pop_token_stream(TokenStream stream);
-void               free_token_stream(TokenStream stream);
+extern void        free_token(Token token);
+extern void        free_token_stream(TokenStream stream);
+extern void        free_operands(operand_t *operand);
 
 #endif // TOKENSTREAM
