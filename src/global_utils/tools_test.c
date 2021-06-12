@@ -15,6 +15,9 @@ int main(void)
     int end    = 3;
     test_int_v(get_bit_range(target, start, end), 0b1001, "result is 0b1001");
     test_int_v(get_bit_range(target, 1, 3), 0b100, "result is 0b100");
+
+    int cond = 0xe3a01001;
+    test_int_v(get_bit_range(cond, 28, 31), 0b1110, "result is 0b1110");
   }
 
   add_test("test set_bit");

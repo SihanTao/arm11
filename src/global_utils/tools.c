@@ -55,7 +55,7 @@ int get_bit_range(int target, int start, int end)
 {
   assert(start <= MAX_BIT_INDEX && start >= 0);
   assert(start < end);
-  int      length = end - start + 1;
+  int      length = end - start;
   uint32_t mask   = ALL_ONE >> (MAX_BIT_INDEX - length);
   return (target >> start) & mask;
 }
