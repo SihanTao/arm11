@@ -40,7 +40,7 @@ void output(char *filename, ArmState arm_state)
   fprintf(file_handle, "Non-zero memory:\n");
   while (true)
   {
-    memory_val = to_int(load(address, arm_state->memory));
+    memory_val = to_int(convert_endian(load(address, arm_state->memory)));
     if (memory_val == 0)
     {
       break;

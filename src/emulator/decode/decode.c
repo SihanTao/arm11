@@ -14,6 +14,8 @@ static instruction_t decode_trans(uint32_t fetched);
 instruction_t decode(bitfield fetched)
 {
   uint32_t fetched_val = to_int(fetched);
+  printf("fetched_val :>> %p\n,", fetched_val); //DELETE_MARK
+  printf("get_bit_range(fetched_val, 28, 31) :>> %x\n,", get_bit_range(fetched_val, 28, 31)); //DELETE_MARK
   if (fetched_val == 0)
   {
     instruction_t result;
@@ -68,7 +70,7 @@ instruction_t decode_branch(uint32_t fetched)
 instruction_t decode_dp(uint32_t fetched)
 {
   instruction_t result;
-  
+
   result.tag = DATA_PROCESS;
   result.word.proc.cond = get_bit_range(fetched, 28, 31);
   result.word.proc.iFlag = get_bit(fetched, 25);

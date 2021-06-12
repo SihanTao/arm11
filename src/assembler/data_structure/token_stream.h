@@ -22,6 +22,7 @@ typedef struct token_t
 {
   char *          opcode;
   operand_t *     operands;
+  int             num_of_operands;
   struct token_t *next;
 } token_t;
 
