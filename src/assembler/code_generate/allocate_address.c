@@ -26,14 +26,16 @@ void allocate_address(Token token, SymbolTable symbol_table)
 
 operand_t *get_label_ptr(token_t *token, SymbolTable symbol_table)
 {
-  operand_t *operands = token->operands;
-  for (int i = 0; i < token->num_operand; i++)
+  operand_t *cur_operand = token->operands;
+  while (cur_operand != NULL)
   {
-    if (operands[i].tag == STRING
-        && find_symbol_table(operands[i].operand_data.letters, symbol_table))
+    if (cur_operand->tag == STRING
+        && find_symbol_table(cur_operand->operand_data.letters, symbol_table))
     {
-      return (operands + i);
+      return cur_operand;
     }
+
+    cur_operand = cur_operand->next;
   }
 
   return NULL;
