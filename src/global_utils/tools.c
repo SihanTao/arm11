@@ -60,7 +60,6 @@ int get_bit_range(int target, int start, int end)
   return (target >> start) & mask;
 }
 
-//
 void set_bit(uint32_t *dest, bool value, int position)
 {
   assert(position <= MAX_BIT_INDEX && position >= 0);
