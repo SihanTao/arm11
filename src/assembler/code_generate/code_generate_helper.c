@@ -36,6 +36,27 @@ SymbolTable create_mnemonic_table()
 	return new_table;
 }
 
+instruction_t *token_to_instruction(Token token)
+{
+	SymbolTable mnemonic_table = create_mnemonic_table();
+	int find = find_symbol_table(token->opcode, mnemonic_table)
+	if (find == ANDEQ) {
+		// halt
+	} else if (find == LSL) {
+		// special case
+	} else if(find <= CMP) {
+		// Data processing
+	} else if (find <= MLA) {
+		// Multiply
+	} else if (find <= STR) {
+		// Single data transfer
+	} else if (find <= B) {
+		// Branch
+	}
+
+
+}
+
 uint32_t to_bcode_mov(Token cur_token)
 {
   proc_t intermidiate_rep;

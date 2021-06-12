@@ -30,5 +30,6 @@ typedef enum {
 } Mnemonic;
 
 SymbolTable create_mnemonic_table();
+instruction_t *token_to_instruction(Token token)
 
 #endif //ARM11_49_SRC_ASSEMBLER_CODE_GENERATE_CODE_GENERATE_HELPER_H_
