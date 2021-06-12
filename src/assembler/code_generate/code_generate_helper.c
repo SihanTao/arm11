@@ -10,12 +10,12 @@ uint32_t to_bcode_mov(Token cur_token)
 {
   proc_t intermidiate_rep;
 
-  // retrive information from cur_token
-  // initialize intermidiate_rep
-  // call encode_DP
-  
-//   intermidiate_rep.tag = DATA_PROCESS;
-//   intermidiate_rep.word.proc.cond = ?;
+// retrive information from cur_token
+// initialize intermidiate_rep
+// call encode_DP
+
+//intermidiate_rep.tag = DATA_PROCESS;
+//intermidiate_rep.word.proc.cond = ?;
 // intermidiate_rep.word.proc.iFlag ;
 // intermidiate_rep.word.proc.opcode;
 // intermidiate_rep.word.proc.operand2;
@@ -28,11 +28,11 @@ uint32_t to_bcode_mov(Token cur_token)
 
 void reg_imm_helper(bool is_imm, reg_or_imm_t reg_or_imm, uint32_t *target)
 {
-  if (is_imm) 
+  if (is_imm)
   {
     set_bit_range(target, reg_or_imm.rot_imm.imm, 0, 7);
     set_bit_range(target, reg_or_imm.rot_imm.amount, 8, 11);
-  } else 
+  } else
   {
     set_bit_range(target, reg_or_imm.shift_reg.Rm, 0, 3);
     set_bit_range(target, reg_or_imm.shift_reg.type, 5, 6);
