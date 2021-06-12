@@ -30,7 +30,7 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table)
   }
   else
   {
-    tokenize(buffer, address, token_stream);
+    add_token_stream(tokenize(buffer), token_stream);
     address += ADDRESS_INTERVAL;
   }
 
