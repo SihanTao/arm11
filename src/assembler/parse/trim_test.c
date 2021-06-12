@@ -60,23 +60,29 @@ int main(void)
   add_test("tokenize test");
   {
     char *string = "this is,a,string";
+    // example: beq01.s
+    char instructions[][10]
+        = { "mov r1,#1", "cmp r1,r2", "beq foo", "mov r3,#3" };
+
+    token_t *token = tokenize(string);
     print_token(tokenize(string));
+    free_token(token);
 
-    		// example: beq01.s
-		char instructions[][10] = {
-			"mov r1,#1", "cmp r1,r2", "beq foo", "mov r3,#3"
-		};
-		token_t* token = tokenize(instructions[0]);
-		print_token(token);
+    token = tokenize(instructions[0]);
+    print_token(token);
+    free_token(token);
 
-		token = tokenize(instructions[1]);
-		print_token(token);
+    token = tokenize(instructions[1]);
+    print_token(token);
+    free_token(token);
 
-		token = tokenize(instructions[2]);
-		print_token(token);
+    token = tokenize(instructions[2]);
+    print_token(token);
+    free_token(token);
 
-		token = tokenize(instructions[3]);
-		print_token(token);
+    token = tokenize(instructions[3]);
+    print_token(token);
+    free_token(token);
   }
   end_all_tests();
 }

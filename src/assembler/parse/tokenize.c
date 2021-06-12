@@ -36,7 +36,7 @@ operand_t *gen_operand(char *trimed)
   else if (trimed[0] == '=')
   {
     current_operand->tag                 = NUMBER;
-    current_operand->operand_data.number = strtol(trimed, NULL, 16);
+    current_operand->operand_data.number = strtol(trimed + 1, NULL, 16);
     free(trimed);
   }
   else

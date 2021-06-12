@@ -26,6 +26,7 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table)
   if (is_label_line(buffer))
   {
     // corresponding to the address of next instruction
+    buffer[strlen(buffer) - 1] = '\0';
     add_symbol_table(buffer, address + ADDRESS_INTERVAL, symbol_table);
   }
   else
