@@ -5,6 +5,8 @@
 #include "../data_structure/token_stream.h"
 #include "../../global_utils//tools.h"
 #include "../../global_utils/types_and_macros.h"
+#include "mnemonic.h"
+#include "reverse_rotate.h"
 
 SymbolTable create_mnemonic_table()
 {
@@ -85,12 +87,63 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode)
 	instruction->tag = DATA_PROCESS;
 	instruction->word.proc.cond = AL;
 	instruction->word.proc.opcode = opcode;
-	// many operations
+
+  if (strcmp(token->opcode, "add") == 0) 
+  {
+    operand_t operand = token->operands[0];
+    instruction->word.proc.Rn = operand.operand_data.number;
+	  operand = operand.next;
+
+	  instruction->word.proc.Rd = operand.operand_data.number;
+    operand = operand.next;
+
+	  int op2 = operand.operand_data.number;
+	  int* rotate_amount;
+    int* imm;
+    reverse_rotate()
+
+  }
+  else if (strcmp(token->opcode, "sub") == 0) 
+  {
+
+  }
+  else if (strcmp(token->opcode, "rsb") == 0)
+  {
+
+  }
+  else if (strcmp(token->opcode, "and") == 0)
+  {
+
+  }
+  else if (strcmp(token->opcode, "eor") == 0) 
+  {
+
+  }
+  else if (strcmp(token->opcode, "orr") == 0)
+  {
+
+  }
+  else if (strcmp(token->opcode, "mov") == 0)
+  {
+
+  }
+  else if (strcmp(token->opcode, "tst") == 0)
+  {
+
+  }
+  else if (strcmp(token->opcode, "teq") == 0)
+  {
+
+  }
+  else if (strcmp(token->opcode, "cmp") == 0)
+  {
+
+  }
 }
 
 void token_to_mul(Token token, instruction_t* instruction)
 {
-	instruction->tag = MULTIPLY;
+	instruction->tag = MULITIPLY;
 	instruction->word.mul.cond = AL;
 	operand_t operand = token->operands;
 	instruction->word.mul.Rd = operand.operand_data.number;
