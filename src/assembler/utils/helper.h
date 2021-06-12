@@ -7,6 +7,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-bool compute_imm(uint32_t target, int rotation_amount, uint32_t imm);
+bool compute_imm(uint32_t target, int *rotation_amount, uint32_t *imm);
 
 #endif 

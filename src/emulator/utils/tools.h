@@ -8,16 +8,21 @@
 
 #include <stdbool.h>
 
-#define INT_BIT_LENGTH 32
+#define ALL_ONE (0xFFFFFFFF)
+#define ALL_ZERO (0x0)
+
+
+#define MAX_BIT_INDEX (31)
+
 // target = 0b011101001 start = 0 end = 3
 // returns : 0b011101001
 int get_bit_range(int target,int start,int end);
 
 // dest = 101001000101 src = 10001 start = 0 end = 5
 // dest = 101001010001
-void set_bit_range(int* dest, int src, int start, int end);
+void set_bit_range(uint32_t * dest, int src, int start, int end);
 
-void set_bit(int* dest, bool value, int position);
+void set_bit(uint32_t * dest, bool value, int position);
 
 /*
  * Print the bit representation

@@ -28,6 +28,10 @@ typedef struct token_t
 
 typedef token_t *Token;
 
+/*
+ * token_t**
+ *
+ * */
 typedef struct token_stream_t
 {
   Token head;

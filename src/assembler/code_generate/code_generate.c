@@ -7,6 +7,7 @@
 
 #include "../utils/write_file.h"
 
+#include <string.h>
 // token_t -> instruction
 
 void code_generate(TokenStream token_stream, SymbolTable symbol_table)

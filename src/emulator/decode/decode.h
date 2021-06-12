@@ -7,11 +7,4 @@
  */
 instruction_t decode(bitfield fetched);
 
-void find_type(instruction_t *instruction);
-
-/*
- * initialize an instruction to UNDEFINED category.
- */
-instruction_t init_instruction(bitfield fetched);
-
 #endif // DECODE

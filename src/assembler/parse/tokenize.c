@@ -6,24 +6,24 @@
 
 #include "tokenize.h"
 
-void tokenize(char *line, int address, TokenStream token_stream)
-{
-  token_t *token_ptr = calloc(1, sizeof(token_t));
-  if (token_ptr == NULL)
-  {
-    perror("Fail to allocate memory in tokenize_instruction");
-    exit(EXIT_FAILURE);
-  }
+// void tokenize(char *line, int address, TokenStream token_stream)
+// {
+//   token_t *token_ptr = calloc(1, sizeof(token_t));
+//   if (token_ptr == NULL)
+//   {
+//     perror("Fail to allocate memory in tokenize_instruction");
+//     exit(EXIT_FAILURE);
+//   }
 
-  token_ptr->real_address = address;
+//   token_ptr->real_address = address;
 
-  char * rest          = get_opcode(token_ptr, line);
-  int    length        = count_num_operand(rest);
-  char **operand_field = split_operand_field(rest, length);
-  set_token_operand(token_ptr, operand_field, length);
+//   char * rest          = get_opcode(token_ptr, line);
+//   int    length        = count_num_operand(rest);
+//   char **operand_field = split_operand_field(rest, length);
+//   set_token_operand(token_ptr, operand_field, length);
 
-  add_token_stream(token_ptr, token_stream);
-}
+//   add_token_stream(token_ptr, token_stream);
+// }
 
 bool trim(char **start_pos, char until, char *before)
 {
@@ -70,47 +70,7 @@ void tokenize(char *line, int address, TokenStream tokenstream)
   }
 }
 
-char *get_opcode(token_t *token, char *instruction)
-{
-  char *rest;
-  token->opcode = strtok(instruction, " ");
-  rest          = strtok(NULL, " ");
-  return rest;
-}
 
-/*
- * rest: r1,#3
- * --> "r1", "#3"
- * */
-
-int count_num_operand(char *rest)
-{
-  int counter = 0;
-
-  for (int i = 0; rest[i]; ++i)
-  {
-    if (rest[i] == ',')
-    {
-      counter++;
-    }
-  }
-#
-  return counter + 1;
-}
-
-char **split_operand_field(char *rest, int length)
-{
-  char **fields = create_string_array(length);
-
-  int i     = 0;
-  fields[i] = strtok(rest, ",");
-  while (fields[i] != NULL)
-  {
-    fields[++i] = strtok(NULL, ",");
-  }
-
-  return fields;
-}
 
 void set_token_operand(token_t *token, char **operand_field, int length)
 {
@@ -136,6 +96,48 @@ void set_token_operand(token_t *token, char **operand_field, int length)
     num++;
   }
 }
+
+/*
+ * rest: r1,#3
+ * --> "r1", "#3"
+ * */
+
+// int count_num_operand(char *rest)
+// {
+//   int counter = 0;
+
+//   for (int i = 0; rest[i]; ++i)
+//   {
+//     if (rest[i] == ',')
+//     {
+//       counter++;
+//     }
+//   }
+// #
+//   return counter + 1;
+// }
+
+// char **split_operand_field(char *rest, int length)
+// {
+//   char **fields = create_string_array(length);
+
+//   int i     = 0;
+//   fields[i] = strtok(rest, ",");
+//   while (fields[i] != NULL)
+//   {
+//     fields[++i] = strtok(NULL, ",");
+//   }
+
+//   return fields;
+// }
+
+// char *get_opcode(token_t *token, char *instruction)
+// {
+//   char *rest;
+//   token->opcode = strtok(instruction, " ");
+//   rest          = strtok(NULL, " ");
+//   return rest;
+// }
 
 void print_token(token_t *token)
 {
