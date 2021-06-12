@@ -150,7 +150,6 @@ void token_to_trans(Token token, instruction_t* instruction)
 			instruction->word.trans.is_pre = 1;
 			if (op.next == NULL)
 			{
-
 				// pre_indexed address specification
 				/* At this point, op.tag = STRING, op.letters contains the following case
 				 * case 1: [Rn] strlen = 4 ([R1]) or 5 ([R11], [R12])
@@ -163,9 +162,17 @@ void token_to_trans(Token token, instruction_t* instruction)
 			{
 				// post-indexing
 				instruction->word.trans.is_pre = 0;
+				char* temp = op.operand_data.letters;
+				instruction->word.trans.Rn = strtol(temp + 1, NULL, 0);
+				op = op.next;
 
+				if (op.operand_data.letters[0] == '#')
+				{
+					trans->offset = strtol(rest + 1, NULL, 0);
+					trans->iFlag = 0;
+					trans->is_up = 1;
+				}
 			}
-
 		}
 	}
 }
@@ -175,6 +182,8 @@ void token_to_trans(Token token, instruction_t* instruction)
  * case 2: [Rn,<#expression>]
  * case 3: [Rn,{+/-}Rm{,<shift>}]
  * */
+// TODO: for later implementing optional, you can extract the part parsing
+// 		<#expression> and {+/-}Rm{,<shift>}
 void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 {
 	char* letters = operand.operand_data.letters;
@@ -195,9 +204,8 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 
 		// Parse it, Rn stores rn,
 		// rest stores <#expression> or {+/-}Rm{,<shift>}
-		char *Rn = strtok(temp, ",");
+		char* Rn = strtok(temp, ",");
 		char* rest = strtok(NULL, ",");
-
 		trans.Rn = strtol(Rn + 1, NULL, 0);
 
 		/*
