@@ -27,6 +27,9 @@ int main(int argc, char **argv)
   parse(loaded_file, token_stream, symbol_table);
 
   code_generate(token_stream, symbol_table);
+
+  // TODO : change 
+  free_string_array(loaded_file, 65536);
 }
 
 

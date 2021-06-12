@@ -5,10 +5,11 @@
 #include "decode.h"
 #include "../../global_utils/tools.h"
 
-instruction_t decode_branch(uint32_t fetched);
-instruction_t decode_dp(uint32_t fetched);
-instruction_t decode_mul(uint32_t fetched);
-instruction_t decode_trans(uint32_t fetched);
+static reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched);
+static instruction_t decode_branch(uint32_t fetched);
+static instruction_t decode_dp(uint32_t fetched);
+static instruction_t decode_mul(uint32_t fetched);
+static instruction_t decode_trans(uint32_t fetched);
 
 instruction_t decode(bitfield fetched)
 {
@@ -38,15 +39,15 @@ instruction_t decode(bitfield fetched)
   }
 }
 
-reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched) 
+reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched)
 {
   reg_or_imm_t result;
-  if (is_imm) 
+  if (is_imm)
   {
     result.rot_imm.imm = get_bit_range(fetched, 0, 7);
     result.rot_imm.amount = get_bit_range(fetched, 8, 11);
     return result;
-  } else 
+  } else
   {
     result.shift_reg.Rm = get_bit_range(fetched, 0, 3);
     result.shift_reg.type = get_bit_range(fetched, 5, 6);
@@ -66,7 +67,7 @@ instruction_t decode_branch(uint32_t fetched)
 instruction_t decode_dp(uint32_t fetched)
 {
   instruction_t result;
-  
+
   result.word.proc.cond = get_bit_range(fetched, 28, 31);
   result.word.proc.iFlag = get_bit(fetched, 25);
   result.word.proc.opcode = get_bit_range(fetched, 21, 24);
