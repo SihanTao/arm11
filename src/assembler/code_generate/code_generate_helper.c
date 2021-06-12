@@ -41,39 +41,41 @@ SymbolTable create_dpi_table()
 	add
 }
 
-instruction_t* token_to_instruction(Token token, SymbolTable symbolTable)
+uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 {
 	SymbolTable mnemonic_table = create_mnemonic_table();
 	instruction_t* instruction = calloc(1, sizeof(instruction_t));
 	int find = find_symbol_table(token->opcode, mnemonic_table);
-	if (find == ANDEQ)
+	if (find == ANDEQ_M)
 	{
 		// halt: maybe deal with it later in encode
+		return 0;
 	}
-	else if (find == LSL)
+	else if (find == LSL_M)
 	{
 		// special case
 	}
-	else if (find <= MOV)
+	else if (find <= MOV_M)
 	{
 		// Data processing
 		token_to_dpi(token, instruction, find);
 	}
-	else if (find <= MLA)
+	else if (find <= MLA_M)
 	{
 		// Multiply
 	}
-	else if (find <= STR)
+	else if (find <= STR_M)
 	{
 		// Single data transfer
 	}
-	else if (find <= B)
+	else if (find <= B_M)
 	{
 		// Branch
 	}
 
 	free_symbol_table(mnemonic_table);
-	return instruction;
+
+//	return instruction;
 }
 
 /* Know that the token is a dpi, add the component to instruction
@@ -109,6 +111,26 @@ void token_to_mul(Token token, instruction_t* instruction)
 	}
 }
 
+void token_to_trans(Token token, instruction_t* instruction) {
+	instruction->tag = TRANS;
+	if (strcmp(token->opcode, "ldr") == 0) {
+		instruction->word.trans.is_load = 1;
+		operand_t op = token->operands;
+		instruction->word.trans.Rd = op.operand_data.number;
+		op = op.next; // op is the <address>
+
+		if (op.tag == NUMBER) {
+			// <=expression>
+			int expression = op.operand_data.number;
+			if (expression < 0xFF) {
+//				Token mov_token =
+				instruction->tag = DATA_PROCESS;
+				instruction->word.proc.opcode = MOV;
+
+			}
+		}
+	}
+}
 uint32_t to_bcode_mov(Token cur_token)
 {
 	proc_t intermidiate_rep;
