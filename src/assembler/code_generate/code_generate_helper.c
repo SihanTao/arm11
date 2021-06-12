@@ -41,7 +41,7 @@ SymbolTable create_dpi_table()
 	add
 }
 
-instruction_t* token_to_instruction(Token token)
+instruction_t* token_to_instruction(Token token, SymbolTable symbolTable)
 {
 	SymbolTable mnemonic_table = create_mnemonic_table();
 	instruction_t* instruction = calloc(1, sizeof(instruction_t));
@@ -84,6 +84,29 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode)
 	instruction->word.proc.cond = AL;
 	instruction->word.proc.opcode = opcode;
 	// many operations
+}
+
+void token_to_mul(Token token, instruction_t* instruction)
+{
+	instruction->tag = MULTIPLY;
+	instruction->word.mul.cond = AL;
+	operand_t operand = token->operands;
+	instruction->word.mul.Rd = operand.operand_data.number;
+	operand = operand.next;
+
+	instruction->word.mul.Rm = operand.operand_data.number;
+	operand = operand.next;
+
+	instruction->word.mul.Rs = operand.operand_data.number;
+
+	if (strcmp(token->opcode, "mul") == 0) {
+		instruction->word.mul.Rn = 0;
+		instruction->word.mul.acc = 0;
+	} else if (strcmp(token->opcode, "mla") == 0) {
+		operand = operand.next;
+		instruction->word.mul.Rn = operand.operand_data.number;
+		instruction->word.mul.acc = 1;
+	}
 }
 
 uint32_t to_bcode_mov(Token cur_token)
