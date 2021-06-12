@@ -1,16 +1,18 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "symbol_table.h"
 
 static symbol_node_t *init_symbol_node(char *symbol_data, int address);
-static void add_node(char *symbol_data, int address, symbol_node_t **node_ptr);
+static void add_node(char *symbol_data, int address, symbol_node_t *node);
+static int  find_node(char *symbol_data, symbol_node_t *node_ptr);
 static void free_node(symbol_node_t *node);
 
 SymbolTable init_symbol_table(void)
 {
-  SymbolTable result  = malloc(sizeof(symbol_table_t));
-  result->head_holder = init_symbol_node(NULL, NULL);
+  SymbolTable result = malloc(sizeof(symbol_table_t));
+  result->head_holder = init_symbol_node(strdup("hello"), 0);
 
   return result;
 }
@@ -22,11 +24,8 @@ void add_symbol_table(char *symbol_data, int address, SymbolTable table)
     perror("Table is null\n");
     exit(EXIT_FAILURE);
   }
-  // strlen(symbol_data) - 1(';') + 1('\0')
-  char *copied = malloc(strlen(symbol_data));
-  memcpy(copied, symbol_data, strlen(symbol_data));
 
-  add_node(copied, address, &table->head_holder);
+  add_node(symbol_data, address, table->head_holder);
 }
 
 int find_symbol_table(char *symbol_data, SymbolTable table)
@@ -48,6 +47,10 @@ void free_symbol_table(SymbolTable table)
 
 void free_node(symbol_node_t *node)
 {
+  if (node == NULL)
+  {
+    return;
+  }
   free(node->symbol_data);
   free_node(node->left);
   free_node(node->right);
@@ -71,22 +74,26 @@ static symbol_node_t *init_symbol_node(char *symbol_data, int address)
   return result;
 }
 
-void add_node(char *symbol_data, int address, symbol_node_t **node_ptr)
+void add_node(char *symbol_data, int address, symbol_node_t *node)
 {
-  if (*node_ptr == NULL)
-  {
-    (*node_ptr) = init_symbol_node(symbol_data, address);
-  }
-
-  symbol_node_t *node = *node_ptr;
-  int            cmp  = strcmp(symbol_data, node->symbol_data);
+  int cmp = strcmp(symbol_data, node->symbol_data);
   if (cmp > 0)
   {
-    add_node(symbol_data, address, &node->left);
+    if (node->left != NULL)
+    {
+      add_node(symbol_data, address, node->left);
+      return;
+    }
+    node->left = init_symbol_node(symbol_data, address);
   }
   else if (cmp < 0)
   {
-    add_node(symbol_data, address, &node->right);
+    if (node->right != NULL)
+    {
+      add_node(symbol_data, address, node->right);
+      return;
+    }
+    node->right = init_symbol_node(symbol_data, address);
   }
   else
   {
@@ -99,7 +106,7 @@ int find_node(char *symbol_data, symbol_node_t *node)
 {
   if (!node)
   {
-    perror("Error! Undefined symbol! %s\n", symbol_data);
+    perror("Error! Undefined symbol! %s\n");
     exit(EXIT_FAILURE);
   }
 
