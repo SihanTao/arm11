@@ -4,18 +4,16 @@
 #include "../data_structure/symbol_table.h"
 
 typedef enum {
-	ANDEQ,
-	LSL,
-	ADD,
-	SUB,
-	RSB,
 	AND,
 	EOR,
-	ORR,
-	MOV,
+	SUB,
+	RSB,
+	ADD,
 	TST,
 	TEQ,
 	CMP,
+	ORR,
+	MOV,
 	MUL,
 	MLA,
 	LDR,
@@ -26,10 +24,14 @@ typedef enum {
 	BLT,
 	BGT,
 	BLE,
-	B
+	B,
+	ANDEQ,
+	LSL
 } Mnemonic;
 
 SymbolTable create_mnemonic_table();
-instruction_t *token_to_instruction(Token token)
+//SymbolTable create_dpi_table();
+instruction_t *token_to_instruction(Token token);
+void token_to_dpi(Token token, instruction_t* instruction, int);
 
 #endif //ARM11_49_SRC_ASSEMBLER_CODE_GENERATE_CODE_GENERATE_HELPER_H_
