@@ -34,5 +34,6 @@ SymbolTable create_mnemonic_table();
 instruction_t *token_to_instruction(Token token, SymbolTable symbolTable);
 void token_to_dpi(Token token, instruction_t* instruction, int);
 void token_to_mul(Token token, instruction_t* instruction);
+void parse_preindexed_trans_operand(operand_t operand, trans_t *trans);
 
 #endif //ARM11_49_SRC_ASSEMBLER_CODE_GENERATE_CODE_GENERATE_HELPER_H_

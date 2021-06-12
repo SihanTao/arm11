@@ -117,6 +117,7 @@ void token_to_mul(Token token, instruction_t* instruction)
 void token_to_trans(Token token, instruction_t* instruction)
 {
 	instruction->tag = TRANS;
+	instruction->word.trans.cond = AL;
 	if (strcmp(token->opcode, "ldr") == 0)
 	{
 		instruction->word.trans.is_load = 1;
@@ -145,16 +146,71 @@ void token_to_trans(Token token, instruction_t* instruction)
 		}
 		else
 		{
-			// pre_indexed address specification
-			/* At this point, op.tag = STRING, op.letters contains the following case
-			 * case 1: [Rn] strlen = 4 ([R1]) or 5 ([R11], [R12])
-			 * case 2: [Rn, <#expression>] strlen > 5([R1,#..])
-			 * */
-			if (strlen(op.operand_data.letters) > 5) {
+			// Not dealing with optional
+			instruction->word.trans.is_pre = 1;
+			if (op.next == NULL)
+			{
 
-			} else {
+				// pre_indexed address specification
+				/* At this point, op.tag = STRING, op.letters contains the following case
+				 * case 1: [Rn] strlen = 4 ([R1]) or 5 ([R11], [R12])
+				 * case 2: [Rn, <#expression>] strlen > 5([R1,#..])
+				 * */
+				instruction->word.trans.is_pre = 1;
+				parse_preindexed_trans_operand(op, &instruction->word.trans);
+			}
+			else
+			{
+				// post-indexing
+				instruction->word.trans.is_pre = 0;
 
 			}
+
+		}
+	}
+}
+
+/*
+ * case 1: [Rn]
+ * case 2: [Rn,<#expression>]
+ * case 3: [Rn,{+/-}Rm{,<shift>}]
+ * */
+void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
+{
+	char* letters = operand.operand_data.letters;
+
+	if (strlen(letters) <= 5)
+	{
+		// [Rn]
+		trans->Rn = operand.operand_data.number;
+		trans->offset = 0;
+		trans->iFlag = 0;
+		trans->is_up = 1;
+	}
+	else
+	{
+		int length = strlen(letters) - 2;
+		char temp[length]; // to store the string without []
+		strncpy(temp, letters, length);
+
+		// Parse it, Rn stores rn,
+		// rest stores <#expression> or {+/-}Rm{,<shift>}
+		char *Rn = strtok(temp, ",");
+		char* rest = strtok(NULL, ",");
+
+		trans.Rn = strtol(Rn + 1, NULL, 0);
+
+		/*
+		 * if <#expression>, #3 for example
+		 * set offset
+		 * the offset is an immediate value -> iFlag = 0
+		 * set up bit
+		 * */
+		if (rest[0] == '#')
+		{
+			trans->offset = strtol(rest + 1, NULL, 0);
+			trans->iFlag = 0;
+			trans->is_up = 1;
 		}
 	}
 }
