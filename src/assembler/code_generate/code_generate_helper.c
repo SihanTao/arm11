@@ -82,10 +82,10 @@ uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
  * */
 void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTable symbol_table)
 {
-  allocate_address(token, symbol_table);
-  instruction->tag = DATA_PROCESS;
-  instruction->word.proc.cond = AL;
-  instruction->word.proc.opcode = opcode;
+	allocate_address(token, symbol_table);
+	instruction->tag = DATA_PROCESS;
+	instruction->word.proc.cond = AL;
+	instruction->word.proc.opcode = opcode;
 //Their syntax is <opcode> Rd, Rn, <Operand2>
 	switch (instruction->word.proc.opcode)
 	{
@@ -101,11 +101,12 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
 
 		//op2 in the form of <#expression>
 		int op2 = token->operands[2].operand_data.number;
-		int *rotate_amount = (int *) malloc(sizeof(int));
-		int *imm = (int *) malloc(sizeof(int));
+		int* rotate_amount = (int*)malloc(sizeof(int));
+		int* imm = (int*)malloc(sizeof(int));
 
 		//If the numeric constant cannot be represented, give an error.
-		if (!reverse_rotate(op2, rotate_amount, imm)) {
+		if (!reverse_rotate(op2, rotate_amount, imm))
+		{
 			perror("the numeric constant cannot be represented.");
 			exit(EXIT_FAILURE);
 		}
@@ -121,9 +122,10 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
 		instruction->word.proc.Rd = token->operands[0].operand_data.number;
 
 		int op2 = token->operands[1].operand_data.number;
-		int *rotate_amount = (int *) malloc(sizeof(int));
-		int *imm = (int *) malloc(sizeof(int));
-		if (!reverse_rotate(op2, rotate_amount, imm)) {
+		int* rotate_amount = (int*)malloc(sizeof(int));
+		int* imm = (int*)malloc(sizeof(int));
+		if (!reverse_rotate(op2, rotate_amount, imm))
+		{
 			perror("the numeric constant cannot be represented.");
 			exit(EXIT_FAILURE);
 		}
@@ -142,9 +144,10 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
 		instruction->word.proc.Rn = token->operands[0].operand_data.number;
 
 		int op2 = token->operands[1].operand_data.number;
-		int *rotate_amount = (int *) malloc(sizeof(int));
-		int *imm = (int *) malloc(sizeof(int));
-		if (!reverse_rotate(op2, rotate_amount, imm)) {
+		int* rotate_amount = (int*)malloc(sizeof(int));
+		int* imm = (int*)malloc(sizeof(int));
+		if (!reverse_rotate(op2, rotate_amount, imm))
+		{
 			perror("the numeric constant cannot be represented.");
 			exit(EXIT_FAILURE);
 		}
@@ -183,64 +186,74 @@ void token_to_mul(Token token, instruction_t* instruction)
 	}
 }
 
-void token_to_trans(Token token, instruction_t* instruction)
+void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolTable)
 {
+	allocate_address(token, symbolTable);
 	instruction->tag = TRANS;
 	instruction->word.trans.cond = AL;
+
 	if (strcmp(token->opcode, "ldr") == 0)
 	{
 		instruction->word.trans.is_load = 1;
-		operand_t op = token->operands;
-		instruction->word.trans.Rd = op.operand_data.number;
-		op = op.next; // op is the <address> now
+	}
+	else
+	{
+		instruction->word.trans.is_load = 0;
+	}
 
-		if (op.tag == NUMBER)
+	operand_t op = token->operands;
+	instruction->word.trans.Rd = op.operand_data.number;
+	op = op.next; // op is the <address> now
+
+	if (op.tag == NUMBER)
+	{
+		// <=expression> only possible for ldr instructions
+		int expression = op.operand_data.number;
+		if (expression < 0xFF)
 		{
-			// <=expression>
-			int expression = op.operand_data.number;
-			if (expression < 0xFF)
-			{
 //				Token mov_token =
-				instruction->tag = DATA_PROCESS;
-				instruction->word.proc.opcode = MOV;
-				// TODO: convert to a mov token
-			}
-			else
-			{
-				instruction->word.trans.is_up = 1;
-				instruction->word.trans.offset = 0;
-				//todo: get current location and new one( op.dddd)
-				instruction->word.trans.is_pre = 1;
-			}
+			instruction->tag = DATA_PROCESS;
+			instruction->word.proc.opcode = MOV;
+			// TODO: convert to a mov token
 		}
 		else
 		{
-			// Not dealing with optional
-			instruction->word.trans.is_pre = 1;
-			if (op.next == NULL)
-			{
-				// pre_indexed address specification
-				/* At this point, op.tag = STRING, op.letters contains the following case
-				 * case 1: [Rn] strlen = 4 ([R1]) or 5 ([R11], [R12])
-				 * case 2: [Rn, <#expression>] strlen > 5([R1,#..])
-				 * */
-				instruction->word.trans.is_pre = 1;
-				parse_preindexed_trans_operand(op, &instruction->word.trans);
-			}
-			else
-			{
-				// post-indexing
-				instruction->word.trans.is_pre = 0;
-				char* temp = op.operand_data.letters;
-				instruction->word.trans.Rn = strtol(temp + 1, NULL, 0);
-				op = op.next;
+			instruction->word.trans.is_up = 1;
 
-				if (op.operand_data.letters[0] == '#')
-				{
-					trans->offset = strtol(rest + 1, NULL, 0);
-					trans->iFlag = 0;
-					trans->is_up = 1;
-				}
+			//todo: get current location and new one( op.dddd)
+			// -8 considers the off-by-8 bytes effect of the pipeline
+			instruction->word.trans.offset = data_address - find_symbol_table(token->opcode) - 8;
+
+			instruction->word.trans.is_pre = 1;
+		}
+	}
+	else
+	{
+		// Not dealing with optional
+		instruction->word.trans.is_pre = 1;
+		if (op.next == NULL)
+		{
+			// pre_indexed address specification
+			/* At this point, op.tag = STRING, op.letters contains the following case
+			 * case 1: [Rn] strlen = 4 ([R1]) or 5 ([R11], [R12])
+			 * case 2: [Rn, <#expression>] strlen > 5([R1,#..])
+			 * */
+			instruction->word.trans.is_pre = 1;
+			parse_preindexed_trans_operand(op, &instruction->word.trans);
+		}
+		else
+		{
+			// post-indexing
+			instruction->word.trans.is_pre = 0;
+			char* temp = op.operand_data.letters;
+			instruction->word.trans.Rn = strtol(temp + 1, NULL, 0);
+			op = op.next;
+
+			if (op.operand_data.letters[0] == '#')
+			{
+				trans->offset = strtol(rest + 1, NULL, 0);
+				trans->iFlag = 0;
+				trans->is_up = 1;
 			}
 		}
 	}
@@ -291,6 +304,7 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 		}
 	}
 }
+
 uint32_t to_bcode_mov(Token cur_token)
 {
 	proc_t intermidiate_rep;
