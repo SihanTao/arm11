@@ -63,14 +63,17 @@ uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 	else if (find <= MLA_M)
 	{
 		// Multiply
+		token_to_mul(token, instruction);
 	}
 	else if (find <= STR_M)
 	{
 		// Single data transfer
+		token_to_trans(token, instruction, symbolTable);
 	}
 	else if (find <= B_M)
 	{
 		// Branch
+		token_to_instruction(token, symbolTable);
 	}
 
 	free_symbol_table(mnemonic_table);
