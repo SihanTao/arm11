@@ -54,6 +54,35 @@ bitfield encode(Token token, SymbolTable symbol_table,
 #define ENCODE_SET_COND false
 
 
+bitfield encode_proc(Token token)
+{
+  uint32_t result = 0;
+
+  set_bit_range(&result, AL, 28, 31);
+  set_bit_range(&result, find_opcode(token->type), 21, 24);
+  set_bit(&result, ENCODE_SET_COND, 20);
+
+  no_reg_t           Rd = token->operands[0].reg;
+  no_reg_t           Rn = token->type == MOV ? 0 : token->operands[1].reg;
+  token_reg_or_imm_t r_o_i = is_arith(tokne->type)
+                                    ? token->operands[2].reg_or_imm
+                                    : token->operands[1].reg_or_imm;
+  bool set_cond = is_test_cmp(token->type);
+
+  bool iFlag = 0;
+  int operand2 = 0;
+
+  reg_or_imm_handle(r_o_i, &iFlag, &operand2);
+  reg_imm_helper(instruction.iFlag, instruction.operand2, result);
+
+  set_bit(&result, iFlag, 25);
+
+  set_bit_range(&result, Rn, 16, 19);
+  set_bit_range(&result, Rd, 12, 15);
+  set_bit_range(&result, operand2, ...);
+}
+
+
 
 void token_to_trans(Token token, TokenStream token_stream,
                     SymbolTable symbolTable)
