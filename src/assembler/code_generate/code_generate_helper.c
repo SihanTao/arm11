@@ -308,10 +308,17 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbolTable)
 {
 	char *opcode = token->opcode;
+	// TODO: deal with condition
+
+
 	char *label = token->operands->operand_data.letters;
 	int label_address = find_symbol_table(label, symbolTable);
 
-
+	// Compute the offset between the current adddress and the label
+	// Take into account the off-by-8 bytes effect
+	int offset = label_address - token->address - 8;
+	offset >>= 2;
+	instruction->word.branch.offset = offset;
 }
 
 uint32_t to_bcode_mov(Token cur_token)
