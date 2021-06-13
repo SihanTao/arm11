@@ -12,20 +12,22 @@
 #include "../utils/load_store.h"
 #include "../utils/output.h"
 
-static bitfield           fetch(size_t pc, byte *memory);
-static void               free_all(ArmState arm_state, pipelines_t pipelines);
+static bitfield fetch(size_t pc, byte *memory);
+
+static void flash_cycle(size_t *pc, pipelines_t pipelines);
+
+static void preheat_pipeline(ArmState arm_state, pipelines_t pipelines);
+static void free_all(ArmState arm_state, pipelines_t pipelines);
+static void free_pipeline(single_pipeline_t *pipeline);
 static single_pipeline_t *init_single_pipeline(void);
 static pipelines_t        init_pipelines(void);
-static void               free_pipeline(single_pipeline_t *pipeline);
-static void               flash_cycle(size_t *pc, pipelines_t pipelines);
-void preheat_pipeline(ArmState arm_state, pipelines_t pipelines);
 
 int main(int argc, char **argv)
 {
-  char *file_name = "add01";
+  char *file_name = argv[1];
 
   ArmState arm_state = init_state();
-  read_file_to_mem(file_name, arm_state->memory, LITTLE);
+  init_memory(file_name, arm_state->memory);
   pipelines_t pipelines = init_pipelines();
 
   // skip the first two cycles
@@ -56,13 +58,6 @@ int main(int argc, char **argv)
   return EXIT_SUCCESS;
 }
 
-pipelines_t init_pipelines(void)
-{
-  pipelines_t result
-      = { .current = init_single_pipeline(), .next = init_single_pipeline() };
-  return result;
-}
-
 void flash_cycle(size_t *pc, pipelines_t pipelines)
 {
   single_pipeline_t temp;
@@ -81,20 +76,24 @@ void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)
   flash_cycle(&arm_state->pc, pipelines);
 }
 
+pipelines_t init_pipelines(void)
+{
+  pipelines_t result
+      = { .current = init_single_pipeline(), .next = init_single_pipeline() };
+  return result;
+}
+
 single_pipeline_t *init_single_pipeline(void)
 {
   single_pipeline_t *result = malloc(sizeof(single_pipeline_t));
   if (result == NULL)
   {
-    return NULL;
+    perror("Error! out of memory!\n");
+    exit(EXIT_FAILURE);
   }
 
-  result->fetched.byte1 = 0;
-  result->fetched.byte2 = 0;
-  result->fetched.byte3 = 0;
-  result->fetched.byte4 = 0;
-
-  result->decoded.tag    = UNDEFINED;
+  result->fetched     = 0;
+  result->decoded.tag = UNDEFINED;
 
   return result;
 }

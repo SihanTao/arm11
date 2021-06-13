@@ -7,13 +7,16 @@
 #include "../../global_utils/tools.h"
 #include "../utils/load_store.h"
 
-static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
-                                  uint32_t operand2, bool *new_flag_c);
-
 bool is_neg(uint32_t val) { return get_bit(val, 31); }
 
 value_carry_t rotate(uint32_t target, int rotate_amount)
 {
+  if (rotate_amount < 0 || rotate_amount >= NUM_OF_BIT_IN_WORD)
+  {
+    perror("Error! rotate_amount should in between 0 - 31\n");
+    exit(EXIT_FAILURE);
+  }
+
   value_carry_t result;
   if (rotate_amount == 0)
   {
@@ -22,21 +25,27 @@ value_carry_t rotate(uint32_t target, int rotate_amount)
     return result;
   }
 
-  result.value
-      = (target << (WORD_SIZE - rotate_amount)) | (target >> rotate_amount);
+  result.value = (target << (NUM_OF_BIT_IN_WORD - rotate_amount))
+                 | (target >> rotate_amount);
   result.carry = get_bit(target, rotate_amount - 1);
   return result;
 }
 
 value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
 {
-  if (shift_amount < 1 || shift_amount >= WORD_SIZE)
+  if (shift_amount < 0 || shift_amount >= NUM_OF_BIT_IN_WORD)
   {
     perror("shift_amount should in between 0 - 31");
     exit(EXIT_FAILURE);
   }
 
   value_carry_t result;
+  if (shift_amount == 0)
+  {
+    result.value = target;
+    result.carry = 0;
+    return result;
+  }
 
   // execept LSL, other carry is defined as shift_amount - 1 bit of target
   result.carry = get_bit(target, shift_amount - 1);
@@ -46,7 +55,7 @@ value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
   case LSL: // logical shift left
   {
     result.value = target << shift_amount;
-    result.carry = get_bit(target, WORD_SIZE - shift_amount);
+    result.carry = get_bit(target, NUM_OF_BIT_IN_WORD - shift_amount);
     return result;
   }
   case LSR: // logical shift right
@@ -57,9 +66,10 @@ value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
   case ASR: // arithmetic shift right
   {
     // padding the 31th bit to result value
-    uint32_t padmask
-        = get_bit(target, 31) ? ALL_ONE << (WORD_SIZE - shift_amount) : 0;
-    result.value = target >> shift_amount | padmask;
+    uint32_t padmask = get_bit(target, 31)
+                           ? ALL_ONE << (NUM_OF_BIT_IN_WORD - shift_amount)
+                           : 0;
+    result.value     = target >> shift_amount | padmask;
     return result;
   }
   case ROR: // rotate right
@@ -69,7 +79,6 @@ value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
   default:
     perror("Internal error! unknown shift type!");
     exit(EXIT_FAILURE);
-    ;
   }
 }
 
@@ -78,12 +87,12 @@ bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
   bool N = arm_state->neg;
   bool V = arm_state->ovflw;
   // cond is at the same position in all cases
-  switch (instruction.word.proc.cond)
+  switch (instruction.cond)
   {
   case EQ:
-    return (N);
-  case NE:
     return (!N);
+  case NE:
+    return (N);
   case GE:
     return (N == V);
   case LT:
@@ -95,9 +104,8 @@ bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
   case AL:
     return true;
   default:
-    return true;
-    // perror("Internal error! unknown cond type!");
-    // exit(EXIT_FAILURE);
+    perror("Internal error! unknown cond type!");
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -113,7 +121,7 @@ void reg_imm_handle(bitfield *reg, reg_or_imm_t reg_imm, bool is_imm,
   }
   else // is shifted register
   {
-    result = shift(to_int(reg[reg_imm.shift_reg.Rm]), reg_imm.shift_reg.val,
+    result = shift(reg[reg_imm.shift_reg.Rm], reg_imm.shift_reg.val,
                    reg_imm.shift_reg.type);
   }
 
@@ -124,10 +132,10 @@ void reg_imm_handle(bitfield *reg, reg_or_imm_t reg_imm, bool is_imm,
   }
 }
 
-void execute_DP(proc_t instruction, ArmState arm_state)
+void execute_proc(proc_t instruction, ArmState arm_state)
 {
-  bitfield *reg = arm_state->reg;
-  uint32_t  Rn  = to_int(reg[instruction.Rn]);
+  bitfield *reg    = arm_state->reg;
+  uint32_t  Rn_val = reg[instruction.Rn];
   uint32_t  operand2;
   bool      new_flag_c;
 
@@ -136,13 +144,13 @@ void execute_DP(proc_t instruction, ArmState arm_state)
                  &new_flag_c);
 
   uint32_t result
-      = dp_carried_result(instruction.opcode, Rn, operand2, &new_flag_c);
+      = dp_carried_result(instruction.opcode, Rn_val, operand2, &new_flag_c);
 
   // update the result if opcode is NOT (TST, TEQ or CMP)
   if (instruction.opcode != TST && instruction.opcode != TEQ
       && instruction.opcode != CMP)
   {
-    reg[instruction.Rd] = to_bf(result);
+    reg[instruction.Rd] = result;
   }
 
   // if set_cond bit is set, change the CPRS flags
@@ -154,15 +162,8 @@ void execute_DP(proc_t instruction, ArmState arm_state)
   }
 }
 
-/*
- * find the result for data processing instruction
- * `new_flag_c` is a output param, it should accept a carry bit from shift
- * barrel, and it will update this flag_c according to opcode type
- * i.e. keep the value if it is a logical operation and change it to
- * arithmetic carry out if it is a arithmetic carry out
- */
-static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
-                                  uint32_t operand2, bool *new_flag_c)
+uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
+                           uint32_t operand2, bool *new_flag_c)
 {
   uint32_t result;
   switch (opcode)
@@ -208,22 +209,21 @@ static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
   }
 }
 
-void execute_TRANS(trans_t instruction, ArmState arm_state)
+void execute_trans(trans_t instruction, ArmState arm_state)
 {
-  if (instruction.Rn == 15) // pc
+  bitfield *reg    = arm_state->reg;
+  uint32_t  Rn_val = reg[instruction.Rn];
+  if (instruction.Rn == PC)
   {
-    perror("Doesn't support to load or store PC! \n");
-    exit(EXIT_FAILURE);
+    Rn_val = Rn_val + 8;
   }
-
-  bitfield *reg = arm_state->reg;
-  uint32_t  Rn  = to_int(reg[instruction.Rn]);
   uint32_t  offset;
 
   // if i bit is set to 0, is immediate value else is shifted register
   reg_imm_handle(reg, instruction.offset, !instruction.iFlag, &offset, NULL);
   // if is_up is set then offset is added to Rn. Otherwise subtracted from Rn.
-  size_t address_with_offset = (instruction.is_up) ? Rn + offset : Rn - offset;
+  size_t address_with_offset
+      = (instruction.is_up) ? Rn_val + offset : Rn_val - offset;
   size_t address;
 
   if (instruction.is_pre)
@@ -234,8 +234,8 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
   else // is post indexing
   {
     // post-indexing changes the contents of the base register by the offset.
-    address             = Rn;
-    reg[instruction.Rn] = to_bf(address_with_offset);
+    address             = Rn_val;
+    reg[instruction.Rn] = address_with_offset;
   }
 
   if (instruction.is_load)
@@ -248,24 +248,24 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
   }
 }
 
-void execute_MUL(mul_t instruction, ArmState arm_state)
+void execute_mul(mul_t instruction, ArmState arm_state)
 {
   // pre: PC is not used as operand or destination register
   //      Rd will not be the same as Rm
   bitfield *reg    = arm_state->reg;
-  uint32_t  Rm     = to_int(reg[instruction.Rm]);
-  uint32_t  Rs     = to_int(reg[instruction.Rs]);
-  uint32_t  Rn     = to_int(reg[instruction.Rn]);
-  uint32_t  result = Rm * Rs;
+  uint32_t  Rm_val = reg[instruction.Rm];
+  uint32_t  Rs_val = reg[instruction.Rs];
+  uint32_t  Rn_val = reg[instruction.Rn];
+  uint32_t  result = Rm_val * Rs_val;
 
   // the accumulate bit is set
   if (instruction.acc)
   {
-    result += Rn;
+    result += Rn_val;
   }
 
   // Save the result
-  reg[instruction.Rd] = to_bf(result);
+  reg[instruction.Rd] = result;
 
   // If the set_cond bit is set, we need to update the CPSR
   if (instruction.set_cond)
@@ -275,9 +275,9 @@ void execute_MUL(mul_t instruction, ArmState arm_state)
   }
 }
 
-void execute_BRANCH(branch_t instruction, ArmState arm_state)
+void execute_bran(branch_t instruction, ArmState arm_state)
 {
-  uint32_t offset   = to_int(arm_state->reg[instruction.offset]);
+  uint32_t offset   = arm_state->reg[instruction.offset];
   int      sign_bit = get_bit(offset, 24);
   offset <<= 2;
 
@@ -287,6 +287,5 @@ void execute_BRANCH(branch_t instruction, ArmState arm_state)
     offset |= BRANCH_PAD_MASK;
   }
 
-  // PC is 8 bytes ahead of the instruction that is being executed
-  arm_state->pc += offset - 8;
+  arm_state->pc += offset;
 }

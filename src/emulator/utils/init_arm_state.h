@@ -2,8 +2,9 @@
 #define INIT_ARM_STATE
 
 /*
- * initialize ArmState to all 0
- * out of memory problem is handled inside function
+ * initialize `ArmState` to all 0
+ *
+ * - if running out of memory, it will print error and exit
  */
 extern ArmState init_state(void);
 extern void free_state(ArmState state);
