@@ -6,7 +6,7 @@
 
 ArmState init_state()
 {
-  ArmState result = (ArmState)malloc(sizeof(arm_state_struct));
+  ArmState result = malloc(sizeof(arm_state_struct));
   if (result == NULL)
   {
     perror("Out of memory!");
