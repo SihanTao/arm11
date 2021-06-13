@@ -259,7 +259,7 @@ void execute_mul(mul_t instruction, ArmState arm_state)
   uint32_t  result = Rm_val * Rs_val;
 
   // the accumulate bit is set
-  if (instruction.acc)
+  if (instruction.is_mla)
   {
     result += Rn_val;
   }

@@ -58,7 +58,7 @@ int main(void)
     instruction_t instruction2 = decode(mul);
     test_int_v(instruction2.tag, MUL, "mul r2,r1,r0 == multiply");
     test_int_v(instruction2.cond, AL, "mul r2,r1,r0 cond == always");
-    test_int_v(instruction2.word.mul.acc, 0, "mul r2,r1,r0 acc == 0");
+    test_int_v(instruction2.word.mul.is_mla, 0, "mul r2,r1,r0 is_mla == 0");
     test_int_v(instruction2.word.mul.Rd, 2, "mul r2,r1,r0 Rd == 2");
     test_int_v(instruction2.word.mul.Rn, 0, "mul r2,r1,r0 Rn == 0");
     test_int_v(instruction2.word.mul.Rs, 0, "mul r2,r1,r0 Rs == 0");

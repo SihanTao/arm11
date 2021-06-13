@@ -89,7 +89,7 @@ instruction_t decode_mul(bitfield fetched)
 
   result.tag               = MUL;
   result.cond     = get_bit_range(fetched, 28, 31);
-  result.word.mul.acc      = get_bit(fetched, 21);
+  result.word.mul.is_mla      = get_bit(fetched, 21);
   result.word.mul.set_cond = get_bit(fetched, 20);
   result.word.mul.Rd       = get_bit_range(fetched, 16, 19);
   result.word.mul.Rn       = get_bit_range(fetched, 12, 15);
