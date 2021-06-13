@@ -165,7 +165,7 @@ typedef struct mul_t
   no_reg_t Rn;
   no_reg_t Rd;
   bool     set_cond;
-  bool     acc;
+  bool     is_mla;
 } mul_t;
 
 typedef struct trans_t
