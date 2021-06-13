@@ -36,7 +36,7 @@ operand_t *gen_operand(char *trimed)
   else if (trimed[0] == '=')
   {
     current_operand->tag                 = NUMBER;
-    current_operand->operand_data.number = strtol(trimed, NULL, 16);
+    current_operand->operand_data.number = strtol(trimed + 1, NULL, 16);
     free(trimed);
   }
   else
@@ -56,20 +56,22 @@ Token tokenize(char *line)
     exit(EXIT_FAILURE);
   }
 
-  char **cur_pos = &line;
-  char * trimed;
+  char *      trimed;
+  int         count;
+  char **     cur_pos        = &line;
+  operand_t **operand_holder = &token->operands;
 
   // initialize opcode
   trim(cur_pos, ' ', &token->opcode);
 
   // initialize operands
-  operand_t **operand_holder = &token->operands;
-  while (*cur_pos != NULL)
+  for (count = 0; *cur_pos != NULL; count++)
   {
     trim(cur_pos, ',', &trimed);
     *operand_holder = gen_operand(trimed);
     operand_holder  = &(*operand_holder)->next;
   }
 
+  token->num_of_operands = count;
   return token;
 }

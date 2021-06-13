@@ -35,6 +35,7 @@ uint32_t to_int(bitfield bf)
     bf = convert_endian(bf);
   }
   uint32_t *result = (uint32_t *)&bf;
+  printf("*result :>> %p\n,", *result); //DELETE_MARK
   return *result;
 }
 
@@ -56,7 +57,7 @@ int get_bit_range(int target, int start, int end)
   assert(start <= MAX_BIT_INDEX && start >= 0);
   assert(start < end);
   int      length = end - start + 1;
-  uint32_t mask   = ALL_ONE >> (MAX_BIT_INDEX - length);
+  uint32_t mask   = ALL_ONE >> (WORD_BIT_LENGTH - length);
   return (target >> start) & mask;
 }
 
@@ -72,6 +73,6 @@ void set_bit_range(uint32_t *dest, int src, int start, int end)
   assert(start <= MAX_BIT_INDEX && start >= 0);
   assert(start < end);
   int      length   = end - start + 1;
-  uint32_t selector = ~((ALL_ONE >> (MAX_BIT_INDEX - length)) << start);
+  uint32_t selector = ~((ALL_ONE >> (WORD_BIT_LENGTH - length)) << start);
   *dest             = (*dest & selector) | (src << start);
 }

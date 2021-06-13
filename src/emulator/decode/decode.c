@@ -13,7 +13,9 @@ static instruction_t decode_trans(uint32_t fetched);
 
 instruction_t decode(bitfield fetched)
 {
-  uint32_t fetched_val;
+  uint32_t fetched_val = to_int(fetched);
+  printf("fetched_val :>> %p\n,", fetched_val); //DELETE_MARK
+  printf("get_bit_range(fetched_val, 28, 31) :>> %x\n,", get_bit_range(fetched_val, 28, 31)); //DELETE_MARK
   if (fetched_val == 0)
   {
     instruction_t result;
@@ -59,6 +61,7 @@ reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched)
 instruction_t decode_branch(uint32_t fetched)
 {
   instruction_t result;
+  result.tag = BRANCH;
   result.word.branch.cond   = get_bit_range(fetched, 28, 31);
   result.word.branch.offset = get_bit_range(fetched, 0, 23);
   return result;
@@ -68,6 +71,7 @@ instruction_t decode_dp(uint32_t fetched)
 {
   instruction_t result;
 
+  result.tag = DATA_PROCESS;
   result.word.proc.cond = get_bit_range(fetched, 28, 31);
   result.word.proc.iFlag = get_bit(fetched, 25);
   result.word.proc.opcode = get_bit_range(fetched, 21, 24);
@@ -81,6 +85,8 @@ instruction_t decode_dp(uint32_t fetched)
 instruction_t decode_mul(uint32_t fetched)
 {
   instruction_t result;
+
+  result.tag = MUL;
   result.word.mul.cond = get_bit_range(fetched, 28, 31);
   result.word.mul.acc = get_bit(fetched, 21);
   result.word.mul.set_cond = get_bit(fetched, 20);
@@ -94,6 +100,8 @@ instruction_t decode_mul(uint32_t fetched)
 instruction_t decode_trans(uint32_t fetched)
 {
   instruction_t result;
+
+  result.tag = TRANS;
   result.word.trans.cond = get_bit_range(fetched, 28, 31);
   result.word.trans.iFlag = get_bit(fetched, 25);
   result.word.trans.is_pre = get_bit(fetched, 24);

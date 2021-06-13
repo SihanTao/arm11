@@ -77,16 +77,16 @@ typedef enum ins_type
 
 typedef enum pd_opcode_type
 {
-  AND,
-  EOR,
-  SUB,
-  RSB,
-  ADD,
-  TST,
-  TEQ,
-  CMP,
-  ORR,
-  MOV
+  AND = 0,
+  EOR = 1,
+  SUB = 2,
+  RSB = 3,
+  ADD = 4,
+  TST = 8,
+  TEQ = 9,
+  CMP = 10,
+  ORR = 12,
+  MOV = 13
 } pd_opcode_type;
 
 typedef enum shift_type
@@ -106,12 +106,12 @@ typedef enum trans_type
 typedef enum cond_type
 {
   EQ = 0,  // equal
-  NE,      // not equal
+  NE = 1,  // not equal
   GE = 10, // greater or equal
-  LT,      // less than
-  GT,      // greater than
-  LE,      // less than or equal
-  AL       // always
+  LT = 11, // less than
+  GT = 12, // greater than
+  LE = 13, // less than or equal
+  AL = 14  // always
 } cond_type;
 
 typedef enum no_reg_t
@@ -134,9 +134,9 @@ typedef enum no_reg_t
 
 typedef struct shift_reg_t
 {
-  int val;  // amount of shifting
+  int        val;  // amount of shifting
   shift_type type; // datatype : shift type
-  no_reg_t Rm;
+  no_reg_t   Rm;
 } shift_reg_t;
 
 typedef struct rot_imm_t
@@ -147,7 +147,7 @@ typedef struct rot_imm_t
 
 typedef union reg_or_imm_t
 {
-  rot_imm_t rot_imm;
+  rot_imm_t   rot_imm;
   shift_reg_t shift_reg;
 } reg_or_imm_t;
 
@@ -164,41 +164,41 @@ typedef struct bitfield
 
 typedef struct proc_t
 {
-  reg_or_imm_t operand2;
-  no_reg_t Rd;
-  no_reg_t Rn;
-  bool set_cond;
+  reg_or_imm_t   operand2;
+  no_reg_t       Rd;
+  no_reg_t       Rn;
+  bool           set_cond;
   pd_opcode_type opcode; // datatype : pd_opcode_type
-  bool iFlag; // else is register
-  cond_type cond;
+  bool           iFlag;  // else is register
+  cond_type      cond;
 } proc_t;
 
 typedef struct mul_t
 {
-  no_reg_t Rm;
-  no_reg_t Rs;
-  no_reg_t Rn;
-  no_reg_t Rd;
-  bool set_cond;
-  bool acc;
+  no_reg_t  Rm;
+  no_reg_t  Rs;
+  no_reg_t  Rn;
+  no_reg_t  Rd;
+  bool      set_cond;
+  bool      acc;
   cond_type cond;
 } mul_t;
 
 typedef struct trans_t
 {
   reg_or_imm_t offset;
-  no_reg_t Rd;
-  no_reg_t Rn;
-  bool is_load; // else is store
-  bool is_up;   // else is down
-  bool is_pre;  // else is post
-  bool iFlag;  // 0 -> immediate value; 1 -> register
-  cond_type cond;
+  no_reg_t     Rd;
+  no_reg_t     Rn;
+  bool         is_load; // else is store
+  bool         is_up;   // else is down
+  bool         is_pre;  // else is post
+  bool         iFlag;   // 0 -> immediate value; 1 -> register
+  cond_type    cond;
 } trans_t;
 
 typedef struct branch_t
 {
-  int offset ;
+  int       offset;
   cond_type cond;
 } branch_t;
 
@@ -213,9 +213,9 @@ typedef struct
   enum ins_type tag;
   union
   {
-    proc_t proc;
-    mul_t mul;
-    trans_t trans;
+    proc_t   proc;
+    mul_t    mul;
+    trans_t  trans;
     branch_t branch;
   } word;
 } instruction_t;
@@ -238,13 +238,13 @@ typedef struct
  */
 typedef struct arm_state_struct
 {
-  size_t pc;
+  size_t    pc;
   bitfield *reg;
-  byte *memory;
-  bool neg;
-  bool zero;
-  bool carry;
-  bool ovflw; // overflow
+  byte *    memory;
+  bool      neg;
+  bool      zero;
+  bool      carry;
+  bool      ovflw; // overflow
 } arm_state_struct;
 
 typedef arm_state_struct *ArmState;
