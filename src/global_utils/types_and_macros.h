@@ -32,25 +32,18 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef uint8_t byte;
-
-// default target machine endian is littel
-#define TARGET_MACHINE_ENDIAN LITTLE
-
-typedef enum endian_type
-{
-  BIG,
-  LITTLE
-} endian_type;
+typedef uint8_t  byte;
+typedef uint32_t bitfield;
 
 // res-pi has 64k of memory, thus max address is 65536
 #define MAX_MEMORY_ADDRESS (65536)
 
 // word_size = 32 (4 bytes)
-#define WORD_SIZE (32)
+#define NUM_OF_BIT_IN_WORD  (32)
+#define NUM_OF_BYTE_IN_WORD (4)
 
 // 12 general purpose registers
-#define NUM_OF_REG (12)
+#define NUM_OF_REG (13)
 
 typedef enum exit_type
 {
@@ -68,10 +61,10 @@ typedef enum exit_type
 typedef enum ins_type
 {
   UNDEFINED,
-  DATA_PROCESS,
+  PROC,
   MUL,   // Multiplication
   TRANS, // Single data transfer
-  BRANCH,
+  BRAN,
   ZERO
 } ins_type;
 
@@ -116,7 +109,8 @@ typedef enum cond_type
 
 typedef enum no_reg_t
 {
-  R1 = 1,
+  R0,
+  R1,
   R2,
   R3,
   R4,
@@ -128,6 +122,7 @@ typedef enum no_reg_t
   R10,
   R11,
   R12,
+  PC = 15
 } no_reg_t;
 
 /************** components for words ***********************/
@@ -153,15 +148,6 @@ typedef union reg_or_imm_t
 
 /****************** words *****************/
 
-// represents word in memory and registers
-typedef struct bitfield
-{
-  byte byte4;
-  byte byte3;
-  byte byte2;
-  byte byte1;
-} bitfield;
-
 typedef struct proc_t
 {
   reg_or_imm_t   operand2;
@@ -170,18 +156,16 @@ typedef struct proc_t
   bool           set_cond;
   pd_opcode_type opcode; // datatype : pd_opcode_type
   bool           iFlag;  // else is register
-  cond_type      cond;
 } proc_t;
 
 typedef struct mul_t
 {
-  no_reg_t  Rm;
-  no_reg_t  Rs;
-  no_reg_t  Rn;
-  no_reg_t  Rd;
-  bool      set_cond;
-  bool      acc;
-  cond_type cond;
+  no_reg_t Rm;
+  no_reg_t Rs;
+  no_reg_t Rn;
+  no_reg_t Rd;
+  bool     set_cond;
+  bool     acc;
 } mul_t;
 
 typedef struct trans_t
@@ -193,13 +177,11 @@ typedef struct trans_t
   bool         is_up;   // else is down
   bool         is_pre;  // else is post
   bool         iFlag;   // 0 -> immediate value; 1 -> register
-  cond_type    cond;
 } trans_t;
 
 typedef struct branch_t
 {
-  int       offset;
-  cond_type cond;
+  int offset;
 } branch_t;
 
 /************************** tagged instruction *************************/
@@ -211,6 +193,7 @@ typedef struct branch_t
 typedef struct
 {
   enum ins_type tag;
+  cond_type     cond;
   union
   {
     proc_t   proc;
@@ -221,6 +204,17 @@ typedef struct
 } instruction_t;
 
 /************************** tagged instruction end ************************/
+
+typedef struct arm_state_struct
+{
+  size_t    pc;
+  bitfield *reg;
+  byte *    memory;
+  bool      neg;
+  bool      zero;
+  bool      carry;
+  bool      ovflw; // overflow
+} arm_state_struct;
 
 /*
  * The struct used to hold the state of the machine
@@ -236,17 +230,6 @@ typedef struct
  *   code compatible with both big and little endian
  *   machines
  */
-typedef struct arm_state_struct
-{
-  size_t    pc;
-  bitfield *reg;
-  byte *    memory;
-  bool      neg;
-  bool      zero;
-  bool      carry;
-  bool      ovflw; // overflow
-} arm_state_struct;
-
 typedef arm_state_struct *ArmState;
 
 #endif // TYPES_AND_MACROS
