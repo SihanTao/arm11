@@ -109,6 +109,28 @@ bitfield encode_mul(Token token)
 
 
 
+#define BRAN_IDENTIFIER 0xa
+
+bitfield encode_bran(Token token, SymbolTable symbol_table)
+{
+  bitfield result;
+  cond_type cond = find_cond(token->type);
+  char *label         = token->operands[0].label
+  int   label_address = find_symbol_table(label, symbolTable);
+
+  // Compute the offset between the current address and the label
+  // Take into account the off-by-8 bytes effect
+  int offset = label_address - token->address - 8;
+  offset >>= 2;
+  set_bit_range(&result, BRAN_IDENTIFIER, 24, 27);
+  set_bit_range(&result, cond, 28, 31);
+  set_bit_range(&result, offset, 0, 23);
+  return result;
+}
+
+
+
+
 void token_to_trans(Token token, TokenStream token_stream,
                     SymbolTable symbolTable)
 {
