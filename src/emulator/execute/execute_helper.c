@@ -218,7 +218,7 @@ void execute_trans(trans_t instruction, ArmState arm_state)
   {
     Rn_val = Rn_val + 8;
   }
-  uint32_t  offset;
+  uint32_t offset;
 
   // if i bit is set to 0, is immediate value else is shifted register
   reg_imm_handle(reg, instruction.offset, !instruction.iFlag, &offset, NULL);
@@ -280,7 +280,7 @@ void execute_bran(branch_t instruction, ArmState arm_state)
 {
   // offset can be negative or positive
   int offset   = instruction.offset;
-  int      sign_bit = get_bit(offset, 23);
+  int sign_bit = get_bit(offset, 23);
   offset <<= 2;
 
   // if is negative padding 1s to left
