@@ -308,8 +308,11 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbolTable)
 {
 	char *opcode = token->opcode;
-	// TODO: deal with condition
-
+	// deal with condition
+	SymbolTable cond_table = create_cond_table();
+	int cond = find_symbol_table(opcode, cond_table);
+	instruction->word.branch.cond = cond;
+	free_symbol_table(cond_table);
 
 	char *label = token->operands->operand_data.letters;
 	int label_address = find_symbol_table(label, symbolTable);
