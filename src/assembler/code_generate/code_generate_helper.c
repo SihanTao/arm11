@@ -321,6 +321,19 @@ void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbol
 	instruction->word.branch.offset = offset;
 }
 
+SymbolTable create_cond_table()
+{
+	SymbolTable cond_table = init_symbol_table();
+	add_symbol_table("bnq", EQ, cond_table);
+	add_symbol_table("bne", NE, cond_table);
+	add_symbol_table("bge", GE, cond_table);
+	add_symbol_table("blt", LT, cond_table);
+	add_symbol_table("bgt", GT, cond_table);
+	add_symbol_table("ble", LE, cond_table);
+	add_symbol_table("b", AL, cond_table);
+	return cond_table;
+}
+
 uint32_t to_bcode_mov(Token cur_token)
 {
 	proc_t intermidiate_rep;
