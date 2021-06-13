@@ -87,6 +87,7 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
   instruction->word.proc.cond = AL;
   instruction->word.proc.opcode = opcode;
 
+  //Their syntax is <opcode> Rd, Rn, <Operand2>
   switch (instruction->word.proc.opcode)
   {
   case ADD:
@@ -99,9 +100,12 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
     instruction->word.proc.Rd = token->operands[0].operand_data.number;
     instruction->word.proc.Rn = token->operands[1].operand_data.number;
 
+    //op2 in the form of <#expression>
     int op2 = token->operands[2].operand_data.number;
     int *rotate_amount = (int *) malloc(sizeof(int));
     int *imm = (int *) malloc(sizeof(int));
+
+    //If the numeric constant cannot be represented, give an error.
     if (!reverse_rotate(op2, rotate_amount, imm)) {
       perror("the numeric constant cannot be represented.");
       exit(EXIT_FAILURE);
@@ -112,6 +116,7 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
     free(imm);
     break;
 
+  //Its syntax is: mov Rd, <Operand2>
   case MOV:
     instruction->word.proc.set_cond = 0;
     instruction->word.proc.Rd = token->operands[0].operand_data.number;
@@ -130,6 +135,7 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
 
     break;
 
+  //Their syntax is: <opcode> Rn, <Operand2>
   case TST:
   case TEQ:
   case CMP:
