@@ -38,4 +38,10 @@ void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolT
 void parse_preindexed_trans_operand(operand_t operand, trans_t *trans);
 void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbolTable);
 SymbolTable create_cond_table();
+
+uint32_t encode_DP(proc_t instruction);
+uint32_t encode_MUL(mul_t instruction);
+uint32_t encode_TRANS(trans_t instruction);
+uint32_t encode_BRANCH(branch_t instruction);
+
 #endif //ARM11_49_SRC_ASSEMBLER_CODE_GENERATE_CODE_GENERATE_HELPER_H_
