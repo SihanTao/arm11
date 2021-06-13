@@ -14,7 +14,7 @@ int main(void)
 
     for (int i = 0; i < NUM_OF_REG; i++)
     {
-      arm_state->reg[i] = to_bf(i + 0xFFAA00A0);
+      arm_state->reg[i] = i + 0xFFAA00A0;
     }
 
     for (int i = 0; i < 30; i++)

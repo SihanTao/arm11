@@ -10,7 +10,6 @@ bitfield load(size_t address, byte *memory)
   bitfield result;
   if (address > MAX_MEMORY_ADDRESS - 4 || address < 0)
   {
-    printf("address :>> %d\n,", address); //DELETE_MARK
     perror("Error! Reading from invalid address!");
     exit(EXIT_FAILURE);
   }

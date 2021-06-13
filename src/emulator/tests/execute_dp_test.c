@@ -22,17 +22,17 @@ int main(void)
             .opcode   = AND,
             .iFlag    = false, // op2 is a register
             0,
-            .cond = 0 };
+            };
     arm_state         = init_state();
-    arm_state->reg[1] = to_bf(0x0000000B); // Rm = 0b1011
-    arm_state->reg[2] = to_bf(0);          // Rd
-    arm_state->reg[3] = to_bf(2);          // Rn = 0b10
+    arm_state->reg[1] = 0x0000000B; // Rm = 0b1011
+    arm_state->reg[2] = 0;          // Rd
+    arm_state->reg[3] = 2;          // Rn = 0b10
 
-    execute_DP(dp_ins1, arm_state);
+    execute_proc(dp_ins1, arm_state);
 
     printf("arm_state->reg[2] :>> %p\n,", arm_state->reg[2]); // DELETE_MARK
 
-    test_int_v(to_int(arm_state->reg[2]),
+    test_int_v(arm_state->reg[2],
                2, // 0b10
                "Rm = 1011, Rn = 10, 1011 becomes 10110, 10110 AND 10, so Rd = "
                "10, set_cond = false S = false iFlag = false");
@@ -48,15 +48,15 @@ int main(void)
             .opcode   = SUB,
             .iFlag    = false, // op2 is a register
             0,
-            .cond = 1 };
+            };
     arm_state         = init_state();
-    arm_state->reg[1] = to_bf(0xA000000B); // Rm = 1010..1011
-    arm_state->reg[2] = to_bf(0);          // Rd
-    arm_state->reg[3] = to_bf(0xF8000002); // Rn = 1111100..00010
+    arm_state->reg[1] = 0xA000000B; // Rm = 1010..1011
+    arm_state->reg[2] = 0;          // Rd
+    arm_state->reg[3] = 0xF8000002; // Rn = 1111100..00010
 
-    execute_DP(dp_ins2, arm_state);
+    execute_proc(dp_ins2, arm_state);
 
-    test_int_v(to_int(arm_state->reg[2]),
+    test_int_v(arm_state->reg[2],
                0xe4000001, // 1000...0001
                "Rm = 1010..1011, LSR becomes 0x14000001, "
                "F8000002 - 0x14000001, so Rd = e4000001, "
@@ -73,15 +73,15 @@ int main(void)
             .opcode   = TST,
             .iFlag    = false, // op2 is a register
             0,
-            .cond = 0 };
+            };
     arm_state         = init_state();
-    arm_state->reg[1] = to_bf(0x0000005D); // Rm = 1011101
-    arm_state->reg[2] = to_bf(0xFFFFABCD); // Rd
-    arm_state->reg[3] = to_bf(3);          // Rn = 11
+    arm_state->reg[1] = 0x0000005D; // Rm = 1011101
+    arm_state->reg[2] = 0xFFFFABCD; // Rd
+    arm_state->reg[3] = 3;          // Rn = 11
 
-    execute_DP(dp_ins3, arm_state);
+    execute_proc(dp_ins3, arm_state);
 
-    test_int_v(to_int(arm_state->reg[2]),
+    test_int_v(arm_state->reg[2],
                0xFFFFABCD, // result not written
                "Rm = 1011101, 1011101 becomes 1010..1011 "
                "1010..1011 TST 11, Rd = 0, S = true iFlag = false");
@@ -109,17 +109,17 @@ int main(void)
             .opcode   = ORR,
             .iFlag    = true, // op2 is an immediate constant
             0,
-            .cond = 0 };
+            };
     arm_state = init_state();
 
-    arm_state->reg[1] = to_bf(0); // Rd
-    arm_state->reg[2] = to_bf(3); // Rn = 11
+    arm_state->reg[1] = 0; // Rd
+    arm_state->reg[2] = 3; // Rn = 11
 
-    execute_DP(dp_ins4, arm_state);
+    execute_proc(dp_ins4, arm_state);
 
     // rotated = C0000002
     // C0000002 | 3 = C0000003
-    test_int_v(to_int(arm_state->reg[1]),
+    test_int_v(arm_state->reg[1],
                0xC0000003, // 1100...0011
                "1011 becomes 1100..0010, 1100...0010 ORR 11, so Rd = "
                "1100...0011, S = false iFlag = true");
@@ -136,15 +136,15 @@ int main(void)
             .opcode   = ADD,
             .iFlag    = true, // op2 is an immediate constant
             0,
-            .cond = 0 };
+            };
     arm_state = init_state();
 
-    arm_state->reg[1] = to_bf(0); // Rd
-    arm_state->reg[2] = to_bf(2); // Rn = 10
+    arm_state->reg[1] = 0; // Rd
+    arm_state->reg[2] = 2; // Rn = 10
 
-    execute_DP(dp_ins5, arm_state);
+    execute_proc(dp_ins5, arm_state);
 
-    test_int_v(to_int(arm_state->reg[1]),
+    test_int_v(arm_state->reg[1],
                0xA0000003, // 1010..0011
                "11010 becomes 1010..0001, 1010..0001 ADD 10, so Rd = "
                "1010..0011, S = true iFlag = true");
@@ -155,10 +155,10 @@ int main(void)
     // test_true(arm_state->carry);
 
     // N is set to bit 31 of the result
-    test_true(arm_state->neg == get_bit(to_int(arm_state->reg[1]), 31));
+    test_true(arm_state->neg == get_bit(arm_state->reg[1], 31));
 
     // Z is set if and only if the result is zero.
-    test_true(arm_state->zero == (to_int(arm_state->reg[1]) == 0));
+    test_true(arm_state->zero == (arm_state->reg[1] == 0));
 
     free(arm_state);
   }
