@@ -86,13 +86,14 @@ bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
 {
   bool N = arm_state->neg;
   bool V = arm_state->ovflw;
+  bool Z = arm_state->zero;
   // cond is at the same position in all cases
   switch (instruction.cond)
   {
   case EQ:
-    return (!N);
+    return (Z);
   case NE:
-    return (N);
+    return (!Z);
   case GE:
     return (N == V);
   case LT:
@@ -277,8 +278,9 @@ void execute_mul(mul_t instruction, ArmState arm_state)
 
 void execute_bran(branch_t instruction, ArmState arm_state)
 {
-  uint32_t offset   = arm_state->reg[instruction.offset];
-  int      sign_bit = get_bit(offset, 24);
+  // offset can be negative or positive
+  int offset   = instruction.offset;
+  int      sign_bit = get_bit(offset, 23);
   offset <<= 2;
 
   // if is negative padding 1s to left
