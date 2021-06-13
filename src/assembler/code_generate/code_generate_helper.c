@@ -5,6 +5,10 @@
 #include "../data_structure/token_stream.h"
 #include "../../global_utils//tools.h"
 #include "../../global_utils/types_and_macros.h"
+#include "mnemonic.h"
+#include "reverse_rotate.h"
+#include "allocate_address.h"
+#include "symbol_table.h"
 
 SymbolTable create_mnemonic_table()
 {
@@ -36,11 +40,6 @@ SymbolTable create_mnemonic_table()
 	return new_table;
 }
 
-SymbolTable create_dpi_table()
-{
-	add
-}
-
 uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 {
 	SymbolTable mnemonic_table = create_mnemonic_table();
@@ -58,7 +57,8 @@ uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 	else if (find <= MOV_M)
 	{
 		// Data processing
-		token_to_dpi(token, instruction, find);
+		token_to_dpi(token, instruction, find, symbolTable);
+		encode_DP(instruction->word.proc);
 	}
 	else if (find <= MLA_M)
 	{
@@ -80,12 +80,81 @@ uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 
 /* Know that the token is a dpi, add the component to instruction
  * */
-void token_to_dpi(Token token, instruction_t* instruction, int opcode)
+void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTable symbol_table)
 {
-	instruction->tag = DATA_PROCESS;
-	instruction->word.proc.cond = AL;
-	instruction->word.proc.opcode = opcode;
-	// many operations
+  allocate_address(token, symbol_table);
+  instruction->tag = DATA_PROCESS;
+  instruction->word.proc.cond = AL;
+  instruction->word.proc.opcode = opcode;
+//Their syntax is <opcode> Rd, Rn, <Operand2>
+	switch (instruction->word.proc.opcode)
+	{
+	case ADD:
+	case EOR:
+	case SUB:
+	case RSB:
+	case AND:
+	case ORR:
+		instruction->word.proc.set_cond = 0;
+		instruction->word.proc.Rd = token->operands[0].operand_data.number;
+		instruction->word.proc.Rn = token->operands[1].operand_data.number;
+
+		//op2 in the form of <#expression>
+		int op2 = token->operands[2].operand_data.number;
+		int *rotate_amount = (int *) malloc(sizeof(int));
+		int *imm = (int *) malloc(sizeof(int));
+
+		//If the numeric constant cannot be represented, give an error.
+		if (!reverse_rotate(op2, rotate_amount, imm)) {
+			perror("the numeric constant cannot be represented.");
+			exit(EXIT_FAILURE);
+		}
+		instruction->word.proc.operand2.rot_imm.imm = *imm;
+		instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
+		free(rotate_amount);
+		free(imm);
+		break;
+
+		//Its syntax is: mov Rd, <Operand2>
+	case MOV:
+		instruction->word.proc.set_cond = 0;
+		instruction->word.proc.Rd = token->operands[0].operand_data.number;
+
+		int op2 = token->operands[1].operand_data.number;
+		int *rotate_amount = (int *) malloc(sizeof(int));
+		int *imm = (int *) malloc(sizeof(int));
+		if (!reverse_rotate(op2, rotate_amount, imm)) {
+			perror("the numeric constant cannot be represented.");
+			exit(EXIT_FAILURE);
+		}
+		instruction->word.proc.operand2.rot_imm.imm = *imm;
+		instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
+		free(rotate_amount);
+		free(imm);
+
+		break;
+
+		//Their syntax is: <opcode> Rn, <Operand2>
+	case TST:
+	case TEQ:
+	case CMP:
+		instruction->word.proc.set_cond = 1;
+		instruction->word.proc.Rn = token->operands[0].operand_data.number;
+
+		int op2 = token->operands[1].operand_data.number;
+		int *rotate_amount = (int *) malloc(sizeof(int));
+		int *imm = (int *) malloc(sizeof(int));
+		if (!reverse_rotate(op2, rotate_amount, imm)) {
+			perror("the numeric constant cannot be represented.");
+			exit(EXIT_FAILURE);
+		}
+		instruction->word.proc.operand2.rot_imm.imm = *imm;
+		instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
+		free(rotate_amount);
+		free(imm);
+
+		break;
+	}
 }
 
 void token_to_mul(Token token, instruction_t* instruction)

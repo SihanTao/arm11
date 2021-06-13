@@ -31,8 +31,8 @@ typedef enum {
 
 SymbolTable create_mnemonic_table();
 //SymbolTable create_dpi_table();
-instruction_t *token_to_instruction(Token token, SymbolTable symbolTable);
-void token_to_dpi(Token token, instruction_t* instruction, int);
+uint32_t token_to_instruction(Token token, SymbolTable symbolTable);
+void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTable symbol_table);
 void token_to_mul(Token token, instruction_t* instruction);
 void parse_preindexed_trans_operand(operand_t operand, trans_t *trans);
 
