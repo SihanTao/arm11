@@ -305,6 +305,15 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 	}
 }
 
+void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbolTable)
+{
+	char *opcode = token->opcode;
+	char *label = token->operands->operand_data.letters;
+	int label_address = find_symbol_table(label, symbolTable);
+
+
+}
+
 uint32_t to_bcode_mov(Token cur_token)
 {
 	proc_t intermidiate_rep;
