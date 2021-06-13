@@ -83,6 +83,31 @@ bitfield encode_proc(Token token)
 }
 
 
+bitfield encode_mul(Token token)
+{
+  uint32_t result = 0;
+
+  set_bit_range(&result, AL, 28, 31);
+
+  // Rd
+  set_bit_range(&result, token->operands[0].reg, 16, 19);
+
+  // Rm
+  set_bit_range(&result, token->operands[1].reg, 12, 15);
+
+  // Rs
+  set_bit_range(&result, token->operands[2].reg, 8, 11);
+
+  if (token->type == MLA_M)
+  {
+    set_bit(&result, true, 21);
+    set_bit_range(&result, token->operands[3].reg, 0, 3);
+  }
+
+  return result;
+}
+
+
 
 void token_to_trans(Token token, TokenStream token_stream,
                     SymbolTable symbolTable)
