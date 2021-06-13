@@ -82,10 +82,10 @@ uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
  * */
 void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTable symbol_table)
 {
+  allocate_address(token, symbol_table);
   instruction->tag = DATA_PROCESS;
   instruction->word.proc.cond = AL;
   instruction->word.proc.opcode = opcode;
-  allocate_address(token, symbol_table);
 
   switch (instruction->word.proc.opcode)
   {
@@ -100,15 +100,16 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
     instruction->word.proc.Rn = token->operands[1].operand_data.number;
 
     int op2 = token->operands[2].operand_data.number;
-    int* rotate_amount;
-    int* imm;
+    int *rotate_amount = (int *) malloc(sizeof(int));
+    int *imm = (int *) malloc(sizeof(int));
     if (!reverse_rotate(op2, rotate_amount, imm)) {
       perror("the numeric constant cannot be represented.");
       exit(EXIT_FAILURE);
     }
     instruction->word.proc.operand2.rot_imm.imm = *imm;
     instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
-
+    free(rotate_amount);
+    free(imm);
     break;
 
   case MOV:
@@ -116,14 +117,16 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
     instruction->word.proc.Rd = token->operands[0].operand_data.number;
 
     int op2 = token->operands[1].operand_data.number;
-    int* rotate_amount;
-    int* imm;
+    int *rotate_amount = (int *) malloc(sizeof(int));
+    int *imm = (int *) malloc(sizeof(int));
     if (!reverse_rotate(op2, rotate_amount, imm)) {
       perror("the numeric constant cannot be represented.");
       exit(EXIT_FAILURE);
     }
     instruction->word.proc.operand2.rot_imm.imm = *imm;
     instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
+    free(rotate_amount);
+    free(imm);
 
     break;
 
@@ -134,14 +137,16 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
     instruction->word.proc.Rn = token->operands[0].operand_data.number;
 
     int op2 = token->operands[1].operand_data.number;
-    int* rotate_amount;
-    int* imm;
+    int *rotate_amount = (int *) malloc(sizeof(int));
+    int *imm = (int *) malloc(sizeof(int));
     if (!reverse_rotate(op2, rotate_amount, imm)) {
       perror("the numeric constant cannot be represented.");
       exit(EXIT_FAILURE);
     }
     instruction->word.proc.operand2.rot_imm.imm = *imm;
     instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
+    free(rotate_amount);
+    free(imm);
 
     break;
   }
