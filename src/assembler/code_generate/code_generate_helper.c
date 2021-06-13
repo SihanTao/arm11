@@ -322,7 +322,7 @@ void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbol
 	char *label = token->operands->operand_data.letters;
 	int label_address = find_symbol_table(label, symbolTable);
 
-	// Compute the offset between the current adddress and the label
+	// Compute the offset between the current address and the label
 	// Take into account the off-by-8 bytes effect
 	int offset = label_address - token->address - 8;
 	offset >>= 2;
