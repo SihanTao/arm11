@@ -12,30 +12,32 @@
 
 SymbolTable create_mnemonic_table()
 {
+	// This table is created to deal with the token opcode
+	// and assign them to functions processing different token types
 	SymbolTable new_table = init_symbol_table();
-	add_symbol_table("andeq", ANDEQ, new_table);
-	add_symbol_table("lsl", LSL, new_table);
-	add_symbol_table("add", ADD, new_table);
-	add_symbol_table("sub", SUB, new_table);
-	add_symbol_table("rsb", RSB, new_table);
-	add_symbol_table("and", AND, new_table);
-	add_symbol_table("eor", EOR, new_table);
-	add_symbol_table("orr", ORR, new_table);
-	add_symbol_table("mov", MOV, new_table);
-	add_symbol_table("tst", TST, new_table);
-	add_symbol_table("teq", TEQ, new_table);
-	add_symbol_table("cmp", CMP, new_table);
-	add_symbol_table("mul", MUL, new_table);
-	add_symbol_table("mla", MLA, new_table);
-	add_symbol_table("ldr", LDR, new_table);
-	add_symbol_table("str", STR, new_table);
-	add_symbol_table("beq", BEQ, new_table);
-	add_symbol_table("bne", BNE, new_table);
-	add_symbol_table("bge", BGE, new_table);
-	add_symbol_table("blt", BLT, new_table);
-	add_symbol_table("bgt", BGT, new_table);
-	add_symbol_table("ble", BLE, new_table);
-	add_symbol_table("b", B, new_table);
+	add_symbol_table("andeq", ANDEQ_M, new_table);
+	add_symbol_table("lsl", LSL_M, new_table);
+	add_symbol_table("add", ADD_M, new_table);
+	add_symbol_table("sub", SUB_M, new_table);
+	add_symbol_table("rsb", RSB_M, new_table);
+	add_symbol_table("and", AND_M, new_table);
+	add_symbol_table("eor", EOR_M, new_table);
+	add_symbol_table("orr", ORR_M, new_table);
+	add_symbol_table("mov", MOV_M, new_table);
+	add_symbol_table("tst", TST_M, new_table);
+	add_symbol_table("teq", TEQ_M, new_table);
+	add_symbol_table("cmp", CMP_M, new_table);
+	add_symbol_table("mul", MUL_M, new_table);
+	add_symbol_table("mla", MLA_M, new_table);
+	add_symbol_table("ldr", LDR_M, new_table);
+	add_symbol_table("str", STR_M, new_table);
+	add_symbol_table("beq", BEQ_M, new_table);
+	add_symbol_table("bne", BNE_M, new_table);
+	add_symbol_table("bge", BGE_M, new_table);
+	add_symbol_table("blt", BLT_M, new_table);
+	add_symbol_table("bgt", BGT_M, new_table);
+	add_symbol_table("ble", BLE_M, new_table);
+	add_symbol_table("b", B_M, new_table);
 
 	return new_table;
 }
