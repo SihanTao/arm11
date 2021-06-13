@@ -5,7 +5,7 @@
 
 #include "../code_generate/allocate_address.h"
 
-#include "../utils/write_file.h"
+//#include "../utils/write_file.h"
 
 #include <string.h>
 // token_t -> instruction

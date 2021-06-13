@@ -69,7 +69,7 @@ typedef enum ins_type
 {
   UNDEFINED,
   DATA_PROCESS,
-  MUL,   // Multiplication
+  MULITIPLY,   // Multiplication
   TRANS, // Single data transfer
   BRANCH,
   ZERO
