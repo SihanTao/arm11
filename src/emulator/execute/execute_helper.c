@@ -9,7 +9,11 @@
 
 static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
                                   uint32_t operand2, bool *new_flag_c);
-
+/*!
+ *
+ * @param val
+ * @return true if val is negative, false if val is positive
+ */
 bool is_neg(uint32_t val) { return get_bit(val, 31); }
 
 value_carry_t rotate(uint32_t target, int rotate_amount)
