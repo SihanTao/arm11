@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*!
+ * This is the unit test for the project.
+ * We can test the equality of int, double, long, char, float, bool, string
+ * The @param msg in some function allows us to print out the test name.
+ *
+ */
 int global_test_num_counter = 0;
 int global_pass_counter     = 0;
 
