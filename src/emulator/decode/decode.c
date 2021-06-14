@@ -85,9 +85,9 @@ instruction_t decode_branch(uint32_t fetched)
 }
 
 /*!
- * TODO
- * @param fetched
- * @return
+ *
+ * @param fetched : a fetched instruction which should be a data processing instruction
+ * @return a processed data processing instruction
  */
 instruction_t decode_dp(uint32_t fetched)
 {
