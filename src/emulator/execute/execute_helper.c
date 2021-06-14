@@ -16,6 +16,12 @@ static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
  */
 bool is_neg(uint32_t val) { return get_bit(val, 31); }
 
+/*!
+ *
+ * @param target :
+ * @param rotate_amount
+ * @return
+ */
 value_carry_t rotate(uint32_t target, int rotate_amount)
 {
   value_carry_t result;
@@ -32,6 +38,13 @@ value_carry_t rotate(uint32_t target, int rotate_amount)
   return result;
 }
 
+/*!
+ *
+ * @param target
+ * @param shift_amount
+ * @param type : one of LSL, LSR, ASR, ROR
+ * @return the result after the shift
+ */
 value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
 {
   if (shift_amount < 1 || shift_amount >= WORD_SIZE)
@@ -42,7 +55,7 @@ value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
 
   value_carry_t result;
 
-  // execept LSL, other carry is defined as shift_amount - 1 bit of target
+  // except LSL, other carry is defined as shift_amount - 1 bit of target
   result.carry = get_bit(target, shift_amount - 1);
 
   switch (type)
