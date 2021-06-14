@@ -105,9 +105,9 @@ instruction_t decode_dp(uint32_t fetched)
 }
 
 /*!
- * TODO
- * @param fetched
- * @return
+ *
+ * @param fetched : a fetched instruction which should be a multiply instruction
+ * @return a processed multiply instruction
  */
 instruction_t decode_mul(uint32_t fetched)
 {
