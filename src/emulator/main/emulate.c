@@ -22,6 +22,17 @@ static void free_pipeline(single_pipeline_t *pipeline);
 static single_pipeline_t *init_single_pipeline(void);
 static pipelines_t        init_pipelines(void);
 
+/*!
+ * main calls the following functions:
+ * init_memory from file_loader.h to load the file into memory
+ * init_pipelines(), preheat_pipeline() to create the three stage pipeline
+ * decode and execute from decode.h and execute.h respectively for the fetch-decode-execute cycle
+ * output from output.h which prints the registers
+ *        and non-zeroed memory in a format which passes the automated tests.
+ * @param argc should be 2
+ * @param argv : argv[1] is the filename containing ARM11 object code
+ * @return
+ */
 int main(int argc, char **argv)
 {
   char *file_name = argv[1];
