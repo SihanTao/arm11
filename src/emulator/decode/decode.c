@@ -136,11 +136,11 @@ instruction_t decode_trans(uint32_t fetched)
   result.tag = TRANS;
   result.word.trans.cond = get_bit_range(fetched, CONDITION_START, CONDITION_END);
   result.word.trans.iFlag = get_bit(fetched, I_BIT);
-  result.word.trans.is_pre = get_bit(fetched, 24);
-  result.word.trans.is_up = get_bit(fetched, 23);
-  result.word.trans.is_load = get_bit(fetched, 20);
-  result.word.trans.Rn = get_bit_range(fetched, 16, 19);
-  result.word.trans.Rd = get_bit_range(fetched, 12, 15);
+  result.word.trans.is_pre = get_bit(fetched, PRE_POST_INDEXING_BIT);
+  result.word.trans.is_up = get_bit(fetched, UP_BIT);
+  result.word.trans.is_load = get_bit(fetched, LOAD_STORE_BIT);
+  result.word.trans.Rn = get_bit_range(fetched, TRANS_RN_START, TRANS_RN_END);
+  result.word.trans.Rd = get_bit_range(fetched, TRANS_RD_START, TRANS_RD_END);
   result.word.trans.offset = reg_or_imm_helper(!result.word.trans.iFlag, fetched);
   return result;
 }
