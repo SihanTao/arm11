@@ -11,6 +11,12 @@ static instruction_t decode_dp(uint32_t fetched);
 static instruction_t decode_mul(uint32_t fetched);
 static instruction_t decode_trans(uint32_t fetched);
 
+/*!
+ * TODO
+ * @param fetched
+ * @return
+ */
+
 instruction_t decode(bitfield fetched)
 {
   uint32_t fetched_val = to_int(fetched);
@@ -41,6 +47,12 @@ instruction_t decode(bitfield fetched)
   }
 }
 
+/*!
+ * TODO
+ * @param is_imm
+ * @param fetched
+ * @return
+ */
 reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched)
 {
   reg_or_imm_t result;
@@ -58,6 +70,11 @@ reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched)
   }
 }
 
+/*!
+ * TODO
+ * @param fetched
+ * @return
+ */
 instruction_t decode_branch(uint32_t fetched)
 {
   instruction_t result;
@@ -67,6 +84,11 @@ instruction_t decode_branch(uint32_t fetched)
   return result;
 }
 
+/*!
+ * TODO
+ * @param fetched
+ * @return
+ */
 instruction_t decode_dp(uint32_t fetched)
 {
   instruction_t result;
@@ -82,6 +104,11 @@ instruction_t decode_dp(uint32_t fetched)
   return result;
 }
 
+/*!
+ * TODO
+ * @param fetched
+ * @return
+ */
 instruction_t decode_mul(uint32_t fetched)
 {
   instruction_t result;
@@ -97,6 +124,11 @@ instruction_t decode_mul(uint32_t fetched)
   return result;
 }
 
+/*!
+ * TODO
+ * @param fetched
+ * @return
+ */
 instruction_t decode_trans(uint32_t fetched)
 {
   instruction_t result;
