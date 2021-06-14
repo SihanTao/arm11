@@ -83,6 +83,11 @@ void flash_cycle(size_t *pc, pipelines_t pipelines)
   *pc                = *pc + ADDRESS_SHIFT;
 }
 
+/*!
+ * Do the preparation work before entering the fetch-decode-execute cycle
+ * @param arm_state
+ * @param pipelines
+ */
 void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)
 {
   pipelines.next->fetched = fetch(arm_state->pc, arm_state->memory);
