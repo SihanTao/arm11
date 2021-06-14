@@ -121,4 +121,10 @@ void free_all(ArmState arm_state, pipelines_t pipelines)
   free(pipelines.next);
 }
 
+/*!
+ *
+ * @param pc : the address of program counter
+ * @param memory : the memory of the arm machine
+ * @return fetched instruction in the form of bitfield at address pc
+ */
 bitfield fetch(size_t pc, byte *memory) { return load(pc, memory); }
