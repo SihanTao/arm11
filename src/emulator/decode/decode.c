@@ -71,9 +71,9 @@ reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched)
 }
 
 /*!
- * TODO
- * @param fetched
- * @return
+ *
+ * @param fetched: a fetched instruction which should be a single data transfer
+ * @return a branch instruction
  */
 instruction_t decode_branch(uint32_t fetched)
 {
