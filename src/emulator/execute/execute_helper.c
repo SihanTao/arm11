@@ -18,9 +18,9 @@ bool is_neg(uint32_t val) { return get_bit(val, 31); }
 
 /*!
  *
- * @param target :
+ * @param target
  * @param rotate_amount
- * @return
+ * @return the result after rotate
  */
 value_carry_t rotate(uint32_t target, int rotate_amount)
 {
