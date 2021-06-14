@@ -98,8 +98,8 @@ instruction_t decode_dp(uint32_t fetched)
   result.word.proc.iFlag = get_bit(fetched, I_BIT);
   result.word.proc.opcode = get_bit_range(fetched, OPCODE_START, OPCODE_END);
   result.word.proc.set_cond = get_bit(fetched, S_BIT);
-  result.word.proc.Rn = get_bit_range(fetched, RN_START, RN_END);
-  result.word.proc.Rd = get_bit_range(fetched, RD_START, RD_END);
+  result.word.proc.Rn = get_bit_range(fetched, DP_RN_START, DP_RN_END);
+  result.word.proc.Rd = get_bit_range(fetched, DP_RD_START, DP_RD_END);
   result.word.proc.operand2 = reg_or_imm_helper(result.word.proc.iFlag, fetched);
   return result;
 }
