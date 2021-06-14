@@ -48,10 +48,11 @@ instruction_t decode(bitfield fetched)
 }
 
 /*!
- * TODO
- * @param is_imm
- * @param fetched
- * @return
+ * This function is used to calculate the offset in single data transfer instruction
+ * and the operand in data processing instruction
+ * @param is_imm : true if the instruction contains a immediate value, false if it contains a shifted register
+ * @param fetched : a fetched instruction
+ * @return the processed result contains the information of the immediate value and the shifted register
  */
 reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched)
 {
