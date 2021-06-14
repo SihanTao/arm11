@@ -295,6 +295,11 @@ void execute_TRANS(trans_t instruction, ArmState arm_state)
   }
 }
 
+/*!
+ *
+ * @param instruction : an multiply instruction
+ * @param arm_state : current state of the arm machine
+ */
 void execute_MUL(mul_t instruction, ArmState arm_state)
 {
   // pre: PC is not used as operand or destination register
