@@ -5,7 +5,7 @@
 #include "../data_structure/token_stream.h"
 #include "../../global_utils//tools.h"
 #include "../../global_utils/types_and_macros.h"
-#include "mnemonic.h"
+#include "../utils/mnemonic.h"
 #include "reverse_rotate.h"
 #include "allocate_address.h"
 #include "symbol_table.h"
@@ -40,6 +40,12 @@ SymbolTable create_mnemonic_table()
 	return new_table;
 }
 
+/*!
+ *
+ * @param token
+ * @param symbolTable
+ * @return 
+ */
 uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 {
 	SymbolTable mnemonic_table = create_mnemonic_table();
@@ -80,7 +86,16 @@ uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 
 /* Know that the token is a dpi, add the component to instruction
  * */
-void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTable symbol_table)
+
+/*!
+ *
+ * @param token
+ * @param instruction : an empty data processing instruction
+ * @param opcode
+ * @param symbolTable
+ * @return 
+ */
+void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTable symbolTable)
 {
 	allocate_address(token, symbol_table);
 	instruction->tag = DATA_PROCESS;
@@ -160,6 +175,12 @@ void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTab
 	}
 }
 
+/*!
+ *
+ * @param token
+ * @param instruction : an empty multiply instruction
+ * @return 
+ */
 void token_to_mul(Token token, instruction_t* instruction)
 {
 	instruction->tag = MULTIPLY;
@@ -186,6 +207,13 @@ void token_to_mul(Token token, instruction_t* instruction)
 	}
 }
 
+/*!
+ *
+ * @param token
+ * @param instruction : an empty single data transfer instruction
+ * @param symbolTable
+ * @return 
+ */
 void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolTable)
 {
 	allocate_address(token, symbolTable);
@@ -266,6 +294,13 @@ void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolT
  * */
 // TODO: for later implementing optional, you can extract the part parsing
 // 		<#expression> and {+/-}Rm{,<shift>}
+
+/*!
+ *
+ * @param operand
+ * @param trans
+ * @return 
+ */
 void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 {
 	char* letters = operand.operand_data.letters;
@@ -305,6 +340,13 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 	}
 }
 
+/*!
+ *
+ * @param token
+ * @param instruction : an empty branch instruction
+ * @param symbolTable
+ * @return 
+ */
 void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbolTable)
 {
 	char *opcode = token->opcode;
@@ -313,6 +355,7 @@ void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbol
 
 
 }
+
 
 uint32_t to_bcode_mov(Token cur_token)
 {
