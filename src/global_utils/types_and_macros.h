@@ -26,19 +26,18 @@
  */
 
 /*
- * In order to minisize redundant code, include some std-libs here.
+ * In order to minimize redundant code, include some std-libs here.
  */
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-<<<<<<< HEAD
 typedef uint8_t  byte;
 typedef uint32_t bitfield;
-=======
+
 #define PC 15
 #define SIGN_BIT 31
-#define OFFSET_BIT 24
+#define OFFSET_BIT 23
 #define IMM_START 0
 #define IMM_END 7
 #define ROTATE_START 8
@@ -88,19 +87,6 @@ typedef uint32_t bitfield;
 #define TRANS_RN_END 19
 #define TRANS_RD_START 12
 #define TRANS_RD_END 15
-
-
-typedef uint8_t byte;
-
-// default target machine endian is littel
-#define TARGET_MACHINE_ENDIAN LITTLE
-
-typedef enum endian_type
-{
-  BIG,
-  LITTLE
-} endian_type;
->>>>>>> 15416429fda8bc9b667cffd2c07379d125447771
 
 // res-pi has 64k of memory, thus max address is 65536
 #define MAX_MEMORY_ADDRESS (65536)
