@@ -60,6 +60,17 @@
 #define DP_RD_START 12
 #define DP_RD_END 15
 
+// multiply
+#define ACCUMULATE_BIT 21
+#define SET_CONDITION_CODES_BIT 20
+#define MUL_RD_START 16
+#define MUL_RD_END 19
+#define MUL_RN_START 12
+#define MUL_RN_END 15
+#define MUL_RS_START 8
+#define MUL_RS_END 11
+#define MUL_RM_START 0
+#define MUL_RM_END 3
 typedef uint8_t byte;
 
 // default target machine endian is littel
