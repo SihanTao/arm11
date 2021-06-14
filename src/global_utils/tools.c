@@ -4,8 +4,21 @@
 
 #include "tools.h"
 
+/*!
+ *
+ * @param i : the target 32-bit integer
+ * @param k : the kth bit wanted
+ * @return
+ */
 int get_bit(uint32_t i, int k) { return (i & (1 << k)) >> k; }
 
+/*!
+ *
+ * @param target
+ * @param start : the start position of the target bit range
+ * @param end : the end position of the target bit range
+ * @return the integer represents the bit in the required range
+ */
 int get_bit_range(int target, int start, int end)
 {
   assert(start <= MAX_BIT_INDEX && start >= 0);
