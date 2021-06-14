@@ -87,6 +87,7 @@ void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)
   flash_cycle(&arm_state->pc, pipelines);
 }
 
+
 pipelines_t init_pipelines(void)
 {
   pipelines_t result
@@ -94,6 +95,10 @@ pipelines_t init_pipelines(void)
   return result;
 }
 
+/*!
+ * initialize a single pipeline, print error when memory allocation fails
+ * @return an empty single pipeline
+ */
 single_pipeline_t *init_single_pipeline(void)
 {
   single_pipeline_t *result = malloc(sizeof(single_pipeline_t));
