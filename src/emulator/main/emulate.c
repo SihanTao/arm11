@@ -108,6 +108,11 @@ single_pipeline_t *init_single_pipeline(void)
   return result;
 }
 
+/*!
+ * Free all the allocated memory on heap
+ * @param arm_state : the arm machine state to be freed
+ * @param pipelines : the pipelines to be freed
+ */
 void free_all(ArmState arm_state, pipelines_t pipelines)
 {
   free_state(arm_state);
