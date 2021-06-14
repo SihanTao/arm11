@@ -80,7 +80,7 @@ void flash_cycle(size_t *pc, pipelines_t pipelines)
   temp               = *pipelines.current;
   *pipelines.current = *pipelines.next;
   *pipelines.next    = temp;
-  *pc                = *pc + 4;
+  *pc                = *pc + ADDRESS_SHIFT;
 }
 
 void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)

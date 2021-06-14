@@ -98,6 +98,7 @@ typedef uint32_t bitfield;
 // 12 general purpose registers
 #define NUM_OF_REG (13)
 
+#define ADDRESS_SHIFT 4
 typedef enum exit_type
 {
   CONTINUE,
