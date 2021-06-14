@@ -155,6 +155,11 @@ void reg_imm_handle(bitfield *reg, reg_or_imm_t reg_imm, bool is_imm,
   }
 }
 
+/*!
+ * execute an an data processing instruction
+ * @param instruction : an data processing instruction
+ * @param arm_state : current state of the arm machine
+ */
 void execute_DP(proc_t instruction, ArmState arm_state)
 {
   bitfield *reg = arm_state->reg;
