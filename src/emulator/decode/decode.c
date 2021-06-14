@@ -94,12 +94,12 @@ instruction_t decode_dp(uint32_t fetched)
   instruction_t result;
 
   result.tag = DATA_PROCESS;
-  result.word.proc.cond = get_bit_range(fetched, 28, 31);
-  result.word.proc.iFlag = get_bit(fetched, 25);
-  result.word.proc.opcode = get_bit_range(fetched, 21, 24);
-  result.word.proc.set_cond = get_bit(fetched, 20);
-  result.word.proc.Rn = get_bit_range(fetched, 16, 19);
-  result.word.proc.Rd = get_bit_range(fetched, 12, 15);
+  result.word.proc.cond = get_bit_range(fetched, CONDITION_START, CONDITION_END);
+  result.word.proc.iFlag = get_bit(fetched, I_BIT);
+  result.word.proc.opcode = get_bit_range(fetched, OPCODE_START, OPCODE_END);
+  result.word.proc.set_cond = get_bit(fetched, S_BIT);
+  result.word.proc.Rn = get_bit_range(fetched, RN_START, RN_END);
+  result.word.proc.Rd = get_bit_range(fetched, RD_START, RD_END);
   result.word.proc.operand2 = reg_or_imm_helper(result.word.proc.iFlag, fetched);
   return result;
 }
