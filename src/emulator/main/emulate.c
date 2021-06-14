@@ -22,6 +22,16 @@ static void free_pipeline(single_pipeline_t *pipeline);
 static single_pipeline_t *init_single_pipeline(void);
 static pipelines_t        init_pipelines(void);
 
+/*!
+ * main takes a single parameter of the filename containing ARM11 object code.
+ * This function calls the functions:
+ * init_memory from file_loader.h to load the file into memory,
+ * decode and execute from decode.h and execute.h respectively, for the main fetch-decode-execute cycle,
+ * output from output.h prints the registers and non-zeroed memory in a format which passes the automated tests
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char **argv)
 {
   char *file_name = argv[1];
