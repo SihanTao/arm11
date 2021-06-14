@@ -87,7 +87,10 @@ void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)
   flash_cycle(&arm_state->pc, pipelines);
 }
 
-
+/*!
+ * initialize an empty linked list of single pipeline
+ * @return an empty pipelines_t which is a linked list of single_pipeline_t
+ */
 pipelines_t init_pipelines(void)
 {
   pipelines_t result
