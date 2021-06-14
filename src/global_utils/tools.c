@@ -28,6 +28,12 @@ int get_bit_range(int target, int start, int end)
   return (target >> start) & mask;
 }
 
+/*!
+ * set the position bit of dest to be value
+ * @param dest : the target 32-bit integer
+ * @param value : true = 1, false = 0
+ * @param position
+ */
 void set_bit(uint32_t *dest, bool value, int position)
 {
   assert(position <= MAX_BIT_INDEX && position >= 0);
