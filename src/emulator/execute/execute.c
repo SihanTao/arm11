@@ -6,11 +6,12 @@
 #include "execute.h"
 
 #include "../execute/execute_helper.h"
+
 /*!
  *
- * @param decoded
- * @param arm_state
- * @return the state of the ARM machine after execute the instruction
+ * @param decoded: A decoded instruction
+ * @param arm_state: the current state of the arm machine
+ * @return the exit type of the ARM machine after execute the instruction
  */
 exit_type execute(instruction_t decoded, ArmState arm_state)
 {
