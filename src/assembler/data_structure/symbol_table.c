@@ -17,6 +17,13 @@ SymbolTable init_symbol_table(void)
   return result;
 }
 
+/*!
+ * 
+ * @param symbol_data
+ * @param address
+ * @param table
+ * @return : add the symbol data to the table in the given address
+ */
 void add_symbol_table(char *symbol_data, int address, SymbolTable table)
 {
   if (!table)
@@ -28,6 +35,12 @@ void add_symbol_table(char *symbol_data, int address, SymbolTable table)
   add_node(symbol_data, address, table->head_holder);
 }
 
+/*!
+ * 
+ * @param symbol_data
+ * @param table
+ * @return : find the given symbol data from symboltable
+ */
 int find_symbol_table(char *symbol_data, SymbolTable table)
 {
   if (!table)
@@ -39,12 +52,21 @@ int find_symbol_table(char *symbol_data, SymbolTable table)
   return find_node(symbol_data, table->head_holder);
 }
 
+/*!
+ * 
+ * @param table
+ *
+ */
 void free_symbol_table(SymbolTable table)
 {
   free_node(table->head_holder);
   free(table);
 }
 
+/*!
+ * 
+ * @param node
+ */
 void free_node(symbol_node_t *node)
 {
   if (node == NULL)
@@ -57,6 +79,12 @@ void free_node(symbol_node_t *node)
   free(node);
 }
 
+/*!
+ * 
+ * @param symbol_data
+ * @param address
+ * @return : initialize the symbol data
+ */
 static symbol_node_t *init_symbol_node(char *symbol_data, int address)
 {
   symbol_node_t *result = malloc(sizeof(symbol_node_t));
@@ -74,6 +102,14 @@ static symbol_node_t *init_symbol_node(char *symbol_data, int address)
   return result;
 }
 
+/*!
+ * 
+ * @param symbol_data
+ * @param address
+ * @param node 
+ * @return : add the node which the key is equal to the symbol data 
+ *           to the symbol node(binary tree) in the given address
+ */
 void add_node(char *symbol_data, int address, symbol_node_t *node)
 {
   int cmp = strcmp(symbol_data, node->symbol_data);
@@ -102,6 +138,12 @@ void add_node(char *symbol_data, int address, symbol_node_t *node)
   }
 }
 
+/*!
+ * 
+ * @param symbol_data
+ * @param node 
+ * @return find the node which the key is equal to the symbol data
+ */
 int find_node(char *symbol_data, symbol_node_t *node)
 {
   if (!node)

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <machine/endian.h>> // include endian for both Linux and macOS
+#include <machine/endian.h> // include endian for both Linux and macOS
 
 #include "../../global_utils/types_and_macros.h"
 
@@ -10,6 +10,11 @@
 
 static int cpsr_to_int(ArmState arm_state);
 
+/*!
+ *
+ * @param filename : the filename to write to
+ * @param arm_state : current state of the arm machine
+ */
 void output(char *filename, ArmState arm_state)
 {
   FILE *file_handle = stdout;
@@ -55,6 +60,11 @@ void output(char *filename, ArmState arm_state)
   fclose(file_handle);
 }
 
+/*!
+ *
+ * @param arm_state
+ * @return an integer that represents the CPSR of the current arm_state
+ */
 int cpsr_to_int(ArmState arm_state)
 {
   int CPSR = 0;

@@ -7,6 +7,13 @@
 
 #include "tokenize.h"
 
+/*!
+ * TODO
+ * @param cur_pos
+ * @param until
+ * @param dst
+ * @return 
+ */
 void trim(char **cur_pos, char until, char **dst)
 {
   int   i;
@@ -24,6 +31,11 @@ void trim(char **cur_pos, char until, char **dst)
   *cur_pos = NULL;
 }
 
+/*!
+ * TODO
+ * @param trimed
+ * @return 
+ */
 operand_t *gen_operand(char *trimed)
 {
   operand_t *current_operand = malloc(sizeof(operand_t));
@@ -47,6 +59,11 @@ operand_t *gen_operand(char *trimed)
   return current_operand;
 }
 
+/*!
+ * TODO
+ * @param line
+ * @return 
+ */
 Token tokenize(char *line)
 {
   Token token = calloc(1, sizeof(token_t));

@@ -4,6 +4,12 @@
 #include "reverse_rotate.h"
 
 // check whether 'target' is in the form of immediate value.
+
+/*!
+ * 
+ * @param target
+ * @return : determine whether the target is an immediate value or not
+ */
 static bool is_valid_imm(uint32_t target)
 {
   uint32_t mask = 0X000000FF;
@@ -17,6 +23,13 @@ static bool is_valid_imm(uint32_t target)
   }
 }
 
+/*!
+ * 
+ * @param target
+ * @param rotation_amount
+ * @param imm
+ * @return the result after reverse rotate
+ */
 bool reverse_rotate(uint32_t target, int *rotation_amount, uint32_t *imm)
 {
   if (is_valid_imm(target))
