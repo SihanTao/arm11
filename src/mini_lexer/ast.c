@@ -6,47 +6,61 @@
 
 AST_Holder init_parserc_ast(ast_mapper map_while_build)
 {
-  ast_node_t* root_holder = calloc(1, sizeof(ast_node_t));
-  if (! root_holder)
+  ast_node_t *root_holder = calloc(1, sizeof(ast_node_t));
+  if (!root_holder)
   {
     perror("out of memory!!\n");
     return NULL;
   }
 
   AST_Holder result = calloc(1, sizeof(ast_holder_t));
-  if (! result)
+  if (!result)
   {
     perror("out of memory!!\n");
     return NULL;
   }
 
-  result->root_holder = root_holder;
+  result->root_holder     = root_holder;
   result->map_while_build = map_while_build;
   return result;
 }
 
-AST merge_into(AST parent, AST child)
+AST add_child(AST self, AST child)
 {
-  child->brother = parent->child;
-  parent->child = child;
-  return parent;
+  self->child = child;
+  return self;
 }
 
-AST make_atom(char * name, char * matched)
+AST add_brother(AST self, AST brother)
+{
+  self->brother = brother;
+  return self;
+}
+
+AST merge(AST self, AST brother_parent)
+{
+  self->brother = brother_parent->child;
+  brother_parent->child = NULL;
+  free_ast(brother_parent);
+  return self;
+}
+
+AST make_atom(char *name, char *matched)
 {
   AST result = calloc(1, sizeof(ast_node_t));
-  if (! result)
+  if (!result)
   {
     perror("out of memory!!\n");
     exit(EXIT_FAILURE);
   }
 
-  result->key = name;
+  result->key     = name;
   result->matched = matched;
   return result;
 }
 
-// void build_parserc_ast(char * name, AST_Holder ast, char * buffer, bro_par b_p)
+// void build_parserc_ast(char * name, AST_Holder ast, char * buffer, bro_par
+// b_p)
 // {
 //   ast_node_t* new_node = calloc(1, sizeof(ast_node_t));
 //   if (! new_node)
@@ -81,7 +95,7 @@ void free_ast_holder(AST_Holder ast_holder)
   free(ast_holder);
 }
 
-void free_ast(ast_node_t* ast_node)
+void free_ast(ast_node_t *ast_node)
 {
   if (ast_node == NULL)
   {
@@ -94,7 +108,7 @@ void free_ast(ast_node_t* ast_node)
   free(ast_node);
 }
 
-ast_node_t* get_child_by_name(ast_node_t* ast, char* name)
+ast_node_t *get_child_by_name(ast_node_t *ast, char *name)
 {
   if (ast == NULL)
   {
@@ -103,7 +117,7 @@ ast_node_t* get_child_by_name(ast_node_t* ast, char* name)
   return get_brother_by_name(ast->child, name);
 }
 
-ast_node_t* get_brother_by_name(ast_node_t* ast, char * name)
+ast_node_t *get_brother_by_name(ast_node_t *ast, char *name)
 {
   if (ast == NULL || ast->key == NULL)
   {
@@ -118,8 +132,7 @@ ast_node_t* get_brother_by_name(ast_node_t* ast, char * name)
   return get_brother_by_name(ast->brother, name);
 }
 
-
-char * get_matched(ast_node_t* ast)
+char *get_matched(ast_node_t *ast)
 {
   return ast->matched;
 }
@@ -131,7 +144,7 @@ void print_ast(AST ast, int indent)
     return;
   }
 
-  for (int i = 0; i < indent;i++)
+  for (int i = 0; i < indent; i++)
   {
     printf(" ");
   }

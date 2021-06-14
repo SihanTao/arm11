@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "ast.h"
 #include "char_stream.h"
@@ -16,7 +17,7 @@ void print_indent(int indent)
   }
 }
 
-void print_pc(Parserc p, int indent)
+void print_pc(Parsec p, int indent)
 {
   if (p == NULL)
   {
@@ -27,7 +28,7 @@ void print_pc(Parserc p, int indent)
   if (p->type == PARSERC_AND || p->type == PARSERC_OR)
   {
     print_pc(p->curr, indent + 2);
-    print_pc(p->next, indent);
+    print_pc(p->next, indent + 2);
   }
   else if (p->type == PARSERC_MATCH)
   {
@@ -40,242 +41,292 @@ void print_pc(Parserc p, int indent)
   }
 }
 
-AST_Holder parse(CharStream char_stream, Parserc parserc, ast_mapper map_while_build)
+AST parse(CharStream char_stream, Parsec parserc, ast_mapper map_while_build)
 {
-  AST_Holder result = init_parserc_ast(map_while_build);
-  parse_h(parserc, char_stream, result);
-  free_parserc(parserc);
+  return parse_h(char_stream, parserc, map_while_build);
+}
+
+Parsec make_or(char *name, Parsec left, Parsec right)
+{
+  Parsec result = calloc(1, sizeof(parsec_t));
+  result->type  = PARSERC_OR;
+  result->name  = name;
+  result->curr  = left;
+  result->next  = right;
   return result;
 }
 
-Parserc one_of(char *name, Parserc *choices, size_t num)
+Parsec make_and(char *name, Parsec left, Parsec right)
 {
-  Parserc result = calloc(1, sizeof(parserc_t));
-  result->name   = name;
-  result->type   = PARSERC_OR;
-  Parserc cur    = result;
-  cur->curr      = *choices;
-  if (num != 0)
+  Parsec result = calloc(1, sizeof(parsec_t));
+  result->type  = PARSERC_AND;
+  result->name  = name;
+  result->curr  = left;
+  result->next  = right;
+  return result;
+}
+
+Parsec alt_h(Parsec *choices, size_t num)
+{
+  if (num == 2)
   {
-    cur->next = one_of(name, choices + 1, num - 1);
+    return make_or(NULL, choices[0], choices[1]);
   }
-  return result;
+  return make_or(NULL, choices[0], alt_h(choices + 1, num - 1));
 }
 
-Parserc seq(char *name, Parserc *sequence, size_t num)
+Parsec alt(char *name, Parsec *choices, size_t num)
 {
-  Parserc result = calloc(1, sizeof(parserc_t));
+  assert(num >= 2);
+  Parsec result = alt_h(choices, num);
   result->name   = name;
-  result->type   = PARSERC_AND;
-  Parserc cur    = result;
-  cur->curr      = *sequence;
-  if (num != 0)
-  {
-    cur->next = seq(name, sequence + 1, num - 1);
-  }
   return result;
 }
 
-Parserc match(char *name, char *template)
+Parsec seq_h(Parsec *sequence, size_t num)
 {
-  Parserc result          = calloc(1, sizeof(parserc_t));
+  if (num == 2)
+  {
+    return make_and(NULL, sequence[0], sequence[1]);
+  }
+  return make_and(NULL, sequence[0], seq_h(sequence + 1, num - 1));
+}
+
+Parsec seq(char* name, Parsec *sequence, size_t num)
+{
+  assert(num >= 2);
+  Parsec result = seq_h(sequence, num);
+  result->name = name;
+  return result;
+}
+
+Parsec match(char *name, char *template)
+{
+  Parsec result           = calloc(1, sizeof(parsec_t));
   result->name            = name;
   result->type            = PARSERC_MATCH;
   result->matching_string = template;
   return result;
 }
 
-Parserc take_while(char *name, proposition accepts)
-{
-  Parserc result = calloc(1, sizeof(parserc_t));
-  result->name   = name;
-  result->type   = PARSERC_TAKE;
-  result->prop   = accepts;
-  return result;
-}
-
-Parserc take_until(char *name, proposition until)
-{
-  Parserc result = calloc(1, sizeof(parserc_t));
-  result->name   = name;
-  result->type   = PARSERC_TAKE;
-  result->prop   = until;
-  return result;
-}
-
-Parserc opt(char *name, Parserc target)
-{
-  Parserc result = calloc(1, sizeof(parserc_t));
-  result->name   = name;
-  result->type   = PARSERC_OPT;
-  result->curr   = target;
-  return result;
-}
-
-Parserc many(char *name, Parserc target)
-{
-  Parserc result = calloc(1, sizeof(parserc_t));
-  result->name   = name;
-  result->type   = PARSERC_STAR;
-  result->curr   = target;
-  return result;
-}
-
-Parserc at_least(char *name, Parserc target)
-{
-  Parserc sequence[2] = { target, many(NULL, target) };
-  return seq(name, sequence, 2);
-}
-
-void free_parserc(Parserc parserc)
-{
-  if (parserc == NULL)
-  {
-    return;
-  }
-
-  free_parserc(parserc->curr);
-  free_parserc(parserc->next);
-  free(parserc);
-}
-
-bool parse_h(Parserc p, CharStream char_stream, AST_Holder ast)
+AST parse_h(CharStream s, Parsec p, ast_mapper map)
 {
   if (p == NULL)
   {
-    return false;
+    return NULL;
   }
 
   switch (p->type)
   {
   case PARSERC_OR:
   {
-    if (parse_h(p->curr, char_stream, ast)
-        || parse_h(p->next, char_stream, ast))
+    AST new_ast  = make_atom(p->name, NULL);
+    AST matched1 = parse_h(s, p->curr, map);
+    if (matched1 != NULL)
     {
-      build_parserc_ast(p->name, ast, NULL, PARENT);
-      return true;
+      return add_child(new_ast, matched1);
     }
+
+    AST matched2 = parse_h(s, p->next, map);
+    if (matched2 != NULL)
+    {
+      return add_child(new_ast, matched2);
+    }
+
+    return NULL;
   }
   case PARSERC_AND:
   {
-    RecordPoint record_point = get_trace_back(char_stream);
-    if (parse_h(p->curr, char_stream, ast)
-        && parse_h(p->next, char_stream, ast))
+    RecordPoint record_point = get_trace_back(s);
+    AST         new_ast      = make_atom(p->name, NULL);
+    AST         matched1     = parse_h(s, p->curr, map);
+    if (matched1 != NULL)
     {
-      build_parserc_ast(p->name, ast, NULL, PARENT);
-      return true;
+      AST matched2 = parse_h(s, p->next, map);
+      if (matched2 != NULL)
+      {
+        if (p->next->type == PARSERC_AND)
+        {
+          return add_child(new_ast,merge(matched1, matched2));
+        }
+        add_brother(matched1, matched2);
+        return add_child(new_ast, matched1);
+      }
     }
-    do_trace_back(char_stream, record_point);
-    return false;
-  }
-  case PARSERC_OPT:
-  {
-    if (parse_h(p->curr, char_stream, ast))
-    {
-      build_parserc_ast(p->name, ast, NULL, PARENT);
-    }
-    return true;
+    do_trace_back(s, record_point);
+    return NULL;
   }
   case PARSERC_MATCH:
   {
-    return parse_match(p, char_stream, ast);
-  }
-  case PARSERC_TAKE:
-  {
-    return parse_take(p, char_stream, ast);
-  }
-  case PARSERC_UNTIL:
-  {
-    return parse_until(p, char_stream, ast);
-  }
-  case PARSERC_STAR:
-  {
-    if (parse_h(p->curr, char_stream, ast))
+    RecordPoint record_point = get_trace_back(s);
+    AST         matched      = parse_match(p, s);
+    if (matched)
     {
-      parse_h(p->curr, char_stream, ast);
+      return matched;
     }
-    build_parserc_ast(p->name, ast, NULL, PARENT);
-    return true;
+    do_trace_back(s, record_point);
+    return NULL;
   }
+  default:
+    return NULL;
   }
 }
 
-bool parse_match(Parserc p, CharStream char_stream, AST_Holder ast)
+AST parse_match(Parsec p, CharStream s)
 {
-  RecordPoint record_point = get_trace_back(char_stream);
-  char        buffer[100];
-  if (match_h(char_stream, p->matching_string, buffer))
+  char *buffer = calloc(100, 1);
+  for (int i = 0; p->matching_string[i] != '\0' && i < 99; i++)
   {
-    if (p->name != NULL)
+    if (get_char(s) != p->matching_string[i])
     {
-      build_parserc_ast(p->name, strdup(buffer), SIBLING);
+      return NULL;
     }
-    return true;
+    buffer[i] = p->matching_string[i];
+    next_char(s);
   }
-  do_trace_back(char_stream, record_point);
-  return false;
+
+  return make_atom(p->name, buffer);
 }
 
-bool parse_take(Parserc p, CharStream char_stream, AST_Holder ast)
-{
-  char buffer[100];
-  ntake_while(char_stream, p->prop, buffer, 99);
-  if (p->name != NULL)
-  {
-    build_parserc_ast(p->name, strdup(buffer), SIBLING);
-  }
-  return true;
-}
+// AST_Holder parse(CharStream char_stream, Parsec parserc, ast_mapper
+// map_while_build)
+// {
+//   AST_Holder result = init_parserc_ast(map_while_build);
+//   parse_h(parserc, char_stream, result);
+//   free_parserc(parserc);
+//   return result;
+// }
 
-bool parse_until(Parserc p, CharStream char_stream, AST_Holder ast)
-{
-  char buffer[100];
-  ntake_until(char_stream, p->prop, buffer, 99);
-  if (p->name != NULL)
-  {
-    build_parserc_ast(p->name, strdup(buffer), SIBLING);
-  }
-  return true;
-}
+// Parsec take_while(char *name, proposition accepts)
+// {
+//   Parsec result = calloc(1, sizeof(parsec_t));
+//   result->name   = name;
+//   result->type   = PARSERC_TAKE;
+//   result->prop   = accepts;
+//   return result;
+// }
 
-bool match_h(CharStream char_stream, char *template, char *buffer)
-{
-  if (get_char(char_stream) != *template || get_char(char_stream) == '\0'
-      || *template == '\0')
-  {
-    return false;
-  }
-  next_char(char_stream);
-  *buffer = *template;
-  return match_h(char_stream, template + 1, buffer + 1);
-}
+// Parsec take_until(char *name, proposition until)
+// {
+//   Parsec result = calloc(1, sizeof(parsec_t));
+//   result->name   = name;
+//   result->type   = PARSERC_TAKE;
+//   result->prop   = until;
+//   return result;
+// }
 
-void ntake_while(char **char_stream, proposition accepts, char *buffer,
-                 size_t n)
-{
-  if (n == 0)
-  {
-    return;
-  }
-  if (accepts(**char_stream))
-  {
-    *buffer = get_char(char_stream);
-    next_char(char_stream);
-    ntake_while(char_stream, accepts, buffer + 1, n - 1);
-  }
-}
+// Parsec opt(char *name, Parsec target)
+// {
+//   Parsec result = calloc(1, sizeof(parsec_t));
+//   result->name   = name;
+//   result->type   = PARSERC_OPT;
+//   result->curr   = target;
+//   return result;
+// }
 
-void ntake_until(char **char_stream, proposition until, char *buffer, size_t n)
-{
-  if (n == 0)
-  {
-    return;
-  }
-  if (!until(**char_stream))
-  {
-    *buffer = get_char(char_stream);
-    next_char(char_stream);
-    ntake_until(char_stream, until, buffer + 1, n - 1);
-  }
-}
+// Parsec many(char *name, Parsec target)
+// {
+//   Parsec result = calloc(1, sizeof(parsec_t));
+//   result->name   = name;
+//   result->type   = PARSERC_STAR;
+//   result->curr   = target;
+//   return result;
+// }
+
+// Parsec at_least(char *name, Parsec target)
+// {
+//   Parsec sequence[2] = { target, many(NULL, target) };
+//   return seq(name, sequence, 2);
+// }
+
+// void free_parserc(Parsec parserc)
+// {
+//   if (parserc == NULL)
+//   {
+//     return;
+//   }
+
+//   free_parserc(parserc->curr);
+//   free_parserc(parserc->next);
+//   free(parserc);
+// }
+
+// bool parse_match(Parsec p, CharStream char_stream, AST_Holder ast)
+// {
+//   RecordPoint record_point = get_trace_back(char_stream);
+//   char        buffer[100];
+//   if (match_h(char_stream, p->matching_string, buffer))
+//   {
+//     if (p->name != NULL)
+//     {
+//       build_parserc_ast(p->name, strdup(buffer), SIBLING);
+//     }
+//     return true;
+//   }
+//   do_trace_back(char_stream, record_point);
+//   return false;
+// }
+
+// bool parse_take(Parsec p, CharStream char_stream, AST_Holder ast)
+// {
+//   char buffer[100];
+//   ntake_while(char_stream, p->prop, buffer, 99);
+//   if (p->name != NULL)
+//   {
+//     build_parserc_ast(p->name, strdup(buffer), SIBLING);
+//   }
+//   return true;
+// }
+
+// bool parse_until(Parsec p, CharStream char_stream, AST_Holder ast)
+// {
+//   char buffer[100];
+//   ntake_until(char_stream, p->prop, buffer, 99);
+//   if (p->name != NULL)
+//   {
+//     build_parserc_ast(p->name, strdup(buffer), SIBLING);
+//   }
+//   return true;
+// }
+
+// bool match_h(CharStream char_stream, char *template, char *buffer)
+// {
+//   if (get_char(char_stream) != *template || get_char(char_stream) == '\0'
+//       || *template == '\0')
+//   {
+//     return false;
+//   }
+//   next_char(char_stream);
+//   *buffer = *template;
+//   return match_h(char_stream, template + 1, buffer + 1);
+// }
+
+// void ntake_while(char **char_stream, proposition accepts, char *buffer,
+//                  size_t n)
+// {
+//   if (n == 0)
+//   {
+//     return;
+//   }
+//   if (accepts(**char_stream))
+//   {
+//     *buffer = get_char(char_stream);
+//     next_char(char_stream);
+//     ntake_while(char_stream, accepts, buffer + 1, n - 1);
+//   }
+// }
+
+// void ntake_until(char **char_stream, proposition until, char *buffer, size_t
+// n)
+// {
+//   if (n == 0)
+//   {
+//     return;
+//   }
+//   if (!until(**char_stream))
+//   {
+//     *buffer = get_char(char_stream);
+//     next_char(char_stream);
+//     ntake_until(char_stream, until, buffer + 1, n - 1);
+//   }
+// }
