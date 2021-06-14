@@ -8,7 +8,8 @@
 #include "../utils/load_store.h"
 
 #define PC 15
-
+#define SIGN_BIT 31
+#define OFFSET_BIT 24
 static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
 	uint32_t operand2, bool* new_flag_c);
 /*!
@@ -18,7 +19,7 @@ static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
  */
 bool is_neg(uint32_t val)
 {
-	return get_bit(val, 31);
+	return get_bit(val, SIGN_BIT);
 }
 
 /*!
@@ -336,15 +337,20 @@ void execute_MUL(mul_t instruction, ArmState arm_state)
 	// If the set_cond bit is set, we need to update the CPSR
 	if (instruction.set_cond)
 	{
-		arm_state->neg = get_bit(result, 31);
+		arm_state->neg = get_bit(result, SIGN_BIT);
 		arm_state->zero = result == 0;
 	}
 }
 
+/*!
+ *
+ * @param instruction : a branch instruction
+ * @param arm_state : current state of the arm machine
+ */
 void execute_BRANCH(branch_t instruction, ArmState arm_state)
 {
 	uint32_t offset = to_int(arm_state->reg[instruction.offset]);
-	int sign_bit = get_bit(offset, 24);
+	int sign_bit = get_bit(offset, OFFSET_BIT);
 	offset <<= 2;
 
 	// if is negative padding 1s to left
