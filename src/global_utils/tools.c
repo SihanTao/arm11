@@ -41,6 +41,13 @@ void set_bit(uint32_t *dest, bool value, int position)
   *dest         = value ? *dest | mask : *dest & ~mask;
 }
 
+/*!
+ *
+ * @param dest : the target 32-bit integer
+ * @param src : the source integer for the target bit range
+ * @param start : start position of bit range to set
+ * @param end : end position of bit range to set
+ */
 void set_bit_range(uint32_t *dest, int src, int start, int end)
 {
   assert(start <= MAX_BIT_INDEX && start >= 0);
