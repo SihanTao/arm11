@@ -4,27 +4,6 @@
 
 #include "ast.h"
 
-AST_Holder init_parserc_ast(ast_mapper map_while_build)
-{
-  ast_node_t *root_holder = calloc(1, sizeof(ast_node_t));
-  if (!root_holder)
-  {
-    perror("out of memory!!\n");
-    return NULL;
-  }
-
-  AST_Holder result = calloc(1, sizeof(ast_holder_t));
-  if (!result)
-  {
-    perror("out of memory!!\n");
-    return NULL;
-  }
-
-  result->root_holder     = root_holder;
-  result->map_while_build = map_while_build;
-  return result;
-}
-
 AST add_child(AST self, AST child)
 {
   self->child = child;
@@ -59,42 +38,6 @@ AST make_atom(char *name, char *matched)
   return result;
 }
 
-// void build_parserc_ast(char * name, AST_Holder ast, char * buffer, bro_par
-// b_p)
-// {
-//   ast_node_t* new_node = calloc(1, sizeof(ast_node_t));
-//   if (! new_node)
-//   {
-//     perror("out of memory!!\n");
-//     exit(EXIT_FAILURE);
-//   }
-
-//   new_node->key = name;
-//   new_node->matched = buffer;
-
-//   if (b_p == PARENT)
-//   {
-//     new_node->child = ast->root_holder;
-//     ast->root_holder = new_node;
-//   }
-//   else
-//   {
-//     new_node->brother = ast->root_holder;
-//     ast->root_holder = new_node;
-//   }
-
-//   if (ast->map_while_build != NULL)
-//   {
-//     ast->root_holder  = ast->map_while_build(ast->root_holder);
-//   }
-// }
-
-void free_ast_holder(AST_Holder ast_holder)
-{
-  free_ast(ast_holder->root_holder);
-  free(ast_holder);
-}
-
 void free_ast(ast_node_t *ast_node)
 {
   if (ast_node == NULL)
@@ -119,9 +62,14 @@ ast_node_t *get_child_by_name(ast_node_t *ast, char *name)
 
 ast_node_t *get_brother_by_name(ast_node_t *ast, char *name)
 {
-  if (ast == NULL || ast->key == NULL)
+  if (ast == NULL)
   {
     return NULL;
+  }
+
+  if (ast->key == NULL)
+  {
+    return get_brother_by_name(ast->brother, name);
   }
 
   if (strcmp(name, ast->key) == 0)
@@ -139,7 +87,7 @@ char *get_matched(ast_node_t *ast)
 
 void print_ast(AST ast, int indent)
 {
-  if (ast == NULL || ast->key == NULL)
+  if (ast == NULL)
   {
     return;
   }

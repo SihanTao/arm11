@@ -56,7 +56,15 @@ int main(void)
   print_pc(my_and, 0);
   printf("\n");
 
-  // Parsec add_component[3]
-  //     = { match(NULL, "add"), match(NULL, " "), match_reg(), match_reg(),
-  //         make_or(NULL, operand2(), match_reg()) };
+  string      = "r12";
+  char_stream = &string;
+
+  Parsec reg = make_and("reg", match(NULL, "r"), take_while("number", isnumber));
+
+  Parsec label = make_and("labal", take_while("label_name", isascii), match(NULL, ":"));
+
+  Parsec label_or_reg = make_or("label_or_reg", reg, label);
+
+  ast = parse(char_stream, label_or_reg, NULL);
+  print_ast(ast, 0);
 }

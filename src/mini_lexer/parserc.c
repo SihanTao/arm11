@@ -41,9 +41,37 @@ void print_pc(Parsec p, int indent)
   }
 }
 
+bool identity(bool in)
+{
+  return in;
+}
+
+bool negate(bool in)
+{
+  return !in;
+}
+
 AST parse(CharStream char_stream, Parsec parserc, ast_mapper map_while_build)
 {
   return parse_h(char_stream, parserc, map_while_build);
+}
+
+Parsec take_while(char *name, proposition accepts)
+{
+  Parsec result = calloc(1, sizeof(parsec_t));
+  result->type  = PARSERC_TAKE;
+  result->name  = name;
+  result->prop  = accepts;
+  return result;
+}
+
+Parsec take_until(char *name, proposition until)
+{
+  Parsec result = calloc(1, sizeof(parsec_t));
+  result->type  = PARSERC_UNTIL;
+  result->name  = name;
+  result->prop  = until;
+  return result;
 }
 
 Parsec make_or(char *name, Parsec left, Parsec right)
@@ -79,7 +107,7 @@ Parsec alt(char *name, Parsec *choices, size_t num)
 {
   assert(num >= 2);
   Parsec result = alt_h(choices, num);
-  result->name   = name;
+  result->name  = name;
   return result;
 }
 
@@ -92,11 +120,11 @@ Parsec seq_h(Parsec *sequence, size_t num)
   return make_and(NULL, sequence[0], seq_h(sequence + 1, num - 1));
 }
 
-Parsec seq(char* name, Parsec *sequence, size_t num)
+Parsec seq(char *name, Parsec *sequence, size_t num)
 {
   assert(num >= 2);
   Parsec result = seq_h(sequence, num);
-  result->name = name;
+  result->name  = name;
   return result;
 }
 
@@ -147,7 +175,7 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
       {
         if (p->next->type == PARSERC_AND)
         {
-          return add_child(new_ast,merge(matched1, matched2));
+          return add_child(new_ast, merge(matched1, matched2));
         }
         add_brother(matched1, matched2);
         return add_child(new_ast, matched1);
@@ -167,22 +195,48 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
     do_trace_back(s, record_point);
     return NULL;
   }
+  case PARSERC_TAKE:
+  {
+    return parse_prop(p, s, identity);
+  }
+  case PARSERC_UNTIL:
+  {
+    return parse_prop(p, s, negate);
+  }
   default:
     return NULL;
   }
 }
 
+AST parse_prop(Parsec p, CharStream s, bool(decorator)(bool))
+{
+  char  cur_char;
+  char *buffer = calloc(100, 1);
+  for (int i = 0; i < 99; i++, next_char(s))
+  {
+    cur_char = get_char(s);
+    if (decorator(p->prop(cur_char)) && cur_char != '\0')
+    {
+      buffer[i] = cur_char;
+    }
+    else
+    {
+      break;
+    }
+  }
+  return make_atom(p->name, buffer);
+}
+
 AST parse_match(Parsec p, CharStream s)
 {
   char *buffer = calloc(100, 1);
-  for (int i = 0; p->matching_string[i] != '\0' && i < 99; i++)
+  for (int i = 0; p->matching_string[i] != '\0' && i < 99; i++, next_char(s))
   {
     if (get_char(s) != p->matching_string[i])
     {
       return NULL;
     }
     buffer[i] = p->matching_string[i];
-    next_char(s);
   }
 
   return make_atom(p->name, buffer);
