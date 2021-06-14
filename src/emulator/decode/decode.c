@@ -12,15 +12,15 @@ static instruction_t decode_mul(uint32_t fetched);
 static instruction_t decode_trans(uint32_t fetched);
 
 /*!
- * TODO
- * @param fetched
- * @return
+ *
+ * @param fetched : a fetched instruction in the form of bitfield from the memory fo the arm machine
+ * @return : a decoded instruction in the form of instruction_t
  */
 
 instruction_t decode(bitfield fetched)
 {
   uint32_t fetched_val = to_int(fetched);
-  printf("fetched_val :>> %p\n,", fetched_val); //DELETE_MARK
+  printf("fetched_val :>> %u\n,", fetched_val); //DELETE_MARK
   printf("get_bit_range(fetched_val, 28, 31) :>> %x\n,", get_bit_range(fetched_val, 28, 31)); //DELETE_MARK
   if (fetched_val == 0)
   {
