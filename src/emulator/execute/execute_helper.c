@@ -90,6 +90,12 @@ value_carry_t shift(uint32_t target, int shift_amount, shift_type type)
   }
 }
 
+/*!
+ *
+ * @param instruction
+ * @param arm_state
+ * @return a bool value which depends on the condition code of the instruction
+ */
 bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
 {
   bool N = arm_state->neg;
@@ -118,6 +124,14 @@ bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
   }
 }
 
+/*!
+ * Handle different cases according to the reg_imm
+ * @param reg : an array that each element represents word in registers
+ * @param reg_imm : stores either an immediate value or a shifted register
+ * @param is_imm : true if reg_imm is an immediate value, false if reg_imm is a shifted register
+ * @param value_out : the output value of the result
+ * @param carry : the output carry of the result
+ */
 void reg_imm_handle(bitfield *reg, reg_or_imm_t reg_imm, bool is_imm,
                     uint32_t *value_out, bool *carry)
 {
