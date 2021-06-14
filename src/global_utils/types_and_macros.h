@@ -49,7 +49,14 @@
 #define CONDITION_END 31
 #define BRANCH_OFFSET_START 0
 #define BRANCH_OFFSET_END 23
-
+#define I_BIT 25
+#define OPCODE_START 21
+#define OPCODE_END 24
+#define S_BIT 20
+#define RN_START 16
+#define RN_END 19
+#define RD_START 12
+#define RD_END 15
 
 typedef uint8_t byte;
 
