@@ -35,7 +35,6 @@
 #define PC 15
 #define SIGN_BIT 31
 #define OFFSET_BIT 24
-
 #define IMM_START 0
 #define IMM_END 7
 #define ROTATE_START 8
@@ -46,6 +45,11 @@
 #define SHIFT_TYPE_END 6
 #define SHIFT_CONST_START 7
 #define SHIFT_CONST_END 11
+#define CONDITION_START 28
+#define CONDITION_END 31
+#define BRANCH_OFFSET_START 0
+#define BRANCH_OFFSET_END 23
+
 
 typedef uint8_t byte;
 

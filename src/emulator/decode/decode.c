@@ -79,8 +79,8 @@ instruction_t decode_branch(uint32_t fetched)
 {
   instruction_t result;
   result.tag = BRANCH;
-  result.word.branch.cond   = get_bit_range(fetched, 28, 31);
-  result.word.branch.offset = get_bit_range(fetched, 0, 23);
+  result.word.branch.cond   = get_bit_range(fetched, CONDITION_START, CONDITION_END);
+  result.word.branch.offset = get_bit_range(fetched, BRANCH_OFFSET_START, BRANCH_OFFSET_END);
   return result;
 }
 
