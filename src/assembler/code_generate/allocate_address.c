@@ -7,6 +7,12 @@
 
 static operand_t *get_label_ptr(Token token, SymbolTable symbol_table);
 
+/*!
+ * TODO
+ * @param token
+ * @param symbol_table
+ * @return : allocate address of the given token
+ */
 void allocate_address(Token token, SymbolTable symbol_table)
 {
   operand_t *label_operand_ptr;
@@ -24,6 +30,12 @@ void allocate_address(Token token, SymbolTable symbol_table)
   return;
 }
 
+/*!
+ * TODO
+ * @param token
+ * @param symbol_table
+ * @return the label pointer of the given token
+ */
 operand_t *get_label_ptr(token_t *token, SymbolTable symbol_table)
 {
   operand_t *cur_operand = token->operands;

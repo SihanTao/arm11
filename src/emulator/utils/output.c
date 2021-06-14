@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <machine/endian.h>> // include endian for both Linux and macOS
 
 #include "../../global_utils/types_and_macros.h"
 
@@ -11,12 +12,13 @@ static int cpsr_to_int(ArmState arm_state);
 
 void output(char *filename, ArmState arm_state)
 {
-  FILE *file_handle = fopen(filename, "w");
-  if (!file_handle)
-  {
-    perror("cannot open file");
-    exit(EXIT_FAILURE);
-  }
+  FILE *file_handle = stdout;
+  // FILE *file_handle = fopen(filename, "w");
+  // if (!file_handle)
+  // {
+  //   perror("cannot open file");
+  //   exit(EXIT_FAILURE);
+  // }
 
   int reg_value;
   int pc_val  = arm_state->pc;
@@ -26,21 +28,21 @@ void output(char *filename, ArmState arm_state)
 
   // output registers
   fprintf(file_handle, "Registers: \n");
-  for (int i = 0; i < 12; i++)
+  for (int i = 0; i < NUM_OF_REG; i++)
   {
-    reg_value = to_int(arm_state->reg[i]);
-    fprintf(file_handle, "$%-3d:%11u (%010p) \n", i, reg_value, reg_value);
+    reg_value =arm_state->reg[i];
+    fprintf(file_handle, "$%-3d:%11d (%010p) \n", i, reg_value, reg_value);
   }
 
   // outputs pc
-  fprintf(file_handle, "PC  :%11u (%010p) \n", pc_val, pc_val);
-  fprintf(file_handle, "CPSR:%11u (%010p) \n", CPSR, CPSR);
+  fprintf(file_handle, "PC  :%11d (%010p) \n", pc_val, pc_val);
+  fprintf(file_handle, "CPSR:%11d (%010p) \n", CPSR, CPSR);
 
   // outputs non zero memory
   fprintf(file_handle, "Non-zero memory:\n");
   while (true)
   {
-    memory_val = to_int(convert_endian(load(address, arm_state->memory)));
+    memory_val = convert_endian(load(address, arm_state->memory));
     if (memory_val == 0)
     {
       break;

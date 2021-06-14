@@ -1,41 +1,44 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include "../../global_utils/types_and_macros.h"
+#include "../data_structure/token_stream.h"
 
 #include "code_generate_helper.h"
-#include "../data_structure/token_stream.h"
-#include "../../global_utils//tools.h"
-#include "../../global_utils/types_and_macros.h"
+#include "../../global_utils/tools.h"
+
 #include "../utils/mnemonic.h"
-#include "reverse_rotate.h"
-#include "allocate_address.h"
-#include "symbol_table.h"
+#include "../code_generate/reverse_rotate.h"
+#include "../code_generate/allocate_address.h"
+#include "../data_structure/symbol_table.h"
 
 SymbolTable create_mnemonic_table()
 {
+	// This table is created to deal with the token opcode
+	// and assign them to functions processing different token types
 	SymbolTable new_table = init_symbol_table();
-	add_symbol_table("andeq", ANDEQ, new_table);
-	add_symbol_table("lsl", LSL, new_table);
-	add_symbol_table("add", ADD, new_table);
-	add_symbol_table("sub", SUB, new_table);
-	add_symbol_table("rsb", RSB, new_table);
-	add_symbol_table("and", AND, new_table);
-	add_symbol_table("eor", EOR, new_table);
-	add_symbol_table("orr", ORR, new_table);
-	add_symbol_table("mov", MOV, new_table);
-	add_symbol_table("tst", TST, new_table);
-	add_symbol_table("teq", TEQ, new_table);
-	add_symbol_table("cmp", CMP, new_table);
-	add_symbol_table("mul", MUL, new_table);
-	add_symbol_table("mla", MLA, new_table);
-	add_symbol_table("ldr", LDR, new_table);
-	add_symbol_table("str", STR, new_table);
-	add_symbol_table("beq", BEQ, new_table);
-	add_symbol_table("bne", BNE, new_table);
-	add_symbol_table("bge", BGE, new_table);
-	add_symbol_table("blt", BLT, new_table);
-	add_symbol_table("bgt", BGT, new_table);
-	add_symbol_table("ble", BLE, new_table);
-	add_symbol_table("b", B, new_table);
+	add_symbol_table("andeq", ANDEQ_M, new_table);
+	add_symbol_table("lsl", LSL_M, new_table);
+	add_symbol_table("add", ADD_M, new_table);
+	add_symbol_table("sub", SUB_M, new_table);
+	add_symbol_table("rsb", RSB_M, new_table);
+	add_symbol_table("and", AND_M, new_table);
+	add_symbol_table("eor", EOR_M, new_table);
+	add_symbol_table("orr", ORR_M, new_table);
+	add_symbol_table("mov", MOV_M, new_table);
+	add_symbol_table("tst", TST_M, new_table);
+	add_symbol_table("teq", TEQ_M, new_table);
+	add_symbol_table("cmp", CMP_M, new_table);
+	add_symbol_table("mul", MUL_M, new_table);
+	add_symbol_table("mla", MLA_M, new_table);
+	add_symbol_table("ldr", LDR_M, new_table);
+	add_symbol_table("str", STR_M, new_table);
+	add_symbol_table("beq", BEQ_M, new_table);
+	add_symbol_table("bne", BNE_M, new_table);
+	add_symbol_table("bge", BGE_M, new_table);
+	add_symbol_table("blt", BLT_M, new_table);
+	add_symbol_table("bgt", BGT_M, new_table);
+	add_symbol_table("ble", BLE_M, new_table);
+	add_symbol_table("b", B_M, new_table);
 
 	return new_table;
 }
@@ -44,7 +47,7 @@ SymbolTable create_mnemonic_table()
  *
  * @param token
  * @param symbolTable
- * @return 
+ * 
  */
 uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 {
@@ -63,20 +66,23 @@ uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
 	else if (find <= MOV_M)
 	{
 		// Data processing
-		token_to_dpi(token, instruction, find, symbolTable);
-		encode_DP(instruction->word.proc);
+		token_to_dp(token, instruction, find, symbolTable);
+		return encode_DP(instruction->word.proc);
 	}
 	else if (find <= MLA_M)
 	{
 		// Multiply
+		token_to_mul(token, instruction);
 	}
 	else if (find <= STR_M)
 	{
 		// Single data transfer
+		token_to_trans(token, instruction, symbolTable);
 	}
 	else if (find <= B_M)
 	{
 		// Branch
+		token_to_instruction(token, symbolTable);
 	}
 
 	free_symbol_table(mnemonic_table);
@@ -91,100 +97,92 @@ uint32_t token_to_instruction(Token token, SymbolTable symbolTable)
  *
  * @param token
  * @param instruction : an empty data processing instruction
- * @param opcode
+ * @param opcode : ADD EOR SUB RSB AND ORR MOV TST TEQ CMP
  * @param symbolTable
- * @return 
+ * 
  */
-void token_to_dpi(Token token, instruction_t* instruction, int opcode, SymbolTable symbolTable)
+void token_to_dp(Token token, instruction_t* instruction, int opcode, SymbolTable symbolTable)
 {
-	allocate_address(token, symbol_table);
-	instruction->tag = DATA_PROCESS;
-	instruction->word.proc.cond = AL;
-	instruction->word.proc.opcode = opcode;
-//Their syntax is <opcode> Rd, Rn, <Operand2>
-	switch (instruction->word.proc.opcode)
-	{
-	case ADD:
-	case EOR:
-	case SUB:
-	case RSB:
-	case AND:
-	case ORR:
-		instruction->word.proc.set_cond = 0;
-		instruction->word.proc.Rd = token->operands[0].operand_data.number;
-		instruction->word.proc.Rn = token->operands[1].operand_data.number;
+  allocate_address(token, symbolTable);
+  instruction->tag = PROC;
+  instruction->cond = AL;
+  instruction->word.proc.opcode = opcode;
 
-		//op2 in the form of <#expression>
-		int op2 = token->operands[2].operand_data.number;
-		int* rotate_amount = (int*)malloc(sizeof(int));
-		int* imm = (int*)malloc(sizeof(int));
+  //Their syntax is <opcode> Rd, Rn, <Operand2>
+  if (opcode == ADD || opcode == EOR || opcode == SUB ||
+      opcode == RSB || opcode == AND || opcode == ORR)
+  {
+    instruction->word.proc.set_cond = 0;
 
-		//If the numeric constant cannot be represented, give an error.
-		if (!reverse_rotate(op2, rotate_amount, imm))
-		{
-			perror("the numeric constant cannot be represented.");
-			exit(EXIT_FAILURE);
-		}
-		instruction->word.proc.operand2.rot_imm.imm = *imm;
-		instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
-		free(rotate_amount);
-		free(imm);
-		break;
+    instruction->word.proc.Rd = (token->operands[0].operand_data.letters) + 1;
+    instruction->word.proc.Rn = (token->operands[1].operand_data.letters) + 1;
+    
+    //op2 in the form of <#expression>.
+    int op2 = token->operands[2].operand_data.number;
+    int *rotate_amount = 0;
+    int *imm = 0;
 
-		//Its syntax is: mov Rd, <Operand2>
-	case MOV:
-		instruction->word.proc.set_cond = 0;
-		instruction->word.proc.Rd = token->operands[0].operand_data.number;
+    //If the numeric constant cannot be represented, give an error.
+    if (!reverse_rotate(op2, rotate_amount, imm)) {
+      perror("the numeric constant cannot be represented.");
+      exit(EXIT_FAILURE);
+    }
 
-		int op2 = token->operands[1].operand_data.number;
-		int* rotate_amount = (int*)malloc(sizeof(int));
-		int* imm = (int*)malloc(sizeof(int));
-		if (!reverse_rotate(op2, rotate_amount, imm))
-		{
-			perror("the numeric constant cannot be represented.");
-			exit(EXIT_FAILURE);
-		}
-		instruction->word.proc.operand2.rot_imm.imm = *imm;
-		instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
-		free(rotate_amount);
-		free(imm);
+    instruction->word.proc.operand2.rot_imm.imm = *imm;
+    instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
+    free(rotate_amount);
+    free(imm);
+  } 
+  else if (opcode == MOV) //Its syntax is: mov Rd, <Operand2>
+  {
+    instruction->word.proc.set_cond = 0;
+    instruction->word.proc.Rd = (token->operands[0].operand_data.number) + 1;
 
-		break;
+    int op2 = token->operands[1].operand_data.number;
+    int *rotate_amount = 0;
+    int *imm = 0;
 
-		//Their syntax is: <opcode> Rn, <Operand2>
-	case TST:
-	case TEQ:
-	case CMP:
-		instruction->word.proc.set_cond = 1;
-		instruction->word.proc.Rn = token->operands[0].operand_data.number;
+    if (!reverse_rotate(op2, rotate_amount, imm)) {
+      perror("the numeric constant cannot be represented.");
+      exit(EXIT_FAILURE);
+    }
 
-		int op2 = token->operands[1].operand_data.number;
-		int* rotate_amount = (int*)malloc(sizeof(int));
-		int* imm = (int*)malloc(sizeof(int));
-		if (!reverse_rotate(op2, rotate_amount, imm))
-		{
-			perror("the numeric constant cannot be represented.");
-			exit(EXIT_FAILURE);
-		}
-		instruction->word.proc.operand2.rot_imm.imm = *imm;
-		instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
-		free(rotate_amount);
-		free(imm);
+    instruction->word.proc.operand2.rot_imm.imm = *imm;
+    instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
+    free(rotate_amount);
+    free(imm);
+  }
+  else if (opcode == TST || opcode == TEQ || opcode == CMP) //Their syntax is: <opcode> Rn, <Operand2>
+  {
+    instruction->word.proc.set_cond = 1;
+    instruction->word.proc.Rn = (token->operands[0].operand_data.number) + 1;
 
-		break;
-	}
+    int op2 = token->operands[1].operand_data.number;
+    int *rotate_amount = 0;
+    int *imm = 0;
+
+    if (!reverse_rotate(op2, rotate_amount, imm)) {
+      perror("the numeric constant cannot be represented.");
+      exit(EXIT_FAILURE);
+    }
+
+    instruction->word.proc.operand2.rot_imm.imm = *imm;
+    instruction->word.proc.operand2.rot_imm.amount = *rotate_amount;
+    free(rotate_amount);
+    free(imm);
+  }
 }
 
 /*!
  *
  * @param token
  * @param instruction : an empty multiply instruction
- * @return 
+ * 
  */
 void token_to_mul(Token token, instruction_t* instruction)
 {
-	instruction->tag = MULTIPLY;
-	instruction->word.mul.cond = AL;
+	instruction->tag = MUL;
+	instruction->cond = AL;
 	operand_t operand = token->operands;
 	instruction->word.mul.Rd = operand.operand_data.number;
 	operand = operand.next;
@@ -212,13 +210,13 @@ void token_to_mul(Token token, instruction_t* instruction)
  * @param token
  * @param instruction : an empty single data transfer instruction
  * @param symbolTable
- * @return 
+ * 
  */
 void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolTable)
 {
 	allocate_address(token, symbolTable);
 	instruction->tag = TRANS;
-	instruction->word.trans.cond = AL;
+	instruction->cond = AL;
 
 	if (strcmp(token->opcode, "ldr") == 0)
 	{
@@ -240,7 +238,7 @@ void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolT
 		if (expression < 0xFF)
 		{
 //				Token mov_token =
-			instruction->tag = DATA_PROCESS;
+			instruction->tag = PROC;
 			instruction->word.proc.opcode = MOV;
 			// TODO: convert to a mov token
 		}
@@ -296,7 +294,7 @@ void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolT
 // 		<#expression> and {+/-}Rm{,<shift>}
 
 /*!
- *
+ * TODO
  * @param operand
  * @param trans
  * @return 
@@ -345,7 +343,7 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
  * @param token
  * @param instruction : an empty branch instruction
  * @param symbolTable
- * @return 
+ * 
  */
 void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbolTable)
 {
@@ -356,7 +354,11 @@ void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbol
 
 }
 
-
+/*!
+ * TODO
+ * @param cur_token
+ * @return 
+ */
 uint32_t to_bcode_mov(Token cur_token)
 {
 	proc_t intermidiate_rep;
@@ -377,6 +379,14 @@ uint32_t to_bcode_mov(Token cur_token)
 	return encode_DP(intermidiate_rep);
 }
 
+/*!
+ * 
+ * @param is_imm
+ * @param reg_or_imm
+ * @param target
+ * @return : determine whether it is a register or an immediate value, and 
+ *           return the result
+ */
 void reg_imm_helper(bool is_imm, reg_or_imm_t reg_or_imm, uint32_t* target)
 {
 	if (is_imm)
@@ -392,47 +402,47 @@ void reg_imm_helper(bool is_imm, reg_or_imm_t reg_or_imm, uint32_t* target)
 	}
 }
 
-uint32_t encode_DP(proc_t instruction)
-{
-	uint32_t result = 0;
-	set_bit_range(&result, instruction.cond, 28, 31);
-	set_bit(&result, instruction.iFlag, 25);
-	set_bit_range(&result, instruction.opcode, 21, 24);
-	set_bit(&result, instruction.set_cond, 20);
-	set_bit_range(&result, instruction.Rn, 16, 19);
-	set_bit_range(&result, instruction.Rd, 12, 15);
-	reg_imm_helper(instruction.iFlag, instruction.operand2, result);
-}
+// uint32_t encode_DP(proc_t instruction)
+// {
+// 	uint32_t result = 0;
+// 	set_bit_range(&result, instruction.cond, 28, 31);
+// 	set_bit(&result, instruction.iFlag, 25);
+// 	set_bit_range(&result, instruction.opcode, 21, 24);
+// 	set_bit(&result, instruction.set_cond, 20);
+// 	set_bit_range(&result, instruction.Rn, 16, 19);
+// 	set_bit_range(&result, instruction.Rd, 12, 15);
+// 	reg_imm_helper(instruction.iFlag, instruction.operand2, result);
+// }
 
-uint32_t encode_MUL(mul_t instruction)
-{
-	uint32_t result = 0;
-	set_bit_range(&result, instruction.cond, 28, 31);
-	set_bit(&result, instruction.acc, 21);
-	set_bit(&result, instruction.set_cond, 20);
-	set_bit_range(&result, instruction.Rd, 16, 19);
-	set_bit_range(&result, instruction.Rn, 12, 15);
-	set_bit_range(&result, instruction.Rs, 8, 11);
-	set_bit_range(&result, instruction.Rm, 0, 3);
-}
+// uint32_t encode_MUL(mul_t instruction)
+// {
+// 	uint32_t result = 0;
+// 	set_bit_range(&result, instruction.cond, 28, 31);
+// 	set_bit(&result, instruction.acc, 21);
+// 	set_bit(&result, instruction.set_cond, 20);
+// 	set_bit_range(&result, instruction.Rd, 16, 19);
+// 	set_bit_range(&result, instruction.Rn, 12, 15);
+// 	set_bit_range(&result, instruction.Rs, 8, 11);
+// 	set_bit_range(&result, instruction.Rm, 0, 3);
+// }
 
-uint32_t encode_TRANS(trans_t instruction)
-{
-	uint32_t result = 0;
-	set_bit_range(&result, instruction.cond, 28, 31);
-	set_bit(&result, instruction.iFlag, 25);
-	set_bit(&result, instruction.is_pre, 24);
-	set_bit(&result, instruction.is_up, 23);
-	set_bit(&result, instruction.is_load, 20);
-	set_bit_range(&result, instruction.Rn, 16, 19);
-	set_bit_range(&result, instruction.Rd, 12, 15);
-	reg_imm_helper(!instruction.iFlag, instruction.offset, result);
-}
+// uint32_t encode_TRANS(trans_t instruction)
+// {
+// 	uint32_t result = 0;
+// 	set_bit_range(&result, instruction.cond, 28, 31);
+// 	set_bit(&result, instruction.iFlag, 25);
+// 	set_bit(&result, instruction.is_pre, 24);
+// 	set_bit(&result, instruction.is_up, 23);
+// 	set_bit(&result, instruction.is_load, 20);
+// 	set_bit_range(&result, instruction.Rn, 16, 19);
+// 	set_bit_range(&result, instruction.Rd, 12, 15);
+// 	reg_imm_helper(!instruction.iFlag, instruction.offset, result);
+// }
 
-uint32_t encode_BRANCH(branch_t instruction)
-{
-	uint32_t result = 0;
-	set_bit_range(&result, instruction.cond, 28, 31);
-	set_bit_range(&result, instruction.offset, 0, 23);
-}
+// uint32_t encode_BRANCH(branch_t instruction)
+// {
+// 	uint32_t result = 0;
+// 	set_bit_range(&result, instruction.cond, 28, 31);
+// 	set_bit_range(&result, instruction.offset, 0, 23);
+// }
 

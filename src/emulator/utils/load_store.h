@@ -4,8 +4,11 @@
 /*
  * invalid read and write is handled in these functions
  */
-
 extern bitfield load(size_t address, byte *memory);
+
+/*
+ *
+ */
 extern void store(bitfield target, size_t address, byte *memory);
 
 #endif LOAD_STORE

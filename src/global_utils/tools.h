@@ -10,9 +10,26 @@
 
 #define ALL_ONE (0xFFFFFFFF)
 #define ALL_ZERO (0x0)
-
-#define WORD_BIT_LENGTH (32)
 #define MAX_BIT_INDEX (31)
+
+#if defined(__linux__) || defined(__CYGWIN__)
+
+#include <endian.h>
+#define convert_endian(x) htobe32(x)
+
+#elif defined(__APPLE__)
+
+#include <libkern/OSByteOrder.h>
+#define convert_endian(x) OSSwapHostToBigInt32(x)
+
+#else
+
+#	error platform not supported
+
+#endif //linux or apple
+
+
+
 
 // target = 0b011101001 start = 0 end = 3
 // returns : 0b011101001
@@ -35,11 +52,5 @@ extern void print_bit (uint32_t i);
  * given integer
  */
 extern int get_bit (uint32_t i, int k);
-
-extern void convert_endian_ptr (char *buffer);
-extern bitfield convert_endian (bitfield word);
-extern uint32_t to_int (bitfield b);
-extern bitfield to_bf (uint32_t i);
-
 
 #endif //GLOBAL_TOOLS

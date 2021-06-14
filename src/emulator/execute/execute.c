@@ -15,24 +15,27 @@
  */
 exit_type execute(instruction_t decoded, ArmState arm_state)
 {
+  if (decoded.tag == ZERO)
+  {
+    return EXIT;
+  }
+  
   if (test_instruction_cond(decoded, arm_state))
   {
     switch (decoded.tag)
     {
-    case DATA_PROCESS:
-      execute_DP(decoded.word.proc, arm_state);
+    case PROC:
+      execute_proc(decoded.word.proc, arm_state);
       return CONTINUE;
     case MUL:
-      execute_MUL(decoded.word.mul, arm_state);
+      execute_mul(decoded.word.mul, arm_state);
       return CONTINUE;
     case TRANS:
-      execute_TRANS(decoded.word.trans, arm_state);
+      execute_trans(decoded.word.trans, arm_state);
       return CONTINUE;
-    case BRANCH:
-      execute_BRANCH(decoded.word.branch, arm_state);
+    case BRAN:
+      execute_bran(decoded.word.branch, arm_state);
       return RESTART_PIPELINE;
-    case ZERO:
-      return EXIT;
     default:
       perror("Internal Error! Unknown instruction!");
       exit(EXIT_FAILURE);

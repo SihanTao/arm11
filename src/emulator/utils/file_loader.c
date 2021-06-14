@@ -1,42 +1,42 @@
-#include "../../global_utils/types_and_macros.h"
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "../../global_utils/types_and_macros.h"
 
 #include "file_loader.h"
 
 #include "../../global_utils/tools.h"
 
-void read_file_to_mem(char const *file_name, void *write_to, endian_type mode)
+void init_memory(char const *file_name, void *write_to)
 {
-  assert(write_to);
+  if (!file_name)
+  {
+    perror("Error! please input a file_name!\n");
+    exit(EXIT_FAILURE);
+  }
+
   int   position = 0;
-  char  buffer[WORD_LENGTH];
+  char  buffer[NUM_OF_BYTE_IN_WORD];
   FILE *file_handler = fopen(file_name, "rb");
 
   if (file_handler == NULL)
   {
-    printf("fopen error! please check file name: %s \n", file_name);
-    assert(file_handler != NULL);
+    perror("Error! invalid file name!\n");
+    exit(EXIT_FAILURE);
   }
 
-  while (fread(buffer, WORD_LENGTH, 1, file_handler))
+  while (fread(buffer, NUM_OF_BYTE_IN_WORD, 1, file_handler))
   {
-    if (mode == BIG)
-    {
-      convert_endian_ptr(buffer);
-    }
-    memcpy((char *)write_to + position, buffer, WORD_LENGTH);
+    memcpy((char *)write_to + position, buffer, NUM_OF_BYTE_IN_WORD);
     position += 4;
   }
 
   if (!feof(file_handler))
   {
-    printf("file not ended!");
+    perror("Error! format of file doesn't match!\n");
+    exit(EXIT_FAILURE);
   }
 
   fclose(file_handler);
-  // TODO : fix error reporting
-  // should get an error if doesn't match word length
 }
