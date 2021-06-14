@@ -32,8 +32,75 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+<<<<<<< HEAD
 typedef uint8_t  byte;
 typedef uint32_t bitfield;
+=======
+#define PC 15
+#define SIGN_BIT 31
+#define OFFSET_BIT 24
+#define IMM_START 0
+#define IMM_END 7
+#define ROTATE_START 8
+#define ROTATE_END 11
+#define RM_START 0
+#define RM_END 3
+#define SHIFT_TYPE_START 5
+#define SHIFT_TYPE_END 6
+#define SHIFT_CONST_START 7
+#define SHIFT_CONST_END 11
+
+// instruction macros
+#define CONDITION_START 28
+#define CONDITION_END 31
+
+// branch macros
+#define BRANCH_OFFSET_START 0
+#define BRANCH_OFFSET_END 23
+
+// data processing macros
+#define I_BIT 25
+#define OPCODE_START 21
+#define OPCODE_END 24
+#define S_BIT 20
+#define DP_RN_START 16
+#define DP_RN_END 19
+#define DP_RD_START 12
+#define DP_RD_END 15
+
+// multiply macros
+#define ACCUMULATE_BIT 21
+#define SET_CONDITION_CODES_BIT 20
+#define MUL_RD_START 16
+#define MUL_RD_END 19
+#define MUL_RN_START 12
+#define MUL_RN_END 15
+#define MUL_RS_START 8
+#define MUL_RS_END 11
+#define MUL_RM_START 0
+#define MUL_RM_END 3
+
+// trans macros
+#define PRE_POST_INDEXING_BIT 24
+#define UP_BIT 23
+#define LOAD_STORE_BIT 20
+#define TRANS_RN_START 16
+#define TRANS_RN_END 19
+#define TRANS_RD_START 12
+#define TRANS_RD_END 15
+
+
+typedef uint8_t byte;
+
+// default target machine endian is littel
+#define TARGET_MACHINE_ENDIAN LITTLE
+
+typedef enum endian_type
+{
+  BIG,
+  LITTLE
+} endian_type;
+>>>>>>> 15416429fda8bc9b667cffd2c07379d125447771
 
 // res-pi has 64k of memory, thus max address is 65536
 #define MAX_MEMORY_ADDRESS (65536)
