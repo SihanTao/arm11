@@ -7,9 +7,6 @@
 #include "../../global_utils/tools.h"
 #include "../utils/load_store.h"
 
-#define PC 15
-#define SIGN_BIT 31
-#define OFFSET_BIT 24
 static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
 	uint32_t operand2, bool* new_flag_c);
 /*!

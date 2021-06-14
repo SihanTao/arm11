@@ -32,6 +32,21 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define PC 15
+#define SIGN_BIT 31
+#define OFFSET_BIT 24
+
+#define IMM_START 0
+#define IMM_END 7
+#define ROTATE_START 8
+#define ROTATE_END 11
+#define RM_START 0
+#define RM_END 3
+#define SHIFT_TYPE_START 5
+#define SHIFT_TYPE_END 6
+#define SHIFT_CONST_START 7
+#define SHIFT_CONST_END 11
+
 typedef uint8_t byte;
 
 // default target machine endian is littel

@@ -3,16 +3,6 @@
 #include "decode.h"
 #include "../../global_utils/tools.h"
 
-#define IMM_START 0
-#define IMM_END 7
-#define ROTATE_START 8
-#define ROTATE_END 11
-#define RM_START 0
-#define RM_END 3
-#define SHIFT_TYPE_START 5
-#define SHIFT_TYPE_END 6
-#define SHIFT_CONST_START 7
-#define SHIFT_CONST_END 11
 
 static reg_or_imm_t reg_or_imm_helper(bool is_imm, uint32_t fetched);
 static instruction_t decode_branch(uint32_t fetched);
