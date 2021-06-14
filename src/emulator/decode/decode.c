@@ -125,9 +125,9 @@ instruction_t decode_mul(uint32_t fetched)
 }
 
 /*!
- * TODO
- * @param fetched
- * @return
+ *
+ * @param fetched : a fetched instruction which should be a single data transfer instruction
+ * @return a processed single transfer instruction
  */
 instruction_t decode_trans(uint32_t fetched)
 {
