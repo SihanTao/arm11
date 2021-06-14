@@ -7,6 +7,8 @@
 #include "../../global_utils/tools.h"
 #include "../utils/load_store.h"
 
+#define PC 15
+
 static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t Rn,
                                   uint32_t operand2, bool *new_flag_c);
 /*!
@@ -248,9 +250,14 @@ static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
   }
 }
 
+/*!
+ *
+ * @param instruction : an single data transfer instruction
+ * @param arm_state : current state of the arm machine
+ */
 void execute_TRANS(trans_t instruction, ArmState arm_state)
 {
-  if (instruction.Rn == 15) // pc
+  if (instruction.Rn == PC) // pc
   {
     perror("Doesn't support to load or store PC! \n");
     exit(EXIT_FAILURE);
