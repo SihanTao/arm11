@@ -190,12 +190,16 @@ void execute_DP(proc_t instruction, ArmState arm_state)
   }
 }
 
-/*
+/*!
  * find the result for data processing instruction
- * `new_flag_c` is a output param, it should accept a carry bit from shift
- * barrel, and it will update this flag_c according to opcode type
- * i.e. keep the value if it is a logical operation and change it to
- * arithmetic carry out if it is a arithmetic carry out
+ * @param opcode
+ * @param operand1
+ * @param operand2
+ * @param new_flag_c 	is a output param, it should accept a carry bit from shift
+ * 						barrel, and it will update this flag_c according to opcode type
+ * 						i.e. keep the value if it is a logical operation and change it to
+ * 						arithmetic carry out if it is a arithmetic carry out
+ * @return
  */
 static uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
                                   uint32_t operand2, bool *new_flag_c)
