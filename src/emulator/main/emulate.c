@@ -69,6 +69,11 @@ int main(int argc, char **argv)
   return EXIT_SUCCESS;
 }
 
+/*!
+ * This function should be called when each instruction cycle is done.
+ * @param pc : program counter, which is updated every function call
+ * @param pipelines : the pipelines to be done
+ */
 void flash_cycle(size_t *pc, pipelines_t pipelines)
 {
   single_pipeline_t temp;
