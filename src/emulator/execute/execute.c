@@ -6,7 +6,12 @@
 #include "execute.h"
 
 #include "../execute/execute_helper.h"
-
+/*!
+ *
+ * @param decoded
+ * @param arm_state
+ * @return the state of the ARM machine after execute the instruction
+ */
 exit_type execute(instruction_t decoded, ArmState arm_state)
 {
   if (test_instruction_cond(decoded, arm_state))
