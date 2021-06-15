@@ -55,7 +55,7 @@ int find_symbol_table(char *symbol_data, SymbolTable table)
 /*!
  * 
  * @param table
- *
+ * @return : free every node from the symbol table
  */
 void free_symbol_table(SymbolTable table)
 {
@@ -66,6 +66,7 @@ void free_symbol_table(SymbolTable table)
 /*!
  * 
  * @param node
+ * @return : free the node
  */
 void free_node(symbol_node_t *node)
 {

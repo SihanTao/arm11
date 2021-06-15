@@ -62,7 +62,7 @@ operand_t *gen_operand(char *trimed)
 /*!
  * TODO
  * @param line
- * @return 
+ * @return  
  */
 Token tokenize(char *line)
 {
