@@ -11,7 +11,7 @@ typedef enum parsec_type
   PARSERC_OR,
   PARSERC_AND,
   PARSERC_STAR,
-  PARSERC_OPT,
+  PARSERC_UNIT,
   PARSERC_MATCH,
   PARSERC_TAKE,
   PARSERC_UNTIL
@@ -61,8 +61,10 @@ Parsec match(char *name, char *template);
 AST parse_h(CharStream s, Parsec p, ast_mapper map);
 AST parse_match(Parsec p, CharStream s);
 Parsec seq(char* name, Parsec *sequence, size_t num);
+Parsec alt(char* name, Parsec *choices, size_t num);
 Parsec take_while(char *name, proposition accepts);
 Parsec take_until(char *name, proposition until);
 AST parse_prop(Parsec p, CharStream s, bool(decorator)(bool));
+Parsec end();
 
 #endif // PARSERC

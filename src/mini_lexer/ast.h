@@ -1,6 +1,10 @@
 #ifndef AST_PARSERC
 #define AST_PARSERC
 
+#define $G get_child_by_name
+#define $T get_matched
+#define $TG(x, y) $T($G(x, y))
+
 typedef struct ast_node_t
 {
   char *       key;

@@ -7,7 +7,7 @@
 #include "ast.h"
 #include "char_stream.h"
 
-#include "parserc.h"
+#include "parsec.h"
 
 void print_indent(int indent)
 {
@@ -54,6 +54,13 @@ bool negate(bool in)
 AST parse(CharStream char_stream, Parsec parserc, ast_mapper map_while_build)
 {
   return parse_h(char_stream, parserc, map_while_build);
+}
+
+Parsec end()
+{
+  Parsec result = calloc(1, sizeof(parsec_t));
+  result->type = PARSERC_UNIT;
+  return result;
 }
 
 Parsec take_while(char *name, proposition accepts)
@@ -113,9 +120,9 @@ Parsec alt(char *name, Parsec *choices, size_t num)
 
 Parsec seq_h(Parsec *sequence, size_t num)
 {
-  if (num == 2)
+  if (num == 1)
   {
-    return make_and(NULL, sequence[0], sequence[1]);
+    return make_and(NULL, sequence[0], end());
   }
   return make_and(NULL, sequence[0], seq_h(sequence + 1, num - 1));
 }
@@ -202,6 +209,10 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
   case PARSERC_UNTIL:
   {
     return parse_prop(p, s, negate);
+  }
+  case PARSERC_UNIT:
+  {
+    return make_atom(NULL, NULL);
   }
   default:
     return NULL;
