@@ -13,6 +13,11 @@ Parsec p_number(char *name)
   return take_while(name, isnumber);
 }
 
+int e_deci(AST number)
+{
+  return atoi($T(number));
+}
+
 Parsec p_hexa(char *name)
 {
   return make_and(name, match(NULL, "0x"), p_number("hexa"));

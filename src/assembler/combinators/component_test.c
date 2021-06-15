@@ -46,9 +46,11 @@ int main(void)
   print_ast(ast, 0);
   printf("\n");
 
-   string      = "[r10],#10";
+  string      = "[r10],#10";
   char_stream = &string;
   ast         = parse(char_stream, address(), NULL);
   print_ast(ast, 0);
   printf("\n");
+
+
 }

@@ -8,6 +8,12 @@
 
 #include "../../global_utils/tools.h"
 
+/*!
+ * pre: file_name is not NULL
+ * With error handling when failure to open the file and the file is not in expected format
+ * @param file_name : the name of the ARM11 object code file
+ * @param write_to : the address to store the information
+ */
 void init_memory(char const *file_name, void *write_to)
 {
   if (!file_name)
@@ -29,7 +35,7 @@ void init_memory(char const *file_name, void *write_to)
   while (fread(buffer, NUM_OF_BYTE_IN_WORD, 1, file_handler))
   {
     memcpy((char *)write_to + position, buffer, NUM_OF_BYTE_IN_WORD);
-    position += 4;
+    position += ADDRESS_SHIFT;
   }
 
   if (!feof(file_handler))

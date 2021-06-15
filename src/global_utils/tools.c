@@ -4,8 +4,21 @@
 
 #include "tools.h"
 
+/*!
+ *
+ * @param i : the target 32-bit integer
+ * @param k : the kth bit wanted
+ * @return
+ */
 int get_bit(uint32_t i, int k) { return (i & (1 << k)) >> k; }
 
+/*!
+ *
+ * @param target
+ * @param start : the start position of the target bit range
+ * @param end : the end position of the target bit range
+ * @return the integer represents the bit in the required range
+ */
 int get_bit_range(int target, int start, int end)
 {
   assert(start <= MAX_BIT_INDEX && start >= 0);
@@ -15,6 +28,12 @@ int get_bit_range(int target, int start, int end)
   return (target >> start) & mask;
 }
 
+/*!
+ * set the position bit of dest to be value
+ * @param dest : the target 32-bit integer
+ * @param value : true = 1, false = 0
+ * @param position
+ */
 void set_bit(uint32_t *dest, bool value, int position)
 {
   assert(position <= MAX_BIT_INDEX && position >= 0);
@@ -22,6 +41,13 @@ void set_bit(uint32_t *dest, bool value, int position)
   *dest         = value ? *dest | mask : *dest & ~mask;
 }
 
+/*!
+ *
+ * @param dest : the target 32-bit integer
+ * @param src : the source integer for the target bit range
+ * @param start : start position of bit range to set
+ * @param end : end position of bit range to set
+ */
 void set_bit_range(uint32_t *dest, int src, int start, int end)
 {
   assert(start <= MAX_BIT_INDEX && start >= 0);

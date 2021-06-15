@@ -2,6 +2,12 @@
 
 #include "token_stream.h"
 
+/*!
+ * 
+ * @param elem
+ * @param stream
+ * @return : add the given element to the token stream
+ */
 void add_token_stream(token_t* elem, TokenStream stream)
 {
   if (stream->head == NULL)
@@ -18,6 +24,11 @@ TokenStream init_token_stream()
   return malloc(sizeof(token_stream_t));
 }
 
+/*!
+ * 
+ * @param stream
+ * @return the head of the token stream
+ */
 Token pop_token_stream(TokenStream stream)
 {
   Token result = stream->head;

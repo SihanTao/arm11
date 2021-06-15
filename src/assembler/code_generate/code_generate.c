@@ -10,6 +10,12 @@
 #include <string.h>
 // token_t -> instruction
 
+/*!
+ * TODO
+ * @param token_stream
+ * @param symbol_table
+ * 
+ */
 void code_generate(TokenStream token_stream, SymbolTable symbol_table)
 {
   uint32_t binary_code;
