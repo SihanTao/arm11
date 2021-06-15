@@ -15,7 +15,7 @@
 bool load(size_t address, byte *memory, bitfield *result)
 {
   bitfield result;
-  if (address > MAX_MEMORY_ADDRESS - ADDRESS_SHIFT || address < 0)
+  if (address > MAX_MEMORY_ADDRESS - 4 || address < 0)
   {
     printf("Error: Out of bounds memory access at address %p", address);
     return false;
@@ -32,7 +32,7 @@ bool load(size_t address, byte *memory, bitfield *result)
  */
 bool store(bitfield target, size_t address, byte *memory)
 {
-  if (address > MAX_MEMORY_ADDRESS - ADDRESS_SHIFT || address < 0)
+  if (address > MAX_MEMORY_ADDRESS - 4 || address < 0)
   {
     printf("Error: Out of bounds memory access at address %p", address);
     return false;

@@ -1,20 +1,22 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include "../../global_utils/types_and_macros.h"
-#include "../data_structure/token_stream.h"
 
 #include "code_generate_helper.h"
-#include "../../global_utils/tools.h"
-
-#include "../utils/mnemonic.h"
-#include "../code_generate/reverse_rotate.h"
-#include "../code_generate/allocate_address.h"
-#include "../data_structure/symbol_table.h"
+#include "../data_structure/token_stream.h"
+#include "../../global_utils//tools.h"
+#include "../../global_utils/types_and_macros.h"
+#include "mnemonic.h"
+#include "reverse_rotate.h"
+#include "allocate_address.h"
+#include "symbol_table.h"
 
 bitfield encode(Token token, SymbolTable symbol_table,
                 TokenStream token_stream)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> aed420e975d2e06d9ce27c001a52082753f5efd0
   // constant in assembly
   if (token->type == CONSTANT)
   {
@@ -206,6 +208,7 @@ void token_to_trans(Token token, TokenStream token_stream,
       }
     }
   }
+<<<<<<< HEAD
 =======
 	// This table is created to deal with the token opcode
 	// and assign them to functions processing different token types
@@ -478,6 +481,8 @@ void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolT
 		}
 	}
 >>>>>>> master
+=======
+>>>>>>> aed420e975d2e06d9ce27c001a52082753f5efd0
 }
 
 
@@ -570,6 +575,7 @@ void token_to_trans(Token token, instruction_t* instruction, SymbolTable symbolT
 // TODO: for later implementing optional, you can extract the part parsing
 // 		<#expression> and {+/-}Rm{,<shift>}
 <<<<<<< HEAD
+<<<<<<< HEAD
 void parse_preindexed_trans_operand(operand_t operand, trans_t *trans)
 =======
 
@@ -581,6 +587,9 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t *trans)
  */
 void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 >>>>>>> master
+=======
+void parse_preindexed_trans_operand(operand_t operand, trans_t *trans)
+>>>>>>> aed420e975d2e06d9ce27c001a52082753f5efd0
 {
   char *letters = operand.operand_data.letters;
 
@@ -620,6 +629,7 @@ void parse_preindexed_trans_operand(operand_t operand, trans_t* trans)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 void reg_imm_helper(bool is_imm, reg_or_imm_t reg_or_imm, uint32_t *target)
 =======
@@ -646,6 +656,10 @@ void token_to_branch(Token token, instruction_t* instruction, SymbolTable symbol
  */
 uint32_t to_bcode_mov(Token cur_token)
 >>>>>>> master
+=======
+
+void reg_imm_helper(bool is_imm, reg_or_imm_t reg_or_imm, uint32_t *target)
+>>>>>>> aed420e975d2e06d9ce27c001a52082753f5efd0
 {
   if (is_imm)
   {
@@ -661,6 +675,9 @@ uint32_t to_bcode_mov(Token cur_token)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> aed420e975d2e06d9ce27c001a52082753f5efd0
 uint32_t encode_DP(proc_t instruction) {}
 
 uint32_t encode_TRANS(trans_t instruction)
@@ -676,6 +693,7 @@ uint32_t encode_TRANS(trans_t instruction)
   reg_imm_helper(!instruction.iFlag, instruction.offset, result);
 }
 
+<<<<<<< HEAD
 =======
 /*!
  *
@@ -744,4 +762,6 @@ void reg_imm_helper(bool is_imm, reg_or_imm_t reg_or_imm, uint32_t* target)
 // 	set_bit_range(&result, instruction.offset, 0, 23);
 // }
 >>>>>>> master
+=======
+>>>>>>> aed420e975d2e06d9ce27c001a52082753f5efd0
 

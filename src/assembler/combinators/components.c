@@ -23,6 +23,11 @@ Parsec p_hexa(char *name)
   return make_and(name, match(NULL, "0x"), p_number("hexa"));
 }
 
+int e_hexa(AST number)
+{
+  return strtol($TG(number, "hexa"), NULL, 16);
+}
+
 Parsec hash_expr(void)
 {
   return make_and("hash_expr", match(NULL, "#"),
