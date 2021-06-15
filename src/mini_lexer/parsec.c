@@ -103,9 +103,9 @@ Parsec make_and(char *name, Parsec left, Parsec right)
 
 Parsec alt_h(Parsec *choices, size_t num)
 {
-  if (num == 2)
+  if (num == 1)
   {
-    return make_or(NULL, choices[0], choices[1]);
+    return make_or(NULL, choices[0], end());
   }
   return make_or(NULL, choices[0], alt_h(choices + 1, num - 1));
 }
@@ -161,11 +161,17 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
     {
       return add_child(new_ast, matched1);
     }
+    matched1 = make_atom(NULL, NULL);
 
     AST matched2 = parse_h(s, p->next, map);
     if (matched2 != NULL)
     {
-      return add_child(new_ast, matched2);
+      if (p->next->type == PARSERC_OR)
+      {
+        return add_child(new_ast, merge(matched1, matched2));
+      }
+      add_brother(matched1, matched2);
+      return add_child(new_ast, matched1);
     }
 
     return NULL;
