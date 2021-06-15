@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*!
+ * This is the unit test for the project.
+ * We can test the equality of int, double, long, char, float, bool, string
+ * The @param msg in some function allows us to print out the test name.
+ *
+ */
 int global_test_num_counter = 0;
 int global_pass_counter     = 0;
 
@@ -95,6 +101,10 @@ void test_eq(void const *got, void const *expect, size_t size)
   test_true(memcmp(got, expect, size) == 0);
 }
 
+/*!
+ * Add a new test with specified test name.
+ * @param test_name
+ */
 void add_test(char const *test_name)
 {
   summarise_test();
@@ -104,8 +114,14 @@ void add_test(char const *test_name)
   global_pass_counter     = 0;
 }
 
+/*!
+ * Wrap the summarise_test()
+ */
 void end_all_tests(void) { summarise_test(); }
 
+/*!
+ * Print out the result of the test
+ */
 static void summarise_test(void)
 {
   char msg[] = "\033[0;31m FAIL \033[0m"; // color : red

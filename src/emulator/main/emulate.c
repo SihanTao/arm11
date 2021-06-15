@@ -22,6 +22,17 @@ static void free_pipeline(single_pipeline_t *pipeline);
 static single_pipeline_t *init_single_pipeline(void);
 static pipelines_t        init_pipelines(void);
 
+/*!
+ * main calls the following functions:
+ * init_memory from file_loader.h to load the file into memory
+ * init_pipelines(), preheat_pipeline() to create the three stage pipeline
+ * decode and execute from decode.h and execute.h respectively for the fetch-decode-execute cycle
+ * output from output.h which prints the registers
+ *        and non-zeroed memory in a format which passes the automated tests.
+ * @param argc should be 2
+ * @param argv : argv[1] is the filename containing ARM11 object code
+ * @return
+ */
 int main(int argc, char **argv)
 {
   char *file_name = argv[1];
@@ -58,15 +69,25 @@ int main(int argc, char **argv)
   return EXIT_SUCCESS;
 }
 
+/*!
+ * This function should be called when each instruction cycle is done.
+ * @param pc : program counter, which is updated every function call
+ * @param pipelines : the pipelines to be done
+ */
 void flash_cycle(size_t *pc, pipelines_t pipelines)
 {
   single_pipeline_t temp;
   temp               = *pipelines.current;
   *pipelines.current = *pipelines.next;
   *pipelines.next    = temp;
-  *pc                = *pc + 4;
+  *pc                = *pc + ADDRESS_SHIFT;
 }
 
+/*!
+ * Do the preparation work before entering the fetch-decode-execute cycle
+ * @param arm_state
+ * @param pipelines
+ */
 void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)
 {
   pipelines.next->fetched = fetch(arm_state->pc, arm_state->memory);
@@ -76,6 +97,10 @@ void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)
   flash_cycle(&arm_state->pc, pipelines);
 }
 
+/*!
+ * initialize an empty linked list of single pipeline
+ * @return an empty pipelines_t which is a linked list of single_pipeline_t
+ */
 pipelines_t init_pipelines(void)
 {
   pipelines_t result
@@ -83,6 +108,10 @@ pipelines_t init_pipelines(void)
   return result;
 }
 
+/*!
+ * initialize a single pipeline, print error when memory allocation fails
+ * @return an empty single pipeline
+ */
 single_pipeline_t *init_single_pipeline(void)
 {
   single_pipeline_t *result = malloc(sizeof(single_pipeline_t));
@@ -98,6 +127,11 @@ single_pipeline_t *init_single_pipeline(void)
   return result;
 }
 
+/*!
+ * Free all the allocated memory on the heap
+ * @param arm_state
+ * @param pipelines
+ */
 void free_all(ArmState arm_state, pipelines_t pipelines)
 {
   free_state(arm_state);
@@ -105,4 +139,10 @@ void free_all(ArmState arm_state, pipelines_t pipelines)
   free(pipelines.next);
 }
 
+/*!
+ *
+ * @param pc : the address of program counter
+ * @param memory : the memory of the arm machine
+ * @return fetched instruction in the form of bitfield at address pc
+ */
 bitfield fetch(size_t pc, byte *memory) { return load(pc, memory); }

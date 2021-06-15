@@ -8,8 +8,16 @@
 #include "parse.h"
 #include "../parse/tokenize.h"
 
+
 static bool is_label_line(char *line);
 
+/*!
+ * TODO
+ * @param file_name
+ * @param token_stream
+ * @param symbol_table
+ * @return  
+ */
 void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table)
 {
   FILE *f_handle = fopen(file_name, "r");
@@ -39,4 +47,9 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table)
   free(buffer);
 }
 
+/*!
+ * 
+ * @param line
+ * @return a bool value that represents whether the line is label or not 
+ */
 bool is_label_line(char *line) { return line[strlen(line) - 1] == ':'; }

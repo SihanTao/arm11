@@ -2,6 +2,7 @@
 #define ARM11_49_SRC_ASSEMBLER_CODE_GENERATE_CODE_GENERATE_HELPER_H_
 
 #include "../data_structure/symbol_table.h"
+#include "../data_structure/token_stream.h"
 
 SymbolTable create_mnemonic_table();
 //SymbolTable create_dpi_table();

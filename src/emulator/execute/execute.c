@@ -7,6 +7,12 @@
 
 #include "../execute/execute_helper.h"
 
+/*!
+ *
+ * @param decoded: A decoded instruction
+ * @param arm_state: the current state of the arm machine
+ * @return the exit type of the ARM machine after execute the instruction
+ */
 exit_type execute(instruction_t decoded, ArmState arm_state)
 {
   if (decoded.tag == ZERO)

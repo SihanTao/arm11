@@ -4,6 +4,11 @@
 
 #include "init_arm_state.h"
 
+/*!
+ * initialize the state of the arm machine,
+ * print error when memory allocation fails
+ * @return initialized state of the arm machine
+ */
 ArmState init_state()
 {
   ArmState result = malloc(sizeof(arm_state_struct));
@@ -30,6 +35,10 @@ ArmState init_state()
   return result;
 }
 
+/*!
+ * free the memory used to store the state of the arm machine
+ * @param state : the arm state to be freed
+ */
 void free_state(ArmState state)
 {
   free(state->memory);
