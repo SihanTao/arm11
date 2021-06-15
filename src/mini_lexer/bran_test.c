@@ -81,6 +81,26 @@ Parsec operand2(void)
   return make_or("operand2", hash_expr(), p_reg_e("Rm"));
 }
 
+Parsec bran_cond(void)
+{
+  Parsec alts[8] = {
+    match("beq", "beq "),
+    match("bne", "bne "),
+    match("bge", "bge "),
+    match("blt", "blt "),
+    match("bgt", "bgt "),
+    match("ble", "ble "),
+    match("bal", "bal "),
+    match("bal", "b ")
+  };
+  return alt("bran_cond", alts, 8);
+}
+
+Parsec p_bran(void)
+{
+  return make_and("bran", bran_cond(), take_while("label", isalpha));
+}
+
 int main(void)
 {
   char *     string;
@@ -88,41 +108,21 @@ int main(void)
   AST        ast;
   Parsec     parsec;
 
-  string      = "#10";
+  string      = "b wait";
   char_stream = &string;
-
-  ast = parse(char_stream, operand2(), NULL);
-
+  ast         = parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
   printf("\n");
 
-  string      = "#0x10";
+  string      = "bal wait";
   char_stream = &string;
-  ast         = parse(char_stream, operand2(), NULL);
+  ast         = parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
   printf("\n");
 
-  string      = "r10";
+  string      = "beq wait";
   char_stream = &string;
-  ast         = parse(char_stream, operand2(), NULL);
-  print_ast(ast, 0);
-  printf("\n");
-
-  string      = "[r10]";
-  char_stream = &string;
-  ast         = parse(char_stream, address(), NULL);
-  print_ast(ast, 0);
-  printf("\n");
-
-   string      = "[r10, #10]";
-  char_stream = &string;
-  ast         = parse(char_stream, address(), NULL);
-  print_ast(ast, 0);
-  printf("\n");
-
-   string      = "[r10],#10";
-  char_stream = &string;
-  ast         = parse(char_stream, address(), NULL);
+  ast         = parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
   printf("\n");
 }
