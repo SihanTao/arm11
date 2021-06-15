@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "ast.h"
-#include "char_stream.h"
+#include "../../parsec/ast.h"
+#include "../../char_stream.h"
+#include "../../parsec.h"
 
-#include "parsec.h"
+#include "component.h"
 
 int main(void)
 {
