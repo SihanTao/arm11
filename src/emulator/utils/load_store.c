@@ -5,24 +5,25 @@
 
 #include "load_store.h"
 
-bitfield load(size_t address, byte *memory)
+bool load(size_t address, byte *memory, bitfield *result)
 {
   bitfield result;
   if (address > MAX_MEMORY_ADDRESS - 4 || address < 0)
   {
-    perror("Error! Reading from invalid address!");
-    exit(EXIT_FAILURE);
+    printf("Error: Out of bounds memory access at address %p", address);
+    return false;
   }
   memcpy(&result, memory + address, sizeof(bitfield));
-  return result;
+  return true;
 }
 
-void store(bitfield target, size_t address, byte *memory)
+bool store(bitfield target, size_t address, byte *memory)
 {
   if (address > MAX_MEMORY_ADDRESS - 4 || address < 0)
   {
-    perror("Error! Writing to invalid address!");
-    exit(EXIT_FAILURE);
+    printf("Error: Out of bounds memory access at address %p", address);
+    return false;
   }
   memcpy(memory + address, &target, sizeof(bitfield));
+  return true;
 }

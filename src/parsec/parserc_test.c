@@ -1,4 +1,22 @@
- Parsec abc = match("first", "abc");
+#include <stdlib.h>
+#include <ctype.h>
+
+#include "ast.h"
+#include "char_stream.h"
+
+#include "parsec.h"
+
+int main(void)
+{
+  char *     string;
+  CharStream char_stream;
+  AST        ast;
+  Parsec     parsec;
+
+  print_ast(ast, 0);
+  printf("\n");
+
+  Parsec abc = match("first", "abc");
   Parsec cde = match("second", "cde");
   Parsec ghf = match("third", "ghf");
 
@@ -43,3 +61,4 @@
   Parsec my_and = seq("my add", and_components, 3);
   print_pc(my_and, 0);
   printf("\n");
+}
