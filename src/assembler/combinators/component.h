@@ -4,14 +4,15 @@
 typedef struct address_t
 {
   bool is_post;
-  int offset;
+  bool is_imm;
+  int offset_or_eq_expr;
   int reg_num;
 }address_t;
 
 extern Parsec p_number(char *name);
 extern Parsec p_hexa(char *name);
-extern Parsec hash_expr(char * name);
-extern Parsec eq_expr(char *name);
+extern Parsec p_hash_expr(char * name);
+extern Parsec p_eq_expr(char *name);
 extern Parsec p_reg_i(char *name);
 extern Parsec p_reg_e(char *name);
 extern Parsec p_no_offset(void);
@@ -28,6 +29,8 @@ address_t e_no_offset(AST no_offset);
 address_t e_has_offset(AST has_offset);
 address_t e_pre_index(AST pre_index);
 address_t e_post_index(AST post_index);
+
+bool reverse_rotate(uint32_t target, int *rotation_amount, uint32_t *imm);
 #endif //COMPONET
 
 
