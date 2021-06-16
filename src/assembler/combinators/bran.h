@@ -1,12 +1,11 @@
-#ifndef BRAN
-#define BRAN
+#ifndef BRAN_COMBINATOR
+#define BRAN_COMBINATOR
 
-extern Parsec no_offset(void);
-extern Parsec pre_index(void);
-extern Parsec post_index(void);
-extern Parsec address(void);
-extern Parsec operand2(void);
-extern Parsec bran_cond(void);
+
+extern Parsec p_bran_cond(void);
 extern Parsec p_bran(void);
 
-#endif //BRAN
+cond_type e_bran_cond(AST bran_cond);
+instruction_t e_bran(AST bran, SymbolTable symbol_table);
+
+#endif //BRAN_COMBINATOR

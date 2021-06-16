@@ -2,71 +2,80 @@
 #include <ctype.h>
 
 #include "../../parsec/ast.h"
-#include "../../char_stream.h"
+#include "../../parsec/char_stream.h"
 
-#include "../../parsec.h"
+#include "../../parsec/parsec.h"
 
-#include "component.h"
+#include "../../global_utils/types_and_macros.h"
+
+#include "../data_structure/symbol_table.h"
+
 #include "bran.h"
 
-Parsec no_offset(void)
+Parsec p_bran_cond(void)
 {
-  Parsec seqs[3] = {
-    match(NULL, "["),
-    p_reg_e("Rn"),
-    match(NULL, "]")
-  };
-  return seq("no offset", seqs, 3);
-}
-
-Parsec pre_index(void)
-{
-  Parsec seqs[4] = {
-    match(NULL, "["),
-    p_reg_i("Rn"),
-    hash_expr(),
-    match(NULL, "]"),
-  };
-  Parsec has_offset = seq("has offset", seqs, 4);
-  return make_or("pre index", no_offset(), has_offset);
-}
-
-Parsec post_index(void)
-{
-  Parsec seqs[3] = {
-    no_offset(),
-    match(NULL, ","),
-    hash_expr()
-  };
-  return seq("post index", seqs, 3);
-}
-
-Parsec address(void)
-{
-  return make_or("address", post_index(), pre_index());
-}
-
-Parsec operand2(void)
-{
-  return make_or("operand2", hash_expr(), p_reg_e("Rm"));
-}
-
-Parsec bran_cond(void)
-{
-  Parsec alts[8] = {
-    match("beq", "beq "),
-    match("bne", "bne "),
-    match("bge", "bge "),
-    match("blt", "blt "),
-    match("bgt", "bgt "),
-    match("ble", "ble "),
-    match("bal", "bal "),
-    match("bal", "b ")
-  };
+  Parsec alts[8]
+      = { match("beq", "beq "), match("bne", "bne "), match("bge", "bge "),
+          match("blt", "blt "), match("bgt", "bgt "), match("ble", "ble "),
+          match("bal", "bal "), match("bal", "b ") };
   return alt("bran_cond", alts, 8);
+}
+
+cond_type e_bran_cond(AST bran_cond)
+{
+  AST cond = $G(bran_cond, "beq");
+  if (cond)
+  {
+    return EQ;
+  }
+
+  cond = $G(bran_cond, "bne");
+  if (cond)
+  {
+    return NE;
+  }
+
+    cond = $G(bran_cond, "bge");
+  if (cond)
+  {
+    return GE;
+  }
+
+    cond = $G(bran_cond, "blt");
+  if (cond)
+  {
+    return LT;
+  }
+
+    cond = $G(bran_cond, "bgt");
+  if (cond)
+  {
+    return GT;
+  }
+
+    cond = $G(bran_cond, "ble");
+  if (cond)
+  {
+    return LE;
+  }
+
+    cond = $G(bran_cond, "bal");
+  if (cond)
+  {
+    return AL;
+  }
+}
+
+instruction_t e_bran(AST bran, SymbolTable symbol_table)
+{
+  instruction_t result;
+  result.cond = e_bran_cond($G(bran, "bran_cond"));
+  result.tag = BRAN;
+  result.word.branch.offset = find_symbol_table($TG(bran, "label"), symbol_table);
+  return result;
 }
 
 Parsec p_bran(void)
 {
-  return make_and("bran", bran_cond(), take_while("label", isalpha));
+  return make_and("bran", p_bran_cond(), take_while("label", isalpha));
 }
