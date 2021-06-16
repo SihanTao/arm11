@@ -24,13 +24,14 @@ static pipelines_t        init_pipelines(void);
 
 /*!
  * main calls the following functions:
- * init_memory from file_loader.h to load the file into memory
- * init_pipelines(), preheat_pipeline() to create the three stage pipeline
- * decode and execute from decode.h and execute.h respectively for the fetch-decode-execute cycle
- * output from output.h which prints the registers
- *        and non-zeroed memory in a format which passes the automated tests.
+ * `init_memory()` from `file_loader.h` to load the file into arm memory
+ * `init_pipelines()`, `preheat_pipeline()` to create the three stage pipeline
+ * `decode()` and `execute()` from `decode.h` and `execute.h` respectively in
+ * order to perform the fetch-decode-execute cycle `output()` from `output.h`
+ * which prints the registers and non-zeroed memory in a format which passes
+ * the automated tests.
  * @param argc should be 2
- * @param argv : argv[1] is the filename containing ARM11 object code
+ * @param argv argv[1] is the filename containing ARM11 object code
  * @return
  */
 int main(int argc, char **argv)
@@ -63,14 +64,14 @@ int main(int argc, char **argv)
     flash_cycle(&arm_state->pc, pipelines);
   }
 
-  output("something", arm_state);
+  output(arm_state);
 
   free_all(arm_state, pipelines);
   return EXIT_SUCCESS;
 }
 
 /*!
- * This function should be called when each instruction cycle is done.
+ * This function should be called when each fetch-decode-execute cycle is done.
  * @param pc : program counter, which is updated every function call
  * @param pipelines : the pipelines to be done
  */
@@ -84,7 +85,7 @@ void flash_cycle(size_t *pc, pipelines_t pipelines)
 }
 
 /*!
- * Do the preparation work before entering the fetch-decode-execute cycle
+ * Skip the first two cycles before the first instruction get executed
  * @param arm_state
  * @param pipelines
  */
@@ -98,8 +99,10 @@ void preheat_pipeline(ArmState arm_state, pipelines_t pipelines)
 }
 
 /*!
- * initialize an empty linked list of single pipeline
- * @return an empty pipelines_t which is a linked list of single_pipeline_t
+ * initialize two pipelines
+ * the reason for this design is to enable instructions like `mov pc #5`
+ * which `mov pc #5` may mess up the pipeline if not handled correctly
+ * @return initialized pipelines
  */
 pipelines_t init_pipelines(void)
 {
@@ -145,4 +148,9 @@ void free_all(ArmState arm_state, pipelines_t pipelines)
  * @param memory : the memory of the arm machine
  * @return fetched instruction in the form of bitfield at address pc
  */
-bitfield fetch(size_t pc, byte *memory) { return load(pc, memory); }
+bitfield fetch(size_t pc, byte *memory)
+{
+  bitfield result;
+  load(pc, memory, &result);
+  return result;
+}

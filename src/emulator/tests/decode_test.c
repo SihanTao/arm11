@@ -58,7 +58,7 @@ int main(void)
     instruction_t instruction2 = decode(mul);
     test_int_v(instruction2.tag, MUL, "mul r2,r1,r0 == multiply");
     test_int_v(instruction2.cond, AL, "mul r2,r1,r0 cond == always");
-    test_int_v(instruction2.word.mul.acc, 0, "mul r2,r1,r0 acc == 0");
+    test_int_v(instruction2.word.mul.is_mla, 0, "mul r2,r1,r0 is_mla == 0");
     test_int_v(instruction2.word.mul.Rd, 2, "mul r2,r1,r0 Rd == 2");
     test_int_v(instruction2.word.mul.Rn, 0, "mul r2,r1,r0 Rn == 0");
     test_int_v(instruction2.word.mul.Rs, 0, "mul r2,r1,r0 Rs == 0");
@@ -78,7 +78,7 @@ int main(void)
     instruction_t instruction = decode(ldr01);
     test_int_v(instruction.tag, TRANS, "ldr r2,[r0] == TRANS");
     test_int_v(instruction.cond, AL, "ldr r2,[r0] cond == AL");
-    test_int_v(instruction.word.trans.iFlag, 0, "ldr r2,[r0] I == 0");
+    test_int_v(instruction.word.trans.is_imm, 0, "ldr r2,[r0] I == 0");
     test_int_v(instruction.word.trans.is_pre, 1, "ldr r2,[r0] P == 1");
     test_int_v(instruction.word.trans.is_up, 1, "ldr r2,[r0] U == 1");
     test_int_v(instruction.word.trans.is_load, 1, "ldr r2,[r0] L == 1");

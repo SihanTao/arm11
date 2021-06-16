@@ -29,7 +29,7 @@ int main(void)
     set_bit(dest, value, position);
     test_int_v(*dest, 0b0001, "result is 0b1000");
 
-    printf("ALL_ONE << 31 :>> %p\n,", ALL_ONE >> 28); //DpLETE_MARK
+    printf("ALL_ONE << 31 :>> %p\n", ALL_ONE >> 28); //DpLETE_MARK
 
     *dest = 0x0;
     set_bit(dest, 1, 4);

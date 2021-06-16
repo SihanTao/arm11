@@ -35,7 +35,6 @@
 typedef uint8_t  byte;
 typedef uint32_t bitfield;
 
-#define PC 15
 #define SIGN_BIT 31
 #define OFFSET_BIT 23
 #define IMM_START 0
@@ -209,7 +208,7 @@ typedef struct proc_t
   no_reg_t       Rn;
   bool           set_cond;
   pd_opcode_type opcode; // datatype : pd_opcode_type
-  bool           iFlag;  // else is register
+  bool           is_imm;  // else is register
 } proc_t;
 
 typedef struct mul_t
@@ -219,7 +218,7 @@ typedef struct mul_t
   no_reg_t Rn;
   no_reg_t Rd;
   bool     set_cond;
-  bool     acc;
+  bool     is_mla;
 } mul_t;
 
 typedef struct trans_t
@@ -230,7 +229,7 @@ typedef struct trans_t
   bool         is_load; // else is store
   bool         is_up;   // else is down
   bool         is_pre;  // else is post
-  bool         iFlag;   // 0 -> immediate value; 1 -> register
+  bool         is_reg;   // 0 -> immediate value; 1 -> register
 } trans_t;
 
 typedef struct branch_t

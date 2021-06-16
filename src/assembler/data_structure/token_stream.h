@@ -1,28 +1,10 @@
 #ifndef TOKENSTREAM
 #define TOKENSTREAM
 
-typedef enum operand_type
-{
-	NUMBER,
-	STRING,
-} operand_type;
-
-typedef struct operand_t
-{
-	operand_type tag;
-	union
-	{
-		char* letters;
-		int number;
-	} operand_data;
-	struct operand_t* next;
-} operand_t;
-
 typedef struct token_t
 {
-	char* opcode;
-	operand_t* operands;
-	int num_of_operands;
+  AST ast;
+  int imm_val;
 	int address;
 	struct token_t* next;
 } token_t;
@@ -52,6 +34,5 @@ extern void add_token_stream(token_t* elem, TokenStream stream);
 extern TokenStream init_token_stream();
 extern void free_token(Token token);
 extern void free_token_stream(TokenStream stream);
-extern void free_operands(operand_t* operand);
 
 #endif // TOKENSTREAM

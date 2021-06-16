@@ -6,36 +6,39 @@
 #include "load_store.h"
 
 /*!
- *
+ * Invalid read and write is handled inside the function
  * @param address
  * @param memory
- * @return the contents of memory at the specified address
-
+ * @param result output param, returns the contents of memory at the specified
+ * address
+ * @return if success returns true else false
  */
-bitfield load(size_t address, byte *memory)
+bool load(size_t address, byte *memory, bitfield *result)
 {
-  bitfield result;
-  if (address > MAX_MEMORY_ADDRESS - ADDRESS_SHIFT || address < 0)
+  if (address > MAX_MEMORY_ADDRESS - 4 || address < 0)
   {
-    perror("Error! Reading from invalid address!");
-    exit(EXIT_FAILURE);
+    printf("Error: Out of bounds memory access at address %p", address);
+    return false;
   }
   memcpy(&result, memory + address, sizeof(bitfield));
-  return result;
+  return true;
 }
 
 /*!
  * Store the target bitfield into the specified memory
+ * Invalid read and write is handled inside the function
  * @param target : the bitfield to be stored
  * @param address
  * @param memory
+ * @return if success returns true else false
  */
-void store(bitfield target, size_t address, byte *memory)
+bool store(bitfield target, size_t address, byte *memory)
 {
-  if (address > MAX_MEMORY_ADDRESS - ADDRESS_SHIFT || address < 0)
+  if (address > MAX_MEMORY_ADDRESS - 4 || address < 0)
   {
-    perror("Error! Writing to invalid address!");
-    exit(EXIT_FAILURE);
+    printf("Error: Out of bounds memory access at address %p", address);
+    return false;
   }
   memcpy(memory + address, &target, sizeof(bitfield));
+  return true;
 }
