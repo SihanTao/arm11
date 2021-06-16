@@ -21,7 +21,6 @@ void output(ArmState arm_state)
   int reg_value;
   int pc_val  = arm_state->pc;
   int CPSR    = cpsr_to_int(arm_state);
-  int address = 0;
   int memory_val;
 
   // output registers
@@ -38,17 +37,16 @@ void output(ArmState arm_state)
 
   // outputs non zero memory
   fprintf(file_handle, "Non-zero memory:\n");
-  while (true)
+  for (int address = 0; address < 65536; address += 4)
   {
     load(address, arm_state->memory, &memory_val);
     memory_val = convert_endian(memory_val);
     if (memory_val == 0)
     {
-      break;
+      continue;
     }
 
     fprintf(file_handle, "%010p: %010p\n", address, memory_val);
-    address += 4;
   }
 
   fclose(file_handle);
