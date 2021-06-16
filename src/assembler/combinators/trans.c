@@ -52,7 +52,7 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
   add_token_stream(token, token_stream);
 
   offset.rot_imm.amount = 0;
-  offset.rot_imm.imm    = end_address - cur_address - 8;
+  offset.rot_imm.imm    = *end_address - cur_address - 8;
   trans_ins.offset      = offset;
 
   trans_ins.Rd      = e_reg($G(trans, "Rd"));
