@@ -21,15 +21,15 @@
 #include "line.h"
 
 static Parsec        p_label(void);
-static Parsec        p_line(void);
 static instruction_t e_andeq(AST anded);
 static Parsec        p_andeq(void);
 static Parsec        p_lsl(void);
 static instruction_t e_lsl(AST lsl);
+static Parsec p_instruction(void);
 
 instruction_t e_instruction(AST ins_ast, int cur_address,
                             TokenStream token_stream, SymbolTable symbol_table,
-                            int end_address)
+                            int* end_address)
 {
   AST andeq = $G(ins_ast, "andeq");
   if (andeq)
@@ -81,13 +81,13 @@ char *e_label(AST label)
 
 Parsec p_line(void)
 {
-  return make_or("line", p_label(), p_instruction());
+  return make_or("line", p_instruction(), p_label());
 }
 
 Parsec p_instruction(void)
 {
   Parsec alts[6]
-      = { p_andeq(), p_lsl(), p_bran(), p_proc(), p_mul(), p_trans() };
+      = { p_andeq(), p_lsl(), p_trans(), p_bran(), p_proc(), p_mul() };
   return alt("instruction", alts, 6);
 }
 
