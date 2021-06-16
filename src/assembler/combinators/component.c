@@ -6,7 +6,57 @@
 
 #include "../../parsec/parsec.h"
 
+#include "../../global_utils/types_and_macros.h"
+
 #include "component.h"
+
+/*!
+ *
+ * @param target
+ * @return : determine whether the target is an immediate value or not
+ */
+static bool is_valid_imm(uint32_t target)
+{
+  uint32_t mask = 0X000000FF;
+  if ((target & mask) == target)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+/*!
+ *
+ * @param target
+ * @param rotation_amount
+ * @param imm
+ * @return the result after reverse rotate
+ */
+bool reverse_rotate(uint32_t target, int *rotation_amount, uint32_t *imm)
+{
+  if (is_valid_imm(target))
+  {
+    *rotation_amount = 0;
+    *imm             = target;
+    return true;
+  }
+
+  for (int i = 1; i < 16; i++)
+  {
+    target = (target << 2) | (target >> 30); // rotate left by 2.
+    if (is_valid_imm(target))
+    {
+      *rotation_amount = i;
+      *imm             = target;
+      return true;
+    }
+  }
+
+  return false;
+}
 
 Parsec p_number(char *name)
 {
@@ -76,23 +126,27 @@ Parsec p_operand2(void)
   return make_or("operand2", hash_expr("imm val"), p_reg_e("Rm"));
 }
 
-reg_or_imm e_operand2(AST operand2)
+reg_or_imm_t e_operand2(AST operand2, bool* is_imm)
 {
-  reg_or_imm result;
+  reg_or_imm_t result;
   AST hash_ast = $G(operand2, "imm val");
   if (hash_ast)
   {
-    result.is_reg = true;
-    result.val = e_eq_hash_expr(hash_ast);
+    int amount;
+    int imm;
+    reverse_rotate(e_eq_hash_expr(hash_ast), &amount, &imm);
+    result.rot_imm.amount = amount;
+    result.rot_imm.imm = imm;
+    *is_imm = true;
     return result;
   }
 
   AST reg = $G(operand2, "Rm");
   if (reg)
   {
-    result.is_reg = false;
-    result.val = e_reg(reg);
-    result.shift = 0;
+    *is_imm = false;
+    result.shift_reg.Rm = e_reg(reg);
+    result.shift_reg.val = 0;
     return result;
   }
 }

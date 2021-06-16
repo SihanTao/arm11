@@ -1,13 +1,6 @@
 #ifndef COMPONET
 #define COMPONET
 
-typedef struct reg_or_imm
-{
-  bool is_reg;
-  int val;
-  int shift;
-} reg_or_imm;
-
 typedef struct address_t
 {
   bool is_post;
@@ -29,7 +22,7 @@ extern Parsec p_operand2(void);
 
 extern int e_eq_hash_expr(AST hash_expr);
 int e_reg(AST reg);
-reg_or_imm e_operand2(AST operand2);
+reg_or_imm_t e_operand2(AST operand2, bool* is_imm);
 address_t e_address(AST address);
 address_t e_no_offset(AST no_offset);
 address_t e_has_offset(AST has_offset);
