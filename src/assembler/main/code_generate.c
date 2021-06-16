@@ -5,6 +5,8 @@
 #include "../data_structure/token_stream.h"
 #include "../data_structure/symbol_table.h"
 
+#include "../combinators/line.h"
+
 
 /*!
  * TODO
@@ -12,15 +14,27 @@
  * @param symbol_table
  *
  */
-void code_generate(TokenStream token_stream, SymbolTable symbol_table)
+void code_generate(TokenStream token_stream, SymbolTable symbol_table, int* end_address)
 {
   uint32_t binary_code;
+  instruction_t ins;
   AST ast;
+  int address;
 
   for (token_t *cur_token = token_stream->head; cur_token != NULL;
        cur_token          = cur_token->next)
   {
-    binary_code = encode(ast, token_stream, symbol_table);
+    if (cur_token->ast == NULL)
+    {
+      write_file(cur_token->imm_val);
+      continue;
+    }
+
+    ast = cur_token->ast;
+    address = cur_token->address;
+    ins = e_instruction(ast, address, token_stream, symbol_table, end_address);
+    binary_code = to_bcode(ins);
+
     write_file(binary_code);
   }
 }
@@ -41,6 +55,7 @@ uint32_t encode_MUL(mul_t instruction)
 {
 	uint32_t result = 0;
 	set_bit_range(&result, instruction.cond, 28, 31);
+
 	set_bit(&result, instruction.acc, 21);
 	set_bit(&result, instruction.set_cond, 20);
 	set_bit_range(&result, instruction.Rd, 16, 19);
