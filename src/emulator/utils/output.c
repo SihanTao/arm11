@@ -12,18 +12,11 @@ static int cpsr_to_int(ArmState arm_state);
 
 /*!
  *
- * @param filename : the filename to write to
  * @param arm_state : current state of the arm machine
  */
-void output(char *filename, ArmState arm_state)
+void output(ArmState arm_state)
 {
   FILE *file_handle = stdout;
-  // FILE *file_handle = fopen(filename, "w");
-  // if (!file_handle)
-  // {
-  //   perror("cannot open file");
-  //   exit(EXIT_FAILURE);
-  // }
 
   int reg_value;
   int pc_val  = arm_state->pc;
@@ -47,7 +40,8 @@ void output(char *filename, ArmState arm_state)
   fprintf(file_handle, "Non-zero memory:\n");
   while (true)
   {
-    memory_val = convert_endian(load(address, arm_state->memory));
+    load(address, arm_state->memory, &memory_val);
+    memory_val = convert_endian(memory_val);
     if (memory_val == 0)
     {
       break;

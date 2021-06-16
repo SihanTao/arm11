@@ -6,6 +6,6 @@
 #define Cbit (1 << 29);
 #define Vbit (1 << 28);
 
-extern void output(char *filename, ArmState arm_state);
+extern void output(ArmState arm_state);
 
 #endif //OUTPUT
