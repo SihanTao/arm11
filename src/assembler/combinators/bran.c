@@ -35,31 +35,31 @@ cond_type e_bran_cond(AST bran_cond)
     return NE;
   }
 
-    cond = $G(bran_cond, "bge");
+  cond = $G(bran_cond, "bge");
   if (cond)
   {
     return GE;
   }
 
-    cond = $G(bran_cond, "blt");
+  cond = $G(bran_cond, "blt");
   if (cond)
   {
     return LT;
   }
 
-    cond = $G(bran_cond, "bgt");
+  cond = $G(bran_cond, "bgt");
   if (cond)
   {
     return GT;
   }
 
-    cond = $G(bran_cond, "ble");
+  cond = $G(bran_cond, "ble");
   if (cond)
   {
     return LE;
   }
 
-    cond = $G(bran_cond, "bal");
+  cond = $G(bran_cond, "bal");
   if (cond)
   {
     return AL;
@@ -70,8 +70,9 @@ instruction_t e_bran(AST bran, SymbolTable symbol_table)
 {
   instruction_t result;
   result.cond = e_bran_cond($G(bran, "bran_cond"));
-  result.tag = BRAN;
-  result.word.branch.offset = find_symbol_table($TG(bran, "label"), symbol_table);
+  result.tag  = BRAN;
+  result.word.branch.offset
+      = find_symbol_table($TG(bran, "label"), symbol_table);
   return result;
 }
 

@@ -22,12 +22,13 @@ int main(void)
   Parsec     parsec;
   instruction_t ins;
   trans_t trans;
+  TokenStream token_stream = init_token_stream();
 
   string      = "ldr r1,[r2]";
   char_stream = &string;
   ast         = parse(char_stream, p_trans(), NULL);
   print_ast(ast, 0);
-  ins = e_trans(ast, 0, NULL, 0);
+  ins = e_trans(ast, 0, token_stream, 0);
   printf("ins.cond :>> %d\n,", ins.cond); //DELETE_MARK
   printf("ins.tag :>> %d\n,", ins.tag); //DELETE_MARK
   trans = ins.word.trans;
@@ -39,11 +40,11 @@ int main(void)
   printf("trans.Rd :>> %d\n,", trans.Rd); //DELETE_MARK
   printf("trans.Rn :>> %d\n,", trans.Rn); //DELETE_MARK
 
-    string      = "str r1,[r2]";
+  string      = "str r1,[r2]";
   char_stream = &string;
   ast         = parse(char_stream, p_trans(), NULL);
   print_ast(ast, 0);
-  ins = e_trans(ast, 0, NULL, 0);
+  ins = e_trans(ast, 0, token_stream, 0);
   printf("ins.cond :>> %d\n,", ins.cond); //DELETE_MARK
   printf("ins.tag :>> %d\n,", ins.tag); //DELETE_MARK
   trans = ins.word.trans;
@@ -59,7 +60,7 @@ int main(void)
   char_stream = &string;
   ast         = parse(char_stream, p_trans(), NULL);
   print_ast(ast, 0);
-  ins = e_trans(ast, 0, NULL, 0);
+  ins = e_trans(ast, 0, token_stream, 0);
   printf("ins.cond :>> %d\n,", ins.cond); //DELETE_MARK
   printf("ins.tag :>> %d\n,", ins.tag); //DELETE_MARK
   trans = ins.word.trans;
