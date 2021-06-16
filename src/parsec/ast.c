@@ -47,6 +47,7 @@ void free_ast(ast_node_t *ast_node)
 
   free_ast(ast_node->brother);
   free_ast(ast_node->child);
+  free(ast_node->matched);
 
   free(ast_node);
 }
