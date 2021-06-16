@@ -12,6 +12,8 @@ BUILD_PROC	=	proc_test
 OBJS_PROC	=	proc_test.o proc.o component.o ../../parsec/ast.o ../../parsec/parsec.o ../../parsec/char_stream.o
 BUILD_TRANS	=	trans_test
 OBJS_TRANS	=	trans_test.o trans.o component.o ../../parsec/parsec.o ../../parsec/char_stream.o ../../parsec/ast.o ../data_structure/token_stream.o
+BUILD_LINE	=	line_test
+OBJS_LINE	=	line.o line_test.o trans.o bran.o mul.o proc.o component.o ../../parsec/parsec.o ../../parsec/char_stream.o ../../parsec/ast.o ../data_structure/token_stream.o ../data_structure/symbol_table.o
 
 clean:
 	rm *.o
@@ -30,6 +32,9 @@ proc_test:	$(OBJS_PROC)
 
 trans_test:	$(OBJS_TRANS)
 	$(CC) $(CFLAGS) $(OBJS_TRANS) $(LDFLAGS) -o trans_test $(LDLIBS)
+
+line_test:	$(OBJS_LINE)
+	$(CC) $(CFLAGS) $(OBJS_LINE) $(LDFLAGS) -o line_test $(LDLIBS)
 
 ../data_structure/symbol_table.o: ../data_structure/symbol_table.c
 ../data_structure/token_stream.o: ../data_structure/token_stream.c
@@ -52,3 +57,6 @@ proc.o:	proc.c ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream
 
 trans_test.o:	trans_test.c ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h trans.h ../data_structure/token_stream.h
 trans.o:	trans.c ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h ../data_structure/token_stream.h
+
+line_test.o: line.h	line_test.c bran.h trans.h proc.h mul.h ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h trans.h ../data_structure/token_stream.h ../data_structure/symbol_table.h
+line.o:	line.c bran.h proc.h mul.h trans.h ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h ../data_structure/token_stream.h ../data_structure/symbol_table.h
