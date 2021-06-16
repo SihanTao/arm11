@@ -7,7 +7,7 @@ OBJS_BRAN	=	bran_test.o ../../parsec/ast.o bran.o ../../parsec/parsec.o ../../pa
 BUILD_COMPONENT	=	component_test
 OBJS_COMPONET	=	component_test.o component.o ../../parsec/ast.o ../../parsec/parsec.o ../../parsec/char_stream.o
 BUILD_MUL	=	mul_test
-OBJS_MUL	=	mul_test.o mul.o ../../parsec/ast.o ../../parsec/parsec.o ../../parsec/char_stream.o
+OBJS_MUL	=	mul_test.o mul.o ../../parsec/ast.o ../../parsec/parsec.o ../../parsec/char_stream.o component.o
 BUILD_PROC	=	proc_test
 OBJS_PROC	=	proc_test.o proc.o component.o ../../parsec/ast.o ../../parsec/parsec.o ../../parsec/char_stream.o
 BUILD_TRANS	=	trans_test
@@ -44,9 +44,8 @@ bran.o:	bran.c ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream
 component.o: component.h ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h
 component_test.o:	component_test.c ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h
 
-mul_test.o:	mul_test.c mul.h
-mul.o:	mul.c ../../parsec/../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h mul.h
-../../parsec/ast.o:	../../parsec/ast.c
+mul_test.o:	mul_test.c mul.h ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h component.h
+mul.o:	mul.c ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h component.h
 
 proc_test.o:	proc_test.c ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h proc.h
 proc.o:	proc.c ../../parsec/ast.h ../../parsec/parsec.h ../../parsec/char_stream.h component.h proc.h

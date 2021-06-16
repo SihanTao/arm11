@@ -28,7 +28,7 @@ int main(void)
 
   char * string      = "ghfabccde";
   char **char_stream = &string;
-  AST    ast         = parse(char_stream, and2, NULL);
+  AST    ast         = perform_parse(char_stream, and2, NULL);
   print_ast(ast, 0);
   printf("\n");
 
@@ -36,21 +36,21 @@ int main(void)
   char_stream     = &string;
   Parsec asdf     = match("asdfasdf", "asdf");
   Parsec make_or1 = make_or("make_or", asdf, and2);
-  ast             = parse(char_stream, make_or1, NULL);
+  ast             = perform_parse(char_stream, make_or1, NULL);
   print_ast(ast, 0);
   printf("\n");
 
   string          = "ghfabccde";
   char_stream     = &string;
   Parsec make_or2 = make_or("make_or", and2, asdf);
-  ast             = parse(char_stream, make_or2, NULL);
+  ast             = perform_parse(char_stream, make_or2, NULL);
 
   print_ast(ast, 0);
   printf("\n");
 
   string      = "asdf";
   char_stream = &string;
-  ast         = parse(char_stream, make_or2, NULL);
+  ast         = perform_parse(char_stream, make_or2, NULL);
 
   print_ast(ast, 0);
   printf("\n");

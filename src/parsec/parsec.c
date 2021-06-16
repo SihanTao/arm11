@@ -51,7 +51,7 @@ bool negate(bool in)
   return !in;
 }
 
-AST parse(CharStream char_stream, Parsec parserc, ast_mapper map_while_build)
+AST perform_parse(CharStream char_stream, Parsec parserc, ast_mapper map_while_build)
 {
   return parse_h(char_stream, parserc, map_while_build);
 }
@@ -259,145 +259,16 @@ AST parse_match(Parsec p, CharStream s)
   return make_atom(p->name, buffer);
 }
 
-// AST_Holder parse(CharStream char_stream, Parsec parserc, ast_mapper
-// map_while_build)
-// {
-//   AST_Holder result = init_parserc_ast(map_while_build);
-//   parse_h(parserc, char_stream, result);
-//   free_parserc(parserc);
-//   return result;
-// }
+void free_parsec(Parsec parsec)
+{
+  if (parsec == NULL)
+  {
+    return;
+  }
 
-// Parsec take_while(char *name, proposition accepts)
-// {
-//   Parsec result = calloc(1, sizeof(parsec_t));
-//   result->name   = name;
-//   result->type   = PARSERC_TAKE;
-//   result->prop   = accepts;
-//   return result;
-// }
+  free(parsec->matching_string);
+  free_parsec(parsec->next);
+  free_parsec(parsec->curr);
 
-// Parsec take_until(char *name, proposition until)
-// {
-//   Parsec result = calloc(1, sizeof(parsec_t));
-//   result->name   = name;
-//   result->type   = PARSERC_TAKE;
-//   result->prop   = until;
-//   return result;
-// }
-
-// Parsec opt(char *name, Parsec target)
-// {
-//   Parsec result = calloc(1, sizeof(parsec_t));
-//   result->name   = name;
-//   result->type   = PARSERC_OPT;
-//   result->curr   = target;
-//   return result;
-// }
-
-// Parsec many(char *name, Parsec target)
-// {
-//   Parsec result = calloc(1, sizeof(parsec_t));
-//   result->name   = name;
-//   result->type   = PARSERC_STAR;
-//   result->curr   = target;
-//   return result;
-// }
-
-// Parsec at_least(char *name, Parsec target)
-// {
-//   Parsec sequence[2] = { target, many(NULL, target) };
-//   return seq(name, sequence, 2);
-// }
-
-// void free_parserc(Parsec parserc)
-// {
-//   if (parserc == NULL)
-//   {
-//     return;
-//   }
-
-//   free_parserc(parserc->curr);
-//   free_parserc(parserc->next);
-//   free(parserc);
-// }
-
-// bool parse_match(Parsec p, CharStream char_stream, AST_Holder ast)
-// {
-//   RecordPoint record_point = get_trace_back(char_stream);
-//   char        buffer[100];
-//   if (match_h(char_stream, p->matching_string, buffer))
-//   {
-//     if (p->name != NULL)
-//     {
-//       build_parserc_ast(p->name, strdup(buffer), SIBLING);
-//     }
-//     return true;
-//   }
-//   do_trace_back(char_stream, record_point);
-//   return false;
-// }
-
-// bool parse_take(Parsec p, CharStream char_stream, AST_Holder ast)
-// {
-//   char buffer[100];
-//   ntake_while(char_stream, p->prop, buffer, 99);
-//   if (p->name != NULL)
-//   {
-//     build_parserc_ast(p->name, strdup(buffer), SIBLING);
-//   }
-//   return true;
-// }
-
-// bool parse_until(Parsec p, CharStream char_stream, AST_Holder ast)
-// {
-//   char buffer[100];
-//   ntake_until(char_stream, p->prop, buffer, 99);
-//   if (p->name != NULL)
-//   {
-//     build_parserc_ast(p->name, strdup(buffer), SIBLING);
-//   }
-//   return true;
-// }
-
-// bool match_h(CharStream char_stream, char *template, char *buffer)
-// {
-//   if (get_char(char_stream) != *template || get_char(char_stream) == '\0'
-//       || *template == '\0')
-//   {
-//     return false;
-//   }
-//   next_char(char_stream);
-//   *buffer = *template;
-//   return match_h(char_stream, template + 1, buffer + 1);
-// }
-
-// void ntake_while(char **char_stream, proposition accepts, char *buffer,
-//                  size_t n)
-// {
-//   if (n == 0)
-//   {
-//     return;
-//   }
-//   if (accepts(**char_stream))
-//   {
-//     *buffer = get_char(char_stream);
-//     next_char(char_stream);
-//     ntake_while(char_stream, accepts, buffer + 1, n - 1);
-//   }
-// }
-
-// void ntake_until(char **char_stream, proposition until, char *buffer, size_t
-// n)
-// {
-//   if (n == 0)
-//   {
-//     return;
-//   }
-//   if (!until(**char_stream))
-//   {
-//     *buffer = get_char(char_stream);
-//     next_char(char_stream);
-//     ntake_until(char_stream, until, buffer + 1, n - 1);
-//   }
-// }
+  free(parsec);
+}

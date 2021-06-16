@@ -10,7 +10,10 @@
  * @param k : the kth bit wanted
  * @return
  */
-int get_bit(uint32_t i, int k) { return (i & (1 << k)) >> k; }
+int get_bit(uint32_t i, int k)
+{
+  return (i & (1 << k)) >> k;
+}
 
 /*!
  *

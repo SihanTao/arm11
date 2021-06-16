@@ -125,7 +125,7 @@ single_pipeline_t *init_single_pipeline(void)
   }
 
   result->fetched     = 0;
-  result->decoded.tag = UNDEFINED;
+  result->decoded.tag = UNDEFINED_ANDEQ;
 
   return result;
 }
