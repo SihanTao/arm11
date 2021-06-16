@@ -113,7 +113,7 @@ typedef enum exit_type
  */
 typedef enum ins_type
 {
-  UNDEFINED,
+  UNDEFINED_ANDEQ,
   PROC,
   MUL,   // Multiplication
   TRANS, // Single data transfer
