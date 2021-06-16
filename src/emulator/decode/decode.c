@@ -73,13 +73,13 @@ instruction_t decode_dp(bitfield fetched)
 
   result.tag                = PROC;
   result.cond     = get_bit_range(fetched, 28, 31);
-  result.word.proc.iFlag    = get_bit(fetched, 25);
+  result.word.proc.is_imm    = get_bit(fetched, 25);
   result.word.proc.opcode   = get_bit_range(fetched, 21, 24);
   result.word.proc.set_cond = get_bit(fetched, 20);
   result.word.proc.Rn       = get_bit_range(fetched, 16, 19);
   result.word.proc.Rd       = get_bit_range(fetched, 12, 15);
   result.word.proc.operand2
-      = reg_or_imm_helper(result.word.proc.iFlag, fetched);
+      = reg_or_imm_helper(result.word.proc.is_imm, fetched);
   return result;
 }
 
@@ -88,8 +88,8 @@ instruction_t decode_mul(bitfield fetched)
   instruction_t result;
 
   result.tag               = MUL;
-  result.word.mul.cond = get_bit_range(fetched, CONDITION_START, CONDITION_END);
-  result.word.mul.acc = get_bit(fetched, ACCUMULATE_BIT);
+  result.cond = get_bit_range(fetched, CONDITION_START, CONDITION_END);
+  result.word.mul.is_mla = get_bit(fetched, ACCUMULATE_BIT);
   result.word.mul.set_cond = get_bit(fetched, SET_CONDITION_CODES_BIT);
   result.word.mul.Rd = get_bit_range(fetched, MUL_RD_START, MUL_RN_END);
   result.word.mul.Rn = get_bit_range(fetched, MUL_RN_START, MUL_RN_END);
@@ -104,13 +104,13 @@ instruction_t decode_trans(bitfield fetched)
 
   result.tag                = TRANS;
   result.cond    = get_bit_range(fetched, 28, 31);
-  result.word.trans.iFlag   = get_bit(fetched, 25);
+  result.word.trans.is_reg   = get_bit(fetched, 25);
   result.word.trans.is_pre  = get_bit(fetched, 24);
   result.word.trans.is_up   = get_bit(fetched, 23);
   result.word.trans.is_load = get_bit(fetched, 20);
   result.word.trans.Rn      = get_bit_range(fetched, 16, 19);
   result.word.trans.Rd      = get_bit_range(fetched, 12, 15);
   result.word.trans.offset
-      = reg_or_imm_helper(!result.word.trans.iFlag, fetched);
+      = reg_or_imm_helper(!result.word.trans.is_reg, fetched);
   return result;
 }
