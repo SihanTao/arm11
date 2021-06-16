@@ -42,23 +42,20 @@ Token pop_token_stream(TokenStream stream)
   return result;
 }
 
-// void free_token_stream(TokenStream stream)
-// {
-//   free_token(stream->head);
-// }
+void free_token_stream(TokenStream stream)
+{
+  free_token(stream->head);
+}
 
-// void free_token(Token token)
-// {
-//   if (token == NULL)
-//   {
-//     return;
-//   }
+void free_token(Token token)
+{
+  if (token == NULL)
+  {
+    return;
+  }
 
-//   for (int i = 0; i < token->num_operand; i++)
-//   {
-//     free(token->operands + i);
-//   }
+  free_ast(token->ast);
 
-//   free_token(token->next);
-//   free(token);
-// }
+  free_token(token->next);
+  free(token);
+}
