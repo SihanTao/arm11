@@ -12,12 +12,16 @@
  * @param val
  * @return true if val is negative, false if val is positive
  */
-bool is_neg(uint32_t val) { return get_bit(val, SIGN_BIT); }
+bool is_neg(uint32_t val)
+{
+  return get_bit(val, SIGN_BIT);
+}
 
 /*!
- *
+ * users should not call this function by default
  * @param target
- * @param rotate_amount
+ * @param rotate_amount should be in range [0, 31], rotation amount is not
+ * doubled in this function
  * @return the result after rotate
  */
 value_carry_t rotate(uint32_t target, int rotate_amount)
@@ -43,9 +47,9 @@ value_carry_t rotate(uint32_t target, int rotate_amount)
 }
 
 /*!
- *
+ * users should not call this function by default
  * @param target
- * @param shift_amount
+ * @param shift_amount shift amount should be in range [0, 31]
  * @param type : one of LSL, LSR, ASR, ROR
  * @return the result after the shift
  */
@@ -136,14 +140,15 @@ bool test_instruction_cond(instruction_t instruction, ArmState arm_state)
 
 /*!
  * Handle different cases according to the reg_imm
- * @param reg : an array that each element represents word in registers
- * @param reg_imm : stores either an immediate value or a shifted register
- * @param is_imm : true if reg_imm is an immediate value, false if reg_imm is a shifted register
- * @param value_out : the output value of the result
- * @param carry : the output carry of the result
+ * @param reg an array that each element represents word in registers
+ * @param reg_imm
+ * @param is_imm
+ * @param value_out output param, the output value of the result
+ * @param carry output param, if carry is setted to NULL,
+ * this function will not change carry
  */
-void reg_imm_handle(bitfield* reg, reg_or_imm_t reg_imm, bool is_imm,
-	uint32_t* value_out, bool* carry)
+void reg_imm_handle(bitfield *reg, reg_or_imm_t reg_imm, bool is_imm,
+                    uint32_t *value_out, bool *carry)
 {
   value_carry_t result;
 
@@ -178,7 +183,7 @@ void execute_proc(proc_t instruction, ArmState arm_state)
   bool      new_flag_c;
 
   // compute operand2, carry out is set to shift barrel carry out
-  reg_imm_handle(reg, instruction.operand2, instruction.iFlag, &operand2,
+  reg_imm_handle(reg, instruction.operand2, instruction.is_imm, &operand2,
                  &new_flag_c);
 
   uint32_t result
@@ -194,7 +199,8 @@ void execute_proc(proc_t instruction, ArmState arm_state)
   // if set_cond bit is set, change the CPRS flags
   if (instruction.set_cond)
   {
-    arm_state->neg   = get_bit(result, SIGN_BIT); // TODO : make it a macro SIGN_BIT
+    arm_state->neg
+        = get_bit(result, SIGN_BIT); // TODO : make it a macro SIGN_BIT
     arm_state->zero  = result == 0;
     arm_state->carry = new_flag_c;
   }
@@ -205,10 +211,10 @@ void execute_proc(proc_t instruction, ArmState arm_state)
  * @param opcode
  * @param operand1
  * @param operand2
- * @param new_flag_c 	is a output param, it should accept a carry bit from shift
- * 						barrel, and it will update this flag_c according to opcode type
- * 						i.e. keep the value if it is a logical operation and change it to
- * 						arithmetic carry out if it is a arithmetic carry out
+ * @param new_flag_c 	is a output param, it should accept a carry bit from
+ * shift barrel, and it will update this flag_c according to opcode type i.e.
+ * keep the value if it is a logical operation and change it to arithmetic
+ * carry out if it is a arithmetic carry out
  * @return
  */
 uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
@@ -233,10 +239,6 @@ uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
     return operand2;
   // In arithmetic operations (add, sub, rsb and cmp) the C bit will be set
   // to the carry out of the bit 31 of the ALU
-
-  // TODO!!!!!!
-  // there will be problems, that I am not sure how unsigned or signed add
-  // and mul performed.
   case SUB:
     result      = operand1 - operand2;
     *new_flag_c = (is_neg(operand1) == is_neg(operand2)) != is_neg(result);
@@ -260,8 +262,8 @@ uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
 
 /*!
  *
- * @param instruction : an single data transfer instruction
- * @param arm_state : current state of the arm machine
+ * @param instruction an single data transfer instruction
+ * @param arm_state current state of the arm machine
  */
 void execute_trans(trans_t instruction, ArmState arm_state)
 {
@@ -274,7 +276,7 @@ void execute_trans(trans_t instruction, ArmState arm_state)
   uint32_t offset;
 
   // if i bit is set to 0, is immediate value else is shifted register
-  reg_imm_handle(reg, instruction.offset, !instruction.iFlag, &offset, NULL);
+  reg_imm_handle(reg, instruction.offset, !instruction.is_reg, &offset, NULL);
   // if is_up is set then offset is added to Rn. Otherwise subtracted from Rn.
   size_t address_with_offset
       = (instruction.is_up) ? Rn_val + offset : Rn_val - offset;
@@ -294,7 +296,7 @@ void execute_trans(trans_t instruction, ArmState arm_state)
 
   if (instruction.is_load)
   {
-    reg[instruction.Rd] = load(address, arm_state->memory);
+    load(address, arm_state->memory, &reg[instruction.Rd]);
   }
   else // is store
   {
@@ -304,8 +306,8 @@ void execute_trans(trans_t instruction, ArmState arm_state)
 
 /*!
  *
- * @param instruction : an multiply instruction
- * @param arm_state : current state of the arm machine
+ * @param instruction an multiply instruction
+ * @param arm_state current state of the arm machine
  */
 void execute_mul(mul_t instruction, ArmState arm_state)
 {
@@ -336,8 +338,8 @@ void execute_mul(mul_t instruction, ArmState arm_state)
 
 /*!
  *
- * @param instruction : a branch instruction
- * @param arm_state : current state of the arm machine
+ * @param instruction a branch instruction
+ * @param arm_state current state of the arm machine
  */
 void execute_bran(branch_t instruction, ArmState arm_state)
 {
