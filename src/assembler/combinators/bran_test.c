@@ -24,7 +24,7 @@ int main(void)
 
   string      = "b wait";
   char_stream = &string;
-  ast         = parse(char_stream, p_bran(), NULL);
+  ast         = perform_parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
   printf("\n");
   bran_ins = e_bran(ast, symbol_table);
@@ -35,7 +35,7 @@ int main(void)
 
   string      = "bal wait";
   char_stream = &string;
-  ast         = parse(char_stream, p_bran(), NULL);
+  ast         = perform_parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
   printf("\n");
   bran_ins = e_bran(ast, symbol_table);
@@ -47,7 +47,7 @@ int main(void)
 
   string      = "beq wait";
   char_stream = &string;
-  ast         = parse(char_stream, p_bran(), NULL);
+  ast         = perform_parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
   bran_ins = e_bran(ast, symbol_table);
 

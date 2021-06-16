@@ -19,7 +19,7 @@ int main(void)
   string      = "#10";
   char_stream = &string;
 
-  ast = parse(char_stream, p_hash_expr("hash_expr"), NULL);
+  ast = perform_parse(char_stream, p_hash_expr("hash_expr"), NULL);
 
   print_ast(ast, 0);
   printf("\n");
@@ -27,28 +27,28 @@ int main(void)
 
   string      = "#0x10";
   char_stream = &string;
-  ast         = parse(char_stream, p_hash_expr("hash_expr"), NULL);
+  ast         = perform_parse(char_stream, p_hash_expr("hash_expr"), NULL);
   print_ast(ast, 0);
   printf("\n");
   printf("e_hash_expr(ast) :>> %d\n", e_eq_hash_expr(ast)); // DELETE_MARK
 
   string      = "=0x10";
   char_stream = &string;
-  ast         = parse(char_stream, p_eq_expr("eq_expr"), NULL);
+  ast         = perform_parse(char_stream, p_eq_expr("eq_expr"), NULL);
   print_ast(ast, 0);
   printf("\n");
   printf("e_hash_expr(ast) :>> %d\n", e_eq_hash_expr(ast)); // DELETE_MARK
 
   string      = "r10";
   char_stream = &string;
-  ast         = parse(char_stream, p_reg_e("Rm"), NULL);
+  ast         = perform_parse(char_stream, p_reg_e("Rm"), NULL);
   print_ast(ast, 0);
   printf("\n");
   printf("e_reg(ast) :>> %d\n", e_reg(ast)); // DELETE_MARK
 
   string      = "r10";
   char_stream = &string;
-  ast         = parse(char_stream, p_operand2(), NULL);
+  ast         = perform_parse(char_stream, p_operand2(), NULL);
   print_ast(ast, 0);
   printf("\n");
   bool         imm;
@@ -58,7 +58,7 @@ int main(void)
 
   string      = "#14";
   char_stream = &string;
-  ast         = parse(char_stream, p_operand2(), NULL);
+  ast         = perform_parse(char_stream, p_operand2(), NULL);
   print_ast(ast, 0);
   printf("\n");
   reg_or_imm1 = e_operand2(ast, &imm);
@@ -67,7 +67,7 @@ int main(void)
 
   string      = "[r10]";
   char_stream = &string;
-  ast         = parse(char_stream, p_no_offset(), NULL);
+  ast         = perform_parse(char_stream, p_no_offset(), NULL);
   print_ast(ast, 0);
   printf("\n");
   address_t address = e_no_offset(ast);
@@ -77,7 +77,7 @@ int main(void)
 
   string      = "[r10]";
   char_stream = &string;
-  ast         = parse(char_stream, p_pre_index(), NULL);
+  ast         = perform_parse(char_stream, p_pre_index(), NULL);
   print_ast(ast, 0);
   printf("\n");
   address = e_pre_index(ast);
@@ -87,7 +87,7 @@ int main(void)
 
   string      = "[r10,#10]";
   char_stream = &string;
-  ast         = parse(char_stream, p_pre_index(), NULL);
+  ast         = perform_parse(char_stream, p_pre_index(), NULL);
   print_ast(ast, 0);
   printf("\n");
   address = e_pre_index(ast);
@@ -97,7 +97,7 @@ int main(void)
 
   string      = "[r10],#13";
   char_stream = &string;
-  ast         = parse(char_stream, p_post_index(), NULL);
+  ast         = perform_parse(char_stream, p_post_index(), NULL);
   print_ast(ast, 0);
   printf("\n");
   address = e_post_index(ast);
@@ -107,7 +107,7 @@ int main(void)
 
   string      = "[r10],#12";
   char_stream = &string;
-  ast         = parse(char_stream, p_address(), NULL);
+  ast         = perform_parse(char_stream, p_address(), NULL);
   print_ast(ast, 0);
   printf("\n");
   address = e_address(ast);
@@ -117,7 +117,7 @@ int main(void)
 
   string      = "=0x100";
   char_stream = &string;
-  ast         = parse(char_stream, p_address(), NULL);
+  ast         = perform_parse(char_stream, p_address(), NULL);
   print_ast(ast, 0);
   printf("\n");
   address = e_address(ast);

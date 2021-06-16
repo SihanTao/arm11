@@ -20,13 +20,13 @@ int main(void)
 
   string      = "add r1,r2,#3";
   char_stream = &string;
-  ast         = parse(char_stream, p_arith(), NULL);
+  ast         = perform_parse(char_stream, p_arith(), NULL);
   print_ast(ast, 0);
   printf("\n");
   string      = "add r1,r2,#0x14";
 
   char_stream = &string;
-  ast         = parse(char_stream, p_proc(), NULL);
+  ast         = perform_parse(char_stream, p_proc(), NULL);
   print_ast(ast, 0);
   printf("\n");
   instruction_t instruction = e_proc(ast);
@@ -42,7 +42,7 @@ int main(void)
 
   string      = "mov r1,#0x14";
   char_stream = &string;
-  ast         = parse(char_stream, p_proc(), NULL);
+  ast         = perform_parse(char_stream, p_proc(), NULL);
   print_ast(ast, 0);
   printf("\n");
   instruction = e_proc(ast);

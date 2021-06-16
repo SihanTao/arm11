@@ -38,7 +38,7 @@ instruction_t e_ldr_as_mov(AST trans)
 }
 
 instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
-                        int end_address)
+                        int* end_address)
 {
   instruction_t result;
   address_t     address = e_address($G(trans, "address"));
@@ -65,6 +65,8 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
   result.tag        = TRANS;
   result.cond       = AL;
   result.word.trans = trans_ins;
+
+  *end_address += 4;
   return result;
 }
 
@@ -103,7 +105,7 @@ instruction_t e_trans_h(AST trans)
 }
 
 instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
-                      int end_address)
+                      int* end_address)
 {
   instruction_t result;
   address_t     address = e_address($G(trans, "address"));
