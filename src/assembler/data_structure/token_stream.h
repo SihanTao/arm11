@@ -1,94 +1,10 @@
 #ifndef TOKENSTREAM
 #define TOKENSTREAM
 
-typedef enum mnemonic_type
-{
-  ADD_M,
-  SUB_M,
-  RSB_M,
-  AND_M,
-  EOR_M,
-  ORR_M,
-  MOV_M,
-  TST_M,
-  TEQ_M,
-  CMP_M,
-  MUL_M,
-  MLA_M,
-  LDR_M,
-  STR_M,
-  // BEQ_M,
-  // BNE_M,
-  // BGE_M,
-  // BLT_M,
-  // BGT_M,
-  // BLE_M,
-  B_M,
-  LSL_M,
-  ANDEQ_M,
-  CONSTANT
-} mnemonic_type;
-
-
-
-
-typedef enum operand_type
-{
-	NUMBER,
-	STRING,
-} operand_type;
-
-typedef struct operand_t
-{
-	operand_type tag;
-	union
-	{
-		char* letters;
-		int number;
-	} operand_data;
-	struct operand_t* next;
-} operand_t;
-
-typedef struct proc_token_t
-{
-  pd_opcode_type type;
-  
-
-} proc_token_t;
-
-typedef struct mul_token_t
-{
-
-} mul_token_t;
-
-typedef struct trans_token_t
-{
-
-} trans_token_t;
-
-typedef struct bran_token_t
-{
-
-} bran_token_t;
-
 typedef struct token_t
 {
-  ins_type type;
-  cond_type cond;
-  union {
-    proc_token_t proc;
-    mul_token_t mul;
-    trans_token_t trans;
-    bran_token_t bran;
-  } token_data;
-}
-
-typedef struct token_t
-{
-	mnemonic_type type;
-  cond_type cond;
-	operand_t* operands;
-	int num_of_operands;
+  AST ast;
+  int imm_val;
 	int address;
 	struct token_t* next;
 } token_t;
@@ -118,6 +34,5 @@ extern void add_token_stream(token_t* elem, TokenStream stream);
 extern TokenStream init_token_stream();
 extern void free_token(Token token);
 extern void free_token_stream(TokenStream stream);
-extern void free_operands(operand_t* operand);
 
 #endif // TOKENSTREAM

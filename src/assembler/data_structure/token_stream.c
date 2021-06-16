@@ -1,9 +1,11 @@
 #include <stdlib.h>
 
+#include "../../parsec/ast.h"
+
 #include "token_stream.h"
 
 /*!
- * 
+ *
  * @param elem
  * @param stream
  * @return : add the given element to the token stream
@@ -25,7 +27,7 @@ TokenStream init_token_stream()
 }
 
 /*!
- * 
+ *
  * @param stream
  * @return the head of the token stream
  */
