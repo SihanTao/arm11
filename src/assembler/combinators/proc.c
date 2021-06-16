@@ -101,7 +101,7 @@ instruction_t e_proc(AST proc_ast)
   proc.Rd                = Rd ? e_reg(Rd) : 0;
   proc.Rn                = Rn ? e_reg(Rn) : 0;
 
-  bool *is_imm  = &proc.iFlag;
+  bool *is_imm  = &proc.is_imm;
   proc.operand2 = e_operand2($G(sub_proc, "operand2"), is_imm);
   proc.opcode   = e_opcode($G(sub_proc, "opcode"));
   proc.set_cond = false;
