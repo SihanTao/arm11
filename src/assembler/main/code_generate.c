@@ -49,49 +49,60 @@ void code_generate(char *file_name, TokenStream token_stream,
   fclose(f_handle);
 }
 
-uint32_t encode_DP(proc_t instruction)
+uint32_t encode_DP(instruction_t instruction)
 {
-  uint32_t result = 0;
-  set_bit_range(&result, instruction.cond, 28, 31);
-  set_bit(&result, instruction.is_imm, 25);
-  set_bit_range(&result, instruction.opcode, 21, 24);
-  set_bit(&result, instruction.set_cond, 20);
-  set_bit_range(&result, instruction.Rn, 16, 19);
-  set_bit_range(&result, instruction.Rd, 12, 15);
-  reg_imm_helper(instruction.is_imm, instruction.operand2, result);
+	uint32_t result = 0;
+	set_bit_range(&result, instruction.cond, 28, 31);
+	set_bit_range(&result, 0, 26, 27);
+	set_bit(&result, instruction.word.proc.is_imm, 25);
+	set_bit_range(&result, instruction.word.proc.opcode, 21, 24);
+	set_bit(&result, instruction.word.proc.set_cond, 20);
+	set_bit_range(&result, instruction.word.proc.Rn, 16, 19);
+	set_bit_range(&result, instruction.word.proc.Rd, 12, 15);
+	reg_imm_helper(instruction.word.proc.is_imm, instruction.word.proc.operand2, result);
 }
 
-uint32_t encode_MUL(mul_t instruction)
+uint32_t encode_MUL(instruction_t instruction)
 {
-  uint32_t result = 0;
-  set_bit_range(&result, instruction.cond, 28, 31);
-
-  set_bit(&result, instruction.acc, 21);
-  set_bit(&result, instruction.set_cond, 20);
-  set_bit_range(&result, instruction.Rd, 16, 19);
-  set_bit_range(&result, instruction.Rn, 12, 15);
-  set_bit_range(&result, instruction.Rs, 8, 11);
-  set_bit_range(&result, instruction.Rm, 0, 3);
+	uint32_t result = 0;
+	set_bit_range(&result, instruction.cond, 28, 31);
+  set_bit_range(&result, 0, 22, 27);
+	set_bit(&result, instruction.word.mul.is_mla, 21);
+	set_bit(&result, instruction.word.mul.set_cond, 20);
+	set_bit_range(&result, instruction.word.mul.Rd, 16, 19);
+	set_bit_range(&result, instruction.word.mul.Rn, 12, 15);
+	set_bit_range(&result, instruction.word.mul.Rs, 8, 11);
+	set_bit(&result, 1, 7);
+	set_bit_range(&result, 0, 5, 6);
+	set_bit(&result, 1, 4);
+	set_bit_range(&result, instruction.word.mul.Rm, 0, 3);
 }
 
-uint32_t encode_TRANS(trans_t instruction)
+uint32_t encode_TRANS(instruction_t instruction)
 {
-  uint32_t result = 0;
-  set_bit_range(&result, instruction.cond, 28, 31);
-  set_bit(&result, instruction.is_reg, 25);
-  set_bit(&result, instruction.is_pre, 24);
-  set_bit(&result, instruction.is_up, 23);
-  set_bit(&result, instruction.is_load, 20);
-  set_bit_range(&result, instruction.Rn, 16, 19);
-  set_bit_range(&result, instruction.Rd, 12, 15);
-  reg_imm_helper(!instruction.is_reg, instruction.offset, result);
+	uint32_t result = 0;
+	set_bit_range(&result, instruction.cond, 28, 31);
+	set_bit(&result, 0 ,27);
+	set_bit(&result, 1, 26);
+	set_bit(&result, instruction.word.trans.is_reg, 25);
+	set_bit(&result, instruction.word.trans.is_pre, 24);
+	set_bit(&result, instruction.word.trans.is_up, 23);
+	set_bit_range(&result, 0, 21, 22);
+	set_bit(&result, instruction.word.trans.is_load, 20);
+	set_bit_range(&result, instruction.word.trans.Rn, 16, 19);
+	set_bit_range(&result, instruction.word.trans.Rd, 12, 15);
+	reg_imm_helper(!instruction.word.trans.is_reg, instruction.word.trans.offset, result);
 }
 
-uint32_t encode_BRANCH(branch_t instruction)
+uint32_t encode_BRANCH(instruction_t instruction)
 {
-  uint32_t result = 0;
-  set_bit_range(&result, instruction.cond, 28, 31);
-  set_bit_range(&result, instruction.offset, 0, 23);
+	uint32_t result = 0;
+	set_bit_range(&result, instruction.cond, 28, 31);
+	set_bit(&result, 1, 27);
+	set_bit(&result, 0, 26);
+	set_bit(&result, 1, 25);
+	set_bit(&result, 0, 24);
+	set_bit_range(&result, instruction.word.branch.offset, 0, 23);
 }
 
 /*!
