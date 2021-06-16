@@ -4,7 +4,8 @@
 #include "../data_structure/token_stream.h"
 #include "../data_structure/symbol_table.h"
 
-#include "../parse/parse.h"
+#include "parse.h"
+#include "code_generate.h"
 
 int main(int argc, char **argv)
 {
