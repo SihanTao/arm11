@@ -15,15 +15,16 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
+  int end_address;
   char *source = argv[1];
   char *output = argv[2];
 
   TokenStream token_stream = init_token_stream();
   SymbolTable symbol_table = init_symbol_table();
 
-  parse(source, token_stream, symbol_table);
+  parse(source, token_stream, symbol_table, &end_address);
 
-  code_generate(token_stream, symbol_table);
+  code_generate(output, token_stream, symbol_table, &end_address);
 
   free_symbol_table(symbol_table);
   free_token_stream(token_stream);
