@@ -11,6 +11,9 @@
 #include "component.h"
 #include "proc.h"
 
+/*!
+ * @return a parser combinator of arith.
+*/
 Parsec p_arith(void)
 {
   Parsec alts[6]
@@ -21,6 +24,9 @@ Parsec p_arith(void)
   return seq("sub proc", sequence, 5);
 }
 
+/*!
+ * @return an encoded opcode.
+*/
 pd_opcode_type e_opcode(AST opcode)
 {
   if ($G(opcode, "and"))
@@ -71,12 +77,18 @@ pd_opcode_type e_opcode(AST opcode)
   return MOV;
 }
 
+/*!
+ * @return a parser combinator of move.
+*/
 Parsec p_mov(void)
 {
   Parsec seqs[4] = { match("opcode", "mov "),p_reg_i("Rd"), p_operand2(), match(NULL, "\n")};
   return seq("sub proc", seqs, 4);
 }
 
+/*!
+ * @return a parser combinator of cmp.
+*/
 Parsec p_cmp_tst(void)
 {
   Parsec alts[6]
@@ -85,12 +97,18 @@ Parsec p_cmp_tst(void)
   return seq("sub proc", sequence, 4);
 }
 
+/*!
+ * @return a parser combinator of data processing insturction.
+*/
 Parsec p_proc(void)
 {
   Parsec alts[3] = { p_mov(), p_arith(), p_cmp_tst() };
   return alt("proc", alts, 3);
 }
 
+/*!
+ * @return an encoded data processing instruction.
+*/
 instruction_t e_proc(AST proc_ast)
 {
   instruction_t result;

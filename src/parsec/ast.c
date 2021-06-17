@@ -4,18 +4,36 @@
 
 #include "ast.h"
 
+/*!
+ *
+ * @param self
+ * @param child
+ * @return : add child into self
+ */
 AST add_child(AST self, AST child)
 {
   self->child = child;
   return self;
 }
 
+/*!
+ *
+ * @param self
+ * @param brother
+ * @return : add brother into self
+ */
 AST add_brother(AST self, AST brother)
 {
   self->brother = brother;
   return self;
 }
 
+/*!
+ *
+ * @param self
+ * @param brother_parent
+ * @return : merge brother_parent into self
+ */
 AST merge(AST self, AST brother_parent)
 {
   self->brother = brother_parent->child;
@@ -24,6 +42,12 @@ AST merge(AST self, AST brother_parent)
   return self;
 }
 
+/*!
+ *
+ * @param name
+ * @param matched
+ * @return : create AST node with key = name and matched = matched
+ */
 AST make_atom(char *name, char *matched)
 {
   AST result = calloc(1, sizeof(ast_node_t));
@@ -38,6 +62,11 @@ AST make_atom(char *name, char *matched)
   return result;
 }
 
+/*!
+ *
+ * @param ast_node
+ * @return : free AST node
+ */
 void free_ast(ast_node_t *ast_node)
 {
   if (ast_node == NULL)
@@ -52,6 +81,12 @@ void free_ast(ast_node_t *ast_node)
   free(ast_node);
 }
 
+/*!
+ *
+ * @param ast
+ * @param name
+ * @return the child which called 'name' of ast
+ */
 ast_node_t *get_child_by_name(ast_node_t *ast, char *name)
 {
   if (ast == NULL)
@@ -61,6 +96,12 @@ ast_node_t *get_child_by_name(ast_node_t *ast, char *name)
   return get_brother_by_name(ast->child, name);
 }
 
+/*!
+ *
+ * @param ast
+ * @param name
+ * @return the brother which called 'name' of ast
+ */
 ast_node_t *get_brother_by_name(ast_node_t *ast, char *name)
 {
   if (ast == NULL)
@@ -81,6 +122,11 @@ ast_node_t *get_brother_by_name(ast_node_t *ast, char *name)
   return get_brother_by_name(ast->brother, name);
 }
 
+/*!
+ *
+ * @param ast
+ * @return the matched of ast
+ */
 char *get_matched(ast_node_t *ast)
 {
   return ast->matched;

@@ -12,6 +12,10 @@
 
 #include "bran.h"
 
+/*!
+ * @return a parser combinator condition part of a branch instruction.
+*/
+
 Parsec p_bran_cond(void)
 {
   Parsec alts[8]
@@ -21,6 +25,10 @@ Parsec p_bran_cond(void)
   return alt("bran_cond", alts, 8);
 }
 
+/*!
+ * @param bran_cond an AST type which is the condition of a branch instructio.
+ * @return the result of encoding.
+*/
 cond_type e_bran_cond(AST bran_cond)
 {
   AST cond = $G(bran_cond, "beq");
@@ -66,6 +74,12 @@ cond_type e_bran_cond(AST bran_cond)
   }
 }
 
+/*!
+ * @param bran
+ * @param symbol_table
+ * @param current_address
+ * @return the encoded branch insturction.
+*/
 instruction_t e_bran(AST bran, SymbolTable symbol_table, int current_address)
 {
   instruction_t result;

@@ -13,7 +13,9 @@
 #include "component.h"
 #include "trans.h"
 
-
+/*!
+ * @return an encoded instruction in the case ldr as mov.
+ */
 instruction_t e_ldr_as_mov(AST trans)
 {
   instruction_t result;
@@ -37,8 +39,11 @@ instruction_t e_ldr_as_mov(AST trans)
   return result;
 }
 
+/*!
+ * @return an encoded instruction in the case ldr as immediate value.
+ */
 instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
-                        int* end_address)
+                        int *end_address)
 {
   instruction_t result;
   address_t     address = e_address($G(trans, "address"));
@@ -49,6 +54,7 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
   token->imm_val = address.offset_or_eq_expr;
   token->ast     = NULL;
   token->address = end_address;
+  token->next = NULL;
   add_token_stream(token, token_stream);
 
   offset.rot_imm.amount = 0;
@@ -58,9 +64,10 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
   trans_ins.Rd      = e_reg($G(trans, "Rd"));
   trans_ins.is_reg  = false; // is imm
   trans_ins.is_load = true;
+  trans_ins.is_pre  = true;
   trans_ins.Rn      = PC;
   trans_ins.is_up   = true;
-  trans_ins.Rn      = 0;
+  trans_ins.Rn      = 0xf;
 
   result.tag        = TRANS;
   result.cond       = AL;
@@ -70,6 +77,9 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
   return result;
 }
 
+/*!
+ * @return an encoded sigle data transfer instruction.
+ */
 instruction_t e_trans_h(AST trans)
 {
   instruction_t result;
@@ -82,8 +92,6 @@ instruction_t e_trans_h(AST trans)
   int amount;
   int imm;
 
-
-
   if (address.offset_or_eq_expr != 0)
   {
     reverse_rotate(offset_unsigned, &amount, &imm);
@@ -92,15 +100,15 @@ instruction_t e_trans_h(AST trans)
   }
   else
   {
-    offset.shift_reg.Rm = 0;
+    offset.shift_reg.Rm   = 0;
     offset.shift_reg.type = LSL;
-    offset.shift_reg.val = 0;
+    offset.shift_reg.val  = 0;
   }
 
   AST opcode = $G(trans, "opcode");
 
   // DO NOT REMOVE THE !! OPERATOR
-  trans_ins.is_load = !! $G(opcode, "ldr");
+  trans_ins.is_load = !!$G(opcode, "ldr");
   trans_ins.is_pre  = !address.is_post;
   trans_ins.is_reg  = false;
   trans_ins.is_up   = is_up;
@@ -108,15 +116,18 @@ instruction_t e_trans_h(AST trans)
   trans_ins.Rd      = e_reg($G(trans, "Rd"));
   trans_ins.Rn      = address.Rn;
 
-  result.cond = AL;
-  result.tag = TRANS;
+  result.cond       = AL;
+  result.tag        = TRANS;
   result.word.trans = trans_ins;
 
   return result;
 }
 
+/*!
+ * @return an encoded sigle data transfer instruction.
+ */
 instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
-                      int* end_address)
+                      int *end_address)
 {
   instruction_t result;
   address_t     address = e_address($G(trans, "address"));
@@ -135,6 +146,9 @@ instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
   return e_trans_h(trans);
 }
 
+/*!
+ * @return a parser combinator of sigle data transfer insturction.
+ */
 Parsec p_trans(void)
 {
   Parsec seqs[3]
