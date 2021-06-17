@@ -54,7 +54,7 @@ bool reverse_rotate(uint32_t target, int *rotation_amount, uint32_t *imm)
       return true;
     }
   }
-
+  perror("invalid imm");
   return false;
 }
 
@@ -70,7 +70,7 @@ int e_deci(AST number)
 
 Parsec p_hexa(char *name)
 {
-  return make_and(name, match(NULL, "0x"), p_number("hexa"));
+  return make_and(name, match(NULL, "0x"), take_while("hexa", isalnum));
 }
 
 int e_hexa(AST hexa)
@@ -106,8 +106,8 @@ int e_eq_hash_expr(AST hash_expr)
 
 Parsec p_reg_i(char *name)
 {
-  return make_and(name, match(NULL, "r"),
-                  make_and(NULL, p_number("reg_num"), match(NULL, ",")));
+  Parsec seq1[3] = {match(NULL, "r"), p_number("reg_num"), make_or(NULL,  match(NULL, ", "), match(NULL, ","))};
+  return seq(name, seq1, 3);
 }
 
 Parsec p_reg_e(char *name)
@@ -132,7 +132,8 @@ reg_or_imm_t e_operand2(AST operand2, bool* is_imm)
   if (hash_ast)
   {
     int amount;
-    int imm;
+    uint32_t imm;
+    printf("e_eq_hash_expr(hash_ast) :>> %d\n", e_eq_hash_expr(hash_ast)); //DELETE_MARK
     reverse_rotate(e_eq_hash_expr(hash_ast), &amount, &imm);
     result.rot_imm.amount = amount;
     result.rot_imm.imm = imm;
@@ -146,6 +147,7 @@ reg_or_imm_t e_operand2(AST operand2, bool* is_imm)
     *is_imm = false;
     result.shift_reg.Rm = e_reg(reg);
     result.shift_reg.val = 0;
+    result.shift_reg.type = LSL;
     return result;
   }
 }
@@ -160,8 +162,8 @@ address_t e_no_offset(AST no_offset)
 {
   address_t result;
   result.is_post = false;
-  result.is_imm = false;
-  result.reg_num = e_reg($G(no_offset, "Rn"));
+  result.is_eq_expr = false;
+  result.Rn = e_reg($G(no_offset, "Rn"));
   result.offset_or_eq_expr = 0;
   return result;
 }
@@ -176,8 +178,8 @@ address_t e_has_offset(AST has_offset)
 {
   address_t result;
   result.is_post = false;
-  result.is_imm =false;
-  result.reg_num = e_reg($G(has_offset, "Rn"));
+  result.is_eq_expr =false;
+  result.Rn = e_reg($G(has_offset, "Rn"));
   result.offset_or_eq_expr = e_eq_hash_expr($G(has_offset, "offset"));
   return result;
 }
@@ -211,7 +213,7 @@ Parsec p_post_index(void)
 address_t e_post_index(AST post_index)
 {
   address_t result = e_no_offset($G(post_index, "no offset"));
-  result.is_imm = false;
+  result.is_eq_expr = true;
   result.is_post = true;
   result.offset_or_eq_expr = e_eq_hash_expr($G(post_index, "offset"));
   return result;
@@ -219,26 +221,26 @@ address_t e_post_index(AST post_index)
 
 Parsec p_address(void)
 {
-  Parsec alts[3] = {p_eq_expr("imm"), p_post_index(), p_pre_index()};
+  Parsec alts[3] = {p_eq_expr("eq expr"), p_post_index(), p_pre_index()};
   return alt("address", alts, 3);
 }
 
-address_t e_imm(AST imm)
+address_t e_eq_expr(AST imm)
 {
   address_t result;
-  result.is_imm = true;
+  result.is_eq_expr = true;
   result.is_post = false;
   result.offset_or_eq_expr = e_eq_hash_expr(imm);
-  result.reg_num = -1;
+  result.Rn = -1;
   return result;
 }
 
 address_t e_address(AST address)
 {
-  AST imm = $G(address, "imm");
+  AST imm = $G(address, "eq expr");
   if (imm)
   {
-    return e_imm(imm);
+    return e_eq_expr(imm);
   }
 
   AST post_index = $G(address, "post index");

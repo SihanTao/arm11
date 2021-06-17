@@ -71,7 +71,7 @@ int main(void)
   print_ast(ast, 0);
   printf("\n");
   address_t address = e_no_offset(ast);
-  printf("address.reg_num :>> %d\n", address.reg_num);      // DELETE_MARK
+  printf("address.Rn :>> %d\n", address.Rn);      // DELETE_MARK
   printf("address.offset :>> %d\n", address.offset_or_eq_expr); // DELETE_MARK
   printf("address.is_post :>> %d\n", address.is_post);      // DELETE_MARK
 
@@ -81,7 +81,7 @@ int main(void)
   print_ast(ast, 0);
   printf("\n");
   address = e_pre_index(ast);
-  printf("address.reg_num :>> %d\n", address.reg_num);      // DELETE_MARK
+  printf("address.Rn :>> %d\n", address.Rn);      // DELETE_MARK
   printf("address.offset :>> %d\n", address.offset_or_eq_expr); // DELETE_MARK
   printf("address.is_post :>> %d\n", address.is_post);      // DELETE_MARK
 
@@ -91,7 +91,7 @@ int main(void)
   print_ast(ast, 0);
   printf("\n");
   address = e_pre_index(ast);
-  printf("address.reg_num :>> %d\n", address.reg_num);      // DELETE_MARK
+  printf("address.Rn :>> %d\n", address.Rn);      // DELETE_MARK
   printf("address.offset :>> %d\n", address.offset_or_eq_expr); // DELETE_MARK
   printf("address.is_post :>> %d\n", address.is_post);      // DELETE_MARK
 
@@ -101,7 +101,7 @@ int main(void)
   print_ast(ast, 0);
   printf("\n");
   address = e_post_index(ast);
-  printf("address.reg_num :>> %d\n", address.reg_num);      // DELETE_MARK
+  printf("address.Rn :>> %d\n", address.Rn);      // DELETE_MARK
   printf("address.offset :>> %d\n", address.offset_or_eq_expr); // DELETE_MARK
   printf("address.is_post :>> %d\n", address.is_post);      // DELETE_MARK
 
@@ -111,7 +111,7 @@ int main(void)
   print_ast(ast, 0);
   printf("\n");
   address = e_address(ast);
-  printf("address.reg_num :>> %d\n", address.reg_num);      // DELETE_MARK
+  printf("address.Rn :>> %d\n", address.Rn);      // DELETE_MARK
   printf("address.offset :>> %d\n", address.offset_or_eq_expr); // DELETE_MARK
   printf("address.is_post :>> %d\n", address.is_post);      // DELETE_MARK
 
@@ -121,8 +121,8 @@ int main(void)
   print_ast(ast, 0);
   printf("\n");
   address = e_address(ast);
-  printf("address.is_imm :>> %d\n", address.is_imm);        // DELETE_MARK
-  printf("address.reg_num :>> %d\n", address.reg_num);      // DELETE_MARK
+  printf("address.is_imm :>> %d\n", address.is_eq_expr);        // DELETE_MARK
+  printf("address.Rn :>> %d\n", address.Rn);      // DELETE_MARK
   printf("address.offset :>> %d\n", address.offset_or_eq_expr); // DELETE_MARK
   printf("address.is_post :>> %d\n", address.is_post);      // DELETE_MARK
 }

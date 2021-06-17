@@ -4,9 +4,9 @@
 typedef struct address_t
 {
   bool is_post;
-  bool is_imm;
+  bool is_eq_expr;
   int offset_or_eq_expr;
-  int reg_num;
+  int Rn;
 }address_t;
 
 extern Parsec p_number(char *name);
