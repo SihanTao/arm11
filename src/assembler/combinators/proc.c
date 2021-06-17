@@ -16,9 +16,9 @@ Parsec p_arith(void)
   Parsec alts[6]
       = { match("and", "and "), match("eor", "eor "), match("sub", "sub "),
           match("rsb", "rsb "), match("add", "add "), match("orr", "orr ") };
-  Parsec sequence[4]
-      = { alt("opcode", alts, 6), p_reg_i("Rd"), p_reg_i("Rn"), p_operand2() };
-  return seq("sub proc", sequence, 4);
+  Parsec sequence[5]
+      = { alt("opcode", alts, 6), p_reg_i("Rd"), p_reg_i("Rn"), p_operand2(), match(NULL, "\n")};
+  return seq("sub proc", sequence, 5);
 }
 
 pd_opcode_type e_opcode(AST opcode)
@@ -73,21 +73,21 @@ pd_opcode_type e_opcode(AST opcode)
 
 Parsec p_mov(void)
 {
-  return make_and("sub proc", match("opcode", "mov "),
-                  make_and(NULL, p_reg_i("Rd"), p_operand2()));
+  Parsec seqs[4] = { match("opcode", "mov "),p_reg_i("Rd"), p_operand2(), match(NULL, "\n")};
+  return seq("sub proc", seqs, 4);
 }
 
 Parsec p_cmp_tst(void)
 {
   Parsec alts[6]
       = { match("tst", "tst "), match("teq", "teq "), match("cmp", "cmp ") };
-  Parsec sequence[4] = { alt("opcode", alts, 6), p_reg_i("Rn"), p_operand2() };
+  Parsec sequence[4] = { alt("opcode", alts, 6), p_reg_i("Rn"), p_operand2(), match(NULL, "\n") };
   return seq("sub proc", sequence, 4);
 }
 
 Parsec p_proc(void)
 {
-  Parsec alts[3] = { p_arith(), p_mov(), p_cmp_tst() };
+  Parsec alts[3] = { p_mov(), p_arith(), p_cmp_tst() };
   return alt("proc", alts, 3);
 }
 
@@ -105,6 +105,11 @@ instruction_t e_proc(AST proc_ast)
   proc.operand2 = e_operand2($G(sub_proc, "operand2"), is_imm);
   proc.opcode   = e_opcode($G(sub_proc, "opcode"));
   proc.set_cond = false;
+  if (proc.opcode == CMP || proc.opcode == TST || proc.opcode == TEQ)
+  {
+    proc.set_cond = true;
+  }
+
 
   result.cond      = AL;
   result.tag       = PROC;
