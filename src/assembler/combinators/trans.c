@@ -76,26 +76,37 @@ instruction_t e_trans_h(AST trans)
   address_t     address = e_address($G(trans, "address"));
   trans_t       trans_ins;
   reg_or_imm_t  offset;
-  bool          is_up = address.offset_or_eq_expr > 0;
+  bool          is_up = address.offset_or_eq_expr >= 0;
   int           offset_unsigned
       = is_up ? address.offset_or_eq_expr : -address.offset_or_eq_expr;
   int amount;
   int imm;
 
-  reverse_rotate(offset_unsigned, &amount, &imm);
-  offset.rot_imm.amount = amount;
-  offset.rot_imm.imm    = imm;
+
+
+  if (address.offset_or_eq_expr != 0)
+  {
+    reverse_rotate(offset_unsigned, &amount, &imm);
+    offset.rot_imm.amount = amount;
+    offset.rot_imm.imm    = imm;
+  }
+  else
+  {
+    offset.shift_reg.Rm = 0;
+    offset.shift_reg.type = LSL;
+    offset.shift_reg.val = 0;
+  }
 
   AST opcode = $G(trans, "opcode");
 
   // DO NOT REMOVE THE !! OPERATOR
   trans_ins.is_load = !! $G(opcode, "ldr");
   trans_ins.is_pre  = !address.is_post;
-  trans_ins.is_reg  = true;
+  trans_ins.is_reg  = false;
   trans_ins.is_up   = is_up;
   trans_ins.offset  = offset;
   trans_ins.Rd      = e_reg($G(trans, "Rd"));
-  trans_ins.Rn      = address.reg_num;
+  trans_ins.Rn      = address.Rn;
 
   result.cond = AL;
   result.tag = TRANS;
@@ -110,12 +121,12 @@ instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
   instruction_t result;
   address_t     address = e_address($G(trans, "address"));
 
-  if (address.is_imm && address.offset_or_eq_expr < 0xFF)
+  if (address.is_eq_expr && address.offset_or_eq_expr < 0xFF)
   {
     return e_ldr_as_mov(trans);
   }
 
-  if (address.is_imm) // greater than 0xFF
+  if (address.is_eq_expr) // greater than 0xFF
   {
     return e_ldr_imm(trans, cur_address, token_stream, end_address);
   }
