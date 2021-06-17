@@ -10,6 +10,9 @@
 #include "component.h"
 #include "mul.h"
 
+/*!
+ * @return an encoded multiply instruction.
+*/
 mul_t e_mul_h(AST ast)
 {
   printf("HERE 2\n"); //DELETE_MARK
@@ -25,6 +28,9 @@ mul_t e_mul_h(AST ast)
   return result;
 }
 
+/*!
+ * @return an encoded multiply instruction.
+*/
 instruction_t e_mul(AST ast)
 {
   instruction_t result;
@@ -48,6 +54,9 @@ instruction_t e_mul(AST ast)
   return result;
 }
 
+/*!
+ * @return a parser combinator of multiply instruction.
+*/
 Parsec p_mul()
 {
   Parsec sequence1[4]
