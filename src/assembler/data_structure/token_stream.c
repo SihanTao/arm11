@@ -16,9 +16,11 @@ void add_token_stream(token_t* elem, TokenStream stream)
   {
     stream->head = elem;
     stream->tail = elem;
+    return;
   }
 
   stream->tail->next = elem;
+  stream->tail = elem;
 }
 
 TokenStream init_token_stream()
