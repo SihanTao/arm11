@@ -13,7 +13,9 @@
 #include "component.h"
 #include "trans.h"
 
-
+/*!
+ * @return an encoded instruction in the case ldr as mov.
+*/
 instruction_t e_ldr_as_mov(AST trans)
 {
   instruction_t result;
@@ -37,6 +39,9 @@ instruction_t e_ldr_as_mov(AST trans)
   return result;
 }
 
+/*!
+ * @return an encoded instruction in the case ldr as immediate value.
+*/
 instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
                         int* end_address)
 {
@@ -70,6 +75,9 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
   return result;
 }
 
+/*!
+ * @return an encoded sigle data transfer instruction.
+*/
 instruction_t e_trans_h(AST trans)
 {
   instruction_t result;
@@ -115,6 +123,9 @@ instruction_t e_trans_h(AST trans)
   return result;
 }
 
+/*!
+ * @return an encoded sigle data transfer instruction.
+*/
 instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
                       int* end_address)
 {
@@ -135,6 +146,9 @@ instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
   return e_trans_h(trans);
 }
 
+/*!
+ * @return a parser combinator of sigle data transfer insturction.
+*/
 Parsec p_trans(void)
 {
   Parsec seqs[3]

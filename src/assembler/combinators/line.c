@@ -25,6 +25,9 @@ static Parsec        p_lsl(void);
 static instruction_t e_lsl(AST lsl);
 static Parsec p_instruction(void);
 
+/*!
+ * @return an encoded instruction.
+*/
 instruction_t e_instruction(AST ins_ast, int cur_address,
                             TokenStream token_stream, SymbolTable symbol_table,
                             int* end_address)
@@ -66,6 +69,9 @@ instruction_t e_instruction(AST ins_ast, int cur_address,
   }
 }
 
+/*!
+ * @return a parser combinator of label.
+*/
 Parsec p_label(void)
 {
   Parsec seqs[3] = {take_while("label string", isalpha),
@@ -78,12 +84,18 @@ char *e_label(AST label)
   return $TG(label, "label string");
 }
 
+/*!
+ * @return a parser combinator of line.
+*/
 Parsec p_line(void)
 {
   Parsec alts[2] = {p_label(), p_instruction()};
   return alt("line", alts, 2);
 }
 
+/*!
+ * @return a parser combinator of instruction.
+*/
 Parsec p_instruction(void)
 {
   Parsec alts[6]
@@ -91,18 +103,26 @@ Parsec p_instruction(void)
   return alt("instruction", alts, 6);
 }
 
+/*!
+ * @return an encoded and equals.
+*/
 instruction_t e_andeq(AST anded)
 {
   instruction_t result;
   result.tag = ZERO;
   return result;
 }
-
+/*!
+ * @return a parser combinator of and equals.
+*/
 Parsec p_andeq(void)
 {
   return match("andeq", "andeq");
 }
 
+/*!
+ * @return a parser combinator of lsl.
+*/
 Parsec p_lsl(void)
 {
   Parsec seqs[3]
@@ -110,6 +130,9 @@ Parsec p_lsl(void)
   return seq("lsl", seqs, 3);
 }
 
+/*!
+ * @return an encoded lsl.
+*/
 instruction_t e_lsl(AST lsl)
 {
   int Rn           = e_reg($G(lsl, "Rn"));
