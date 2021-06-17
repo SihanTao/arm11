@@ -126,7 +126,7 @@ Parsec p_andeq(void)
 Parsec p_lsl(void)
 {
   Parsec seqs[3]
-      = { match(NULL, "lsl "), p_reg_i("Rn"), p_hash_expr("shift amount") };
+      = { match(NULL, "lsl "), p_reg_i("Rm"), p_hash_expr("shift amount") };
   return seq("lsl", seqs, 3);
 }
 
@@ -135,11 +135,11 @@ Parsec p_lsl(void)
 */
 instruction_t e_lsl(AST lsl)
 {
-  int Rn           = e_reg($G(lsl, "Rn"));
+  int Rm           = e_reg($G(lsl, "Rm"));
   int shift_amount = e_eq_hash_expr($G(lsl, "shift amount"));
 
   reg_or_imm_t operand2;
-  operand2.shift_reg.Rm   = Rn;
+  operand2.shift_reg.Rm   = Rm;
   operand2.shift_reg.type = LSL;
   operand2.shift_reg.val  = shift_amount;
 
@@ -147,8 +147,8 @@ instruction_t e_lsl(AST lsl)
   mov.is_imm   = false;
   mov.opcode   = MOV;
   mov.operand2 = operand2;
-  mov.Rd       = 0;
-  mov.Rn       = Rn;
+  mov.Rd       = Rm;
+  mov.Rn       = 0;
   mov.set_cond = false;
 
   instruction_t result;
