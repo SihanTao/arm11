@@ -66,17 +66,21 @@ cond_type e_bran_cond(AST bran_cond)
   }
 }
 
-instruction_t e_bran(AST bran, SymbolTable symbol_table)
+instruction_t e_bran(AST bran, SymbolTable symbol_table, int current_address)
 {
   instruction_t result;
   result.cond = e_bran_cond($G(bran, "bran_cond"));
   result.tag  = BRAN;
+  printf("current_address :>> %d\n", current_address); //DELETE_MARK
   result.word.branch.offset
-      = find_symbol_table($TG(bran, "label"), symbol_table);
+      = find_symbol_table($TG(bran, "label"), symbol_table) - current_address - 8;
+
+  printf("result.word.branch.offset :>> %d\n", result.word.branch.offset); //DELETE_MARK
   return result;
 }
 
 Parsec p_bran(void)
 {
-  return make_and("bran", p_bran_cond(), take_while("label", isalpha));
+  Parsec seqs[3] = {p_bran_cond(), take_while("label", isalpha), match(NULL, "\n")};
+  return seq("bran", seqs, 3);
 }
