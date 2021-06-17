@@ -75,38 +75,36 @@ Parsec p_hexa(char *name)
 
 int e_hexa(AST hexa)
 {
-  char * val = $TG(hexa, "hexa");
+  char *val = $TG(hexa, "hexa");
   return strtol(val, NULL, 16);
 }
 
-Parsec p_hash_expr(char * name)
+Parsec p_hash_expr(char *name)
 {
   return make_and(name, match(NULL, "#"),
-                  make_or("number", p_hexa("hexa"), p_number("deci")));
-}
-
-Parsec p_eq_expr(char * name)
-{
-  return make_and(name, match(NULL, "="),
                   make_or("number", p_hexa("hexa"), p_number("deci")));
 }
 
 int e_eq_hash_expr(AST hash_expr)
 {
   AST number = $G(hash_expr, "number");
-  AST deci = $G(number, "deci");
+  AST deci   = $G(number, "deci");
   if (deci)
-  {
     return e_deci(deci);
-  }
-
   AST hexa = $G(number, "hexa");
   return e_hexa(hexa);
 }
 
+Parsec p_eq_expr(char *name)
+{
+  return make_and(name, match(NULL, "="),
+                  make_or("number", p_hexa("hexa"), p_number("deci")));
+}
+
 Parsec p_reg_i(char *name)
 {
-  Parsec seq1[3] = {match(NULL, "r"), p_number("reg_num"), make_or(NULL,  match(NULL, ", "), match(NULL, ","))};
+  Parsec seq1[3] = { match(NULL, "r"), p_number("reg_num"),
+                     make_or(NULL, match(NULL, ", "), match(NULL, ",")) };
   return seq(name, seq1, 3);
 }
 
@@ -125,28 +123,29 @@ Parsec p_operand2(void)
   return make_or("operand2", p_hash_expr("imm val"), p_reg_e("Rm"));
 }
 
-reg_or_imm_t e_operand2(AST operand2, bool* is_imm)
+reg_or_imm_t e_operand2(AST operand2, bool *is_imm)
 {
   reg_or_imm_t result;
-  AST hash_ast = $G(operand2, "imm val");
+  AST          hash_ast = $G(operand2, "imm val");
   if (hash_ast)
   {
-    int amount;
+    int      amount;
     uint32_t imm;
-    printf("e_eq_hash_expr(hash_ast) :>> %d\n", e_eq_hash_expr(hash_ast)); //DELETE_MARK
+    printf("e_eq_hash_expr(hash_ast) :>> %d\n",
+           e_eq_hash_expr(hash_ast)); // DELETE_MARK
     reverse_rotate(e_eq_hash_expr(hash_ast), &amount, &imm);
     result.rot_imm.amount = amount;
-    result.rot_imm.imm = imm;
-    *is_imm = true;
+    result.rot_imm.imm    = imm;
+    *is_imm               = true;
     return result;
   }
 
   AST reg = $G(operand2, "Rm");
   if (reg)
   {
-    *is_imm = false;
-    result.shift_reg.Rm = e_reg(reg);
-    result.shift_reg.val = 0;
+    *is_imm               = false;
+    result.shift_reg.Rm   = e_reg(reg);
+    result.shift_reg.val  = 0;
     result.shift_reg.type = LSL;
     return result;
   }
@@ -161,25 +160,26 @@ Parsec p_no_offset(void)
 address_t e_no_offset(AST no_offset)
 {
   address_t result;
-  result.is_post = false;
-  result.is_eq_expr = false;
-  result.Rn = e_reg($G(no_offset, "Rn"));
+  result.is_post           = false;
+  result.is_eq_expr        = false;
+  result.Rn                = e_reg($G(no_offset, "Rn"));
   result.offset_or_eq_expr = 0;
   return result;
 }
 
 Parsec p_has_offset(void)
 {
-  Parsec seqs[4] = {match(NULL, "["), p_reg_i("Rn"), p_hash_expr("offset"), match(NULL, "]")};
+  Parsec seqs[4] = { match(NULL, "["), p_reg_i("Rn"), p_hash_expr("offset"),
+                     match(NULL, "]") };
   return seq("has offset", seqs, 4);
 }
 
 address_t e_has_offset(AST has_offset)
 {
   address_t result;
-  result.is_post = false;
-  result.is_eq_expr =false;
-  result.Rn = e_reg($G(has_offset, "Rn"));
+  result.is_post           = false;
+  result.is_eq_expr        = false;
+  result.Rn                = e_reg($G(has_offset, "Rn"));
   result.offset_or_eq_expr = e_eq_hash_expr($G(has_offset, "offset"));
   return result;
 }
@@ -212,26 +212,26 @@ Parsec p_post_index(void)
 
 address_t e_post_index(AST post_index)
 {
-  address_t result = e_no_offset($G(post_index, "no offset"));
-  result.is_eq_expr = true;
-  result.is_post = true;
+  address_t result         = e_no_offset($G(post_index, "no offset"));
+  result.is_eq_expr        = true;
+  result.is_post           = true;
   result.offset_or_eq_expr = e_eq_hash_expr($G(post_index, "offset"));
   return result;
 }
 
 Parsec p_address(void)
 {
-  Parsec alts[3] = {p_eq_expr("eq expr"), p_post_index(), p_pre_index()};
+  Parsec alts[3] = { p_eq_expr("eq expr"), p_post_index(), p_pre_index() };
   return alt("address", alts, 3);
 }
 
 address_t e_eq_expr(AST imm)
 {
   address_t result;
-  result.is_eq_expr = true;
-  result.is_post = false;
+  result.is_eq_expr        = true;
+  result.is_post           = false;
   result.offset_or_eq_expr = e_eq_hash_expr(imm);
-  result.Rn = -1;
+  result.Rn                = -1;
   return result;
 }
 
@@ -255,4 +255,3 @@ address_t e_address(AST address)
     return e_pre_index(pre_index);
   }
 }
-
