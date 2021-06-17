@@ -1,12 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
-
-#include "../data_structure/token_stream.h"
-#include "../data_structure/symbol_table.h"
+#include <string.h>
 
 #include "../../parsec/char_stream.h"
 #include "../../parsec/ast.h"
 #include "../../parsec/parsec.h"
+
+#include "../../global_utils/types_and_macros.h"
+
+#include "../data_structure/token_stream.h"
+#include "../data_structure/symbol_table.h"
 
 #include "../combinators/line.h"
 
@@ -29,23 +32,30 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
     exit(EXIT_FAILURE);
   }
   int  address;
-  char buffer[MAX_LINE_LENGTH];
+  char * buffer = malloc(MAX_LINE_LENGTH);
+  CharStream char_stream;
   Parsec line_parser = p_line();
 
   while (fgets(buffer, MAX_LINE_LENGTH, f_handle))
   {
-    AST result = perform_parse(buffer, line_parser, NULL);
+    char_stream = &buffer;
+    AST result = perform_parse(char_stream, line_parser, NULL);
+          print_ast(result,0);
+
+    printf("count!!");
 
     AST label = $G(result, "label");
     if (label)
     {
-      add_symbol_table(e_label(label), address + ADDRESS_INTERVAL,
+      add_symbol_table(strdup(e_label(label)), address,
                        symbol_table);
-      free_ast(result);
     }
     else
     {
+
       AST      instruction = $G(result, "instruction");
+      print_ast(instruction,0);
+      printf("\n");
       token_t *token       = malloc(sizeof(token_t));
       token->ast           = instruction;
       token->address       = address;
@@ -61,4 +71,5 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
   free_parsec(line_parser);
   fclose(f_handle);
   *end_address = address;
+  printf("HERE 4\n"); //DELETE_MARK
 }
