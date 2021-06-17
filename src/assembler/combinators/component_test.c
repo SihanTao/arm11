@@ -27,10 +27,11 @@ int main(void)
 
   string      = "#0x10";
   char_stream = &string;
-  ast         = perform_parse(char_stream, p_hash_expr("hash_expr"), NULL);
+  ast         = perform_parse(char_stream,
+                 p_hash_expr("hash_expr"), NULL);
   print_ast(ast, 0);
-  printf("\n");
-  printf("e_hash_expr(ast) :>> %d\n", e_eq_hash_expr(ast)); // DELETE_MARK
+  printf("e_hash_expr(ast) :>> %d\n",
+           e_eq_hash_expr(ast));
 
   string      = "=0x10";
   char_stream = &string;
@@ -126,3 +127,10 @@ int main(void)
   printf("address.offset :>> %d\n", address.offset_or_eq_expr); // DELETE_MARK
   printf("address.is_post :>> %d\n", address.is_post);      // DELETE_MARK
 }
+
+
+Parsec p_term(void)
+{return make_or("term",
+          p_number("number"),
+          p_brack_expr());}
+
