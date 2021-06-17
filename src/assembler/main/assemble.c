@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "../../global_utils/types_and_macros.h"
+
+#include "../../parsec/ast.h"
+
 #include "../data_structure/token_stream.h"
 #include "../data_structure/symbol_table.h"
 
@@ -23,6 +27,8 @@ int main(int argc, char **argv)
   SymbolTable symbol_table = init_symbol_table();
 
   parse(source, token_stream, symbol_table, &end_address);
+
+  printf("HERE 4\n"); //DELETE_MARK
 
   code_generate(output, token_stream, symbol_table, &end_address);
 
