@@ -3,7 +3,6 @@
 
 #include "../../parsec/ast.h"
 #include "../../parsec/char_stream.h"
-
 #include "../../parsec/parsec.h"
 
 #include "../../global_utils/types_and_macros.h"
@@ -16,7 +15,6 @@
 #include "mul.h"
 #include "trans.h"
 #include "proc.h"
-#include "line.h"
 
 #include "line.h"
 
@@ -49,7 +47,7 @@ instruction_t e_instruction(AST ins_ast, int cur_address,
     return e_trans(trans, cur_address, token_stream, end_address);
   }
 
-  AST mul = $G(ins_ast, "mul");
+  AST mul = $G(ins_ast, "mul_mla");
   if (mul)
   {
     return e_mul(mul);
@@ -58,7 +56,7 @@ instruction_t e_instruction(AST ins_ast, int cur_address,
   AST bran = $G(ins_ast, "bran");
   if (bran)
   {
-    return e_bran(bran, symbol_table);
+    return e_bran(bran, symbol_table, cur_address);
   }
 
   AST proc = $G(ins_ast, "proc");
@@ -70,8 +68,9 @@ instruction_t e_instruction(AST ins_ast, int cur_address,
 
 Parsec p_label(void)
 {
-  return make_and("label", take_while("label string", isalpha),
-                  match(NULL, ":"));
+  Parsec seqs[3] = {take_while("label string", isalpha),
+                  match(NULL, ":"), match(NULL, "\n")};
+  return seq("label", seqs, 3);
 }
 
 char *e_label(AST label)
@@ -81,20 +80,21 @@ char *e_label(AST label)
 
 Parsec p_line(void)
 {
-  return make_or("line", p_instruction(), p_label());
+  Parsec alts[2] = {p_label(), p_instruction()};
+  return alt("line", alts, 2);
 }
 
 Parsec p_instruction(void)
 {
   Parsec alts[6]
-      = { p_andeq(), p_lsl(), p_trans(), p_bran(), p_proc(), p_mul() };
+      = { p_andeq(), p_lsl(), p_trans(), p_mul(), p_bran(), p_proc() };
   return alt("instruction", alts, 6);
 }
 
 instruction_t e_andeq(AST anded)
 {
   instruction_t result;
-  result.tag = UNDEFINED_ANDEQ;
+  result.tag = ZERO;
   return result;
 }
 
