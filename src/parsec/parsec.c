@@ -51,7 +51,8 @@ bool negate(bool in)
   return !in;
 }
 
-AST perform_parse(CharStream char_stream, Parsec parserc, ast_mapper map_while_build)
+AST perform_parse(CharStream char_stream, Parsec parserc,
+                  ast_mapper map_while_build)
 {
   return parse_h(char_stream, parserc, map_while_build);
 }
@@ -59,7 +60,7 @@ AST perform_parse(CharStream char_stream, Parsec parserc, ast_mapper map_while_b
 Parsec end()
 {
   Parsec result = calloc(1, sizeof(parsec_t));
-  result->type = PARSERC_UNIT;
+  result->type  = PARSERC_UNIT;
   return result;
 }
 
@@ -112,7 +113,7 @@ Parsec alt_h(Parsec *choices, size_t num)
 
 Parsec alt(char *name, Parsec *choices, size_t num)
 {
-  assert(num >= 2);
+  assert(num >= 1);
   Parsec result = alt_h(choices, num);
   result->name  = name;
   return result;
@@ -129,7 +130,7 @@ Parsec seq_h(Parsec *sequence, size_t num)
 
 Parsec seq(char *name, Parsec *sequence, size_t num)
 {
-  assert(num >= 2);
+  assert(num >= 1);
   Parsec result = seq_h(sequence, num);
   result->name  = name;
   return result;
@@ -155,6 +156,7 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
   {
   case PARSERC_OR:
   {
+    RecordPoint record_point = get_trace_back(s);
     AST new_ast  = make_atom(p->name, NULL);
     AST matched1 = parse_h(s, p->curr, map);
     if (matched1 != NULL)
@@ -173,7 +175,7 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
       add_brother(matched1, matched2);
       return add_child(new_ast, matched1);
     }
-
+        do_trace_back(s, record_point);
     return NULL;
   }
   case PARSERC_AND:
@@ -266,7 +268,6 @@ void free_parsec(Parsec parsec)
     return;
   }
 
-  free(parsec->matching_string);
   free_parsec(parsec->next);
   free_parsec(parsec->curr);
 

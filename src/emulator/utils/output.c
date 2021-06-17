@@ -24,16 +24,16 @@ void output(ArmState arm_state)
   int memory_val;
 
   // output registers
-  fprintf(file_handle, "Registers: \n");
+  fprintf(file_handle, "Registers:\n");
   for (int i = 0; i < NUM_OF_REG; i++)
   {
     reg_value =arm_state->reg[i];
-    fprintf(file_handle, "$%-3d: %10d (%010p) \n", i, reg_value, reg_value);
+    fprintf(file_handle, "$%-3d: %10d (%010p)\n", i, reg_value, reg_value);
   }
 
   // outputs pc
-  fprintf(file_handle, "PC  : %10d (%010p) \n", pc_val, pc_val);
-  fprintf(file_handle, "CPSR: %10d (%010p) \n", CPSR, CPSR);
+  fprintf(file_handle, "PC  : %10d (%010p)\n", pc_val, pc_val);
+  fprintf(file_handle, "CPSR: %10d (%010p)\n", CPSR, CPSR);
 
   // outputs non zero memory
   fprintf(file_handle, "Non-zero memory:\n");
