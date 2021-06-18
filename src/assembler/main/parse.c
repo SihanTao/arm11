@@ -40,19 +40,15 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
   {
     char_stream = &buffer;
     AST result = perform_parse(char_stream, line_parser, NULL);
-          print_ast(result,0);
-
     AST label = $G(result, "label");
     if (label)
     {
       add_symbol_table(strdup(e_label(label)), address,
                        symbol_table);
     }
-    else
+    else // is instruction
     {
-
       AST      instruction = $G(result, "instruction");
-      print_ast(instruction,0); // TODO : to delete
       token_t *token       = malloc(sizeof(token_t));
       token->ast           = instruction;
       token->address       = address;
