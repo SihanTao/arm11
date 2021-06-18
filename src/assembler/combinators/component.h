@@ -22,7 +22,7 @@ extern Parsec p_address(void);
 extern Parsec p_operand2(void);
 
 extern int e_eq_hash_expr(AST hash_expr);
-extern int e_reg(AST reg);
+extern no_reg_t e_reg(AST reg);
 extern reg_or_imm_t e_operand2(AST operand2, bool* is_imm);
 extern address_t e_address(AST address);
 extern address_t e_no_offset(AST no_offset);
