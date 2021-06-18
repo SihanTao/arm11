@@ -28,8 +28,6 @@ int main(int argc, char **argv)
 
   parse(source, token_stream, symbol_table, &end_address);
 
-  printf("HERE 4\n"); //DELETE_MARK
-
   code_generate(output, token_stream, symbol_table, &end_address);
 
   free_symbol_table(symbol_table);
