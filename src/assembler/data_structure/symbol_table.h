@@ -22,10 +22,10 @@ typedef struct symbol_table_t
  */
 typedef symbol_table_t *SymbolTable;
 
-SymbolTable init_symbol_table(void);
-void        add_symbol_table(char *symbol_data, int address_to_next_ins,
-                             SymbolTable table);
-int         find_symbol_table(char *symbol_data, SymbolTable table);
-void        free_symbol_table(SymbolTable table);
+extern SymbolTable init_symbol_table(void);
+extern void        add_symbol_table(char *symbol_data, int address_to_next_ins,
+                                    SymbolTable table);
+extern int         find_symbol_table(char *symbol_data, SymbolTable table);
+extern void        free_symbol_table(SymbolTable table);
 
 #endif // SYMBOL_TABLE

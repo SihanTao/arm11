@@ -5,10 +5,9 @@
 #include "token_stream.h"
 
 /*!
- *
+ * add the given element to the end of token stream
  * @param elem
  * @param stream
- * @return : add the given element to the token stream
  */
 void add_token_stream(token_t* elem, TokenStream stream)
 {
@@ -28,13 +27,19 @@ TokenStream init_token_stream()
   return malloc(sizeof(token_stream_t));
 }
 
-
+/*!
+ * free a token stream
+ * @param stream
+ */
 void free_token_stream(TokenStream stream)
 {
   free_token(stream->head);
   free(stream);
 }
-
+/*!
+ * free one token
+ * @param token
+ */
 void free_token(Token token)
 {
   if (token == NULL)

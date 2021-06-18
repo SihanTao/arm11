@@ -18,7 +18,7 @@ SymbolTable init_symbol_table(void)
 }
 
 /*!
- * 
+ *
  * @param symbol_data
  * @param address
  * @param table
@@ -36,10 +36,10 @@ void add_symbol_table(char *symbol_data, int address, SymbolTable table)
 }
 
 /*!
- * 
+ *
  * @param symbol_data
  * @param table
- * @return : find the given symbol data from symboltable
+ * @return : find the address given symbol data from symboltable
  */
 int find_symbol_table(char *symbol_data, SymbolTable table)
 {
@@ -53,9 +53,9 @@ int find_symbol_table(char *symbol_data, SymbolTable table)
 }
 
 /*!
- * 
+ * free every node from the symbol table
  * @param table
- * @return : free every node from the symbol table
+ * @return
  */
 void free_symbol_table(SymbolTable table)
 {
@@ -64,9 +64,9 @@ void free_symbol_table(SymbolTable table)
 }
 
 /*!
- * 
+ * free node recursively
  * @param node
- * @return : free the node
+ * @return
  */
 void free_node(symbol_node_t *node)
 {
@@ -81,10 +81,9 @@ void free_node(symbol_node_t *node)
 }
 
 /*!
- * 
+ * initialize the symbol table
  * @param symbol_data
  * @param address
- * @return : initialize the symbol data
  */
 static symbol_node_t *init_symbol_node(char *symbol_data, int address)
 {
@@ -104,11 +103,11 @@ static symbol_node_t *init_symbol_node(char *symbol_data, int address)
 }
 
 /*!
- * 
+ *
  * @param symbol_data
  * @param address
- * @param node 
- * @return : add the node which the key is equal to the symbol data 
+ * @param node
+ * @return : add the node which the key is equal to the symbol data
  *           to the symbol node(binary tree) in the given address
  */
 void add_node(char *symbol_data, int address, symbol_node_t *node)
@@ -140,9 +139,9 @@ void add_node(char *symbol_data, int address, symbol_node_t *node)
 }
 
 /*!
- * 
+ *
  * @param symbol_data
- * @param node 
+ * @param node
  * @return find the node which the key is equal to the symbol data
  */
 int find_node(char *symbol_data, symbol_node_t *node)
