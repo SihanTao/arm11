@@ -4,7 +4,6 @@
 typedef struct address_t
 {
   bool is_post;
-  bool is_up;
   bool is_eq_expr;
   int eq_expr_val;
   reg_or_imm_t operand2;

@@ -215,7 +215,7 @@ reg_or_imm_t e_shift_reg(AST shift_reg)
  */
 Parsec p_operand2(void)
 {
-  Parsec alts[3] = { p_hash_expr("imm val"), p_shift_reg(), p_reg_e("Rm") };
+  Parsec alts[3] = { p_hash_expr("number"), p_shift_reg(), p_reg_e("Rm") };
   return alt("operand2", alts, 3);
 }
 
@@ -226,7 +226,7 @@ Parsec p_operand2(void)
 reg_or_imm_t e_operand2(AST operand2, bool *is_imm, bool *is_positive)
 {
   reg_or_imm_t result;
-  AST          hash_ast = $G(operand2, "imm val");
+  AST          hash_ast = $G(operand2, "number");
   if (hash_ast)
   {
     int      amount;
@@ -242,6 +242,7 @@ reg_or_imm_t e_operand2(AST operand2, bool *is_imm, bool *is_positive)
       hash_expr_val = -hash_expr_val;
     }
     reverse_rotate(hash_expr_val, &amount, &imm);
+    result.shift_reg.Rm = 0;
     result.rot_imm.amount = amount;
     result.rot_imm.imm    = imm;
     *is_imm               = true;
@@ -308,14 +309,17 @@ address_t e_pre_index_no_offset(AST pre_index, bool *is_imm, bool *is_up)
   result.is_post     = false;
   result.is_eq_expr  = false;
   result.eq_expr_val = 0;
-  result.operand2.rot_imm.imm = 0;
-  result.operand2.rot_imm.amount = 0;
+  result.operand2.shift_reg.Rm = 0;
+  result.operand2.shift_reg.type = 0;
+  result.operand2.shift_reg.val = 0;
   result.Rn          = e_reg($G(pre_index, "Rn"));
+  *is_imm = true;
   return result;
 }
 
 address_t e_pre_index(AST pre_index, bool* is_imm, bool* is_up)
 {
+    *is_up = true;
   AST no_offset = $G(pre_index, "pre index no offset");
   if (no_offset)
   {

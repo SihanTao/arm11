@@ -99,7 +99,7 @@ instruction_t e_trans_h(AST trans)
   trans_ins.is_reg = !is_imm;
   trans_ins.is_up = is_up;
   trans_ins.is_pre = !address.is_post;
-  reg_or_imm_t  offset = address.operand2;
+  trans_ins.offset = address.operand2;
   trans_ins.Rn = address.Rn;
   trans_ins.is_up = is_up;
 
