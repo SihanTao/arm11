@@ -30,7 +30,7 @@ clean:
 	rm -f $(DIR_OBJ)/*.o
 
 link:
-	cd $(DIR_EM_MAIN); make main
+	cd $(DIR_EM_MAIN); make emulate
 
 compile_all: mkfolders
 	cd $(DIR_EM_UTILS); make
