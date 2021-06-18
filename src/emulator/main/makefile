@@ -13,8 +13,8 @@ OBJ = $(patsubst %.c,${DIR_OBJ}/%.o,$(notdir ${SRC}))
 
 compile: $(OBJ)
 
-main: $(wildcard $(DIR_OBJ)/*.o)
-	$(CC) -o main $(wildcard $(DIR_OBJ)/*.o)
+emulate: $(wildcard $(DIR_OBJ)/*.o)
+	$(CC) -o emulate $(wildcard $(DIR_OBJ)/*.o)
 
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.c
 	$(CC) $(CFLAGS) -c  $< -o $@
