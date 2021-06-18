@@ -16,7 +16,6 @@ DIR_EM_TESTS = ./src/emulator/tests
 DIR_EM_UTILS = ./src/emulator/utils
 DIR_GLB_UTILS = ./src/global_utils
 
-# I don't know why but if don't make clean, some file will not recompile
 test: clean compile_all
 	cd $(DIR_EM_TESTS); make
 
@@ -25,8 +24,11 @@ clean:
 	rm -f $(DIR_TEST_BIN)/*.test
 	rm -f $(DIR_OBJ)/*.o
 
-link:
+emulate:
 	cd $(DIR_EM_MAIN); make emulate
+
+assemble:
+	cd src/assembler/main; make assemble
 
 compile_all: mkfolders
 	cd $(DIR_EM_UTILS); make
