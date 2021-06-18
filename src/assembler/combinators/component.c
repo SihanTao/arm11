@@ -123,7 +123,6 @@ int e_eq_hash_expr(AST hash_expr)
   return e_hexa(hexa);
 }
 
-
 Parsec p_reg_i(char *name)
 {
   Parsec seq1[3] = { match(NULL, "r"), p_number("reg_num"),
