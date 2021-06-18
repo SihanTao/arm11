@@ -10,10 +10,18 @@
 
 #include "component.h"
 
+static Parsec p_number(char *name);
+static Parsec p_hexa(char *name);
+static Parsec p_no_offset(void);
+static Parsec p_pre_index(void);
+static Parsec p_post_index(void);
+static address_t e_pre_index(AST pre_index, bool* is_imm, bool* is_up);
+static address_t e_post_index(AST post_index, bool* is_imm, bool* is_up);
+
 /*!
- *
+ * determine whether the target is an immediate value or not
  * @param target
- * @return : determine whether the target is an immediate value or not
+ * @return
  */
 static bool is_valid_imm(uint32_t target)
 {
@@ -22,7 +30,7 @@ static bool is_valid_imm(uint32_t target)
 }
 
 /*!
- *
+ * convert immediate value into a rotated value
  * @param target
  * @param rotation_amount
  * @param imm
@@ -51,6 +59,11 @@ bool reverse_rotate(uint32_t target, int *rotation_amount, uint32_t *imm)
   return false;
 }
 
+/*!
+ * propsition to test if it is a space
+ * @param target
+ * @return
+ */
 bool is_space(char target)
 {
   return (target == ' ');
@@ -66,7 +79,7 @@ Parsec p_number(char *name)
 }
 
 /*!
- * @return an encoded decimal.
+ * @return an encoded decimal number.
  */
 int e_deci(AST number)
 {
@@ -74,7 +87,7 @@ int e_deci(AST number)
 }
 
 /*!
- * @return a parser combinator of Hexadecimal.
+ * @return a parser combinator of Hexadecimal number
  */
 Parsec p_hexa(char *name)
 {
@@ -85,7 +98,7 @@ Parsec p_hexa(char *name)
 }
 
 /*!
- * @return an encoded Hexadecimal.
+ * @return encode hexa AST into int
  */
 int e_hexa(AST hexa)
 {
@@ -164,13 +177,20 @@ no_reg_t e_reg(AST reg)
   return atoi($TG(reg, "reg_num"));
 }
 
+/*!
+ * parser combination to match shift name, which can be (lsl | lsr | ror | asr)
+ * @return
+ */
 Parsec p_shift_name(void)
 {
   Parsec alts[4] = { match("lsl", "lsl "), match("lsr", "lsr "),
                      match("ror", "ror "), match("asr", "asr ") };
   return alt("shift name", alts, 4);
 }
-
+/*!
+ * encode shift name AST into enum
+ * @return
+ */
 shift_type e_shift_name(AST shift)
 {
   if ($G(shift, "lsl"))
@@ -194,13 +214,21 @@ shift_type e_shift_name(AST shift)
   }
 }
 
+/*!
+ * parser combination to match shifted register, which is Rm + shift name +
+ * amount
+ * @return
+ */
 Parsec p_shift_reg(void)
 {
   Parsec seqs[3]
       = { p_reg_i("Rm"), p_shift_name(), p_hash_expr("shift amount") };
   return seq("shift reg", seqs, 3);
 }
-
+/*!
+ * encode shifted register into reg or imm
+ * @return
+ */
 reg_or_imm_t e_shift_reg(AST shift_reg)
 {
   reg_or_imm_t result;
@@ -211,7 +239,8 @@ reg_or_imm_t e_shift_reg(AST shift_reg)
 }
 
 /*!
- * @return a parser combinator of operand2.
+ * a operand two is is either a (# expr | shifted register | a single register)
+ * @return
  */
 Parsec p_operand2(void)
 {
@@ -231,18 +260,18 @@ reg_or_imm_t e_operand2(AST operand2, bool *is_imm, bool *is_positive)
   {
     int      amount;
     uint32_t imm;
-    int hash_expr_val = e_eq_hash_expr(hash_ast);
+    int      hash_expr_val = e_eq_hash_expr(hash_ast);
     if (hash_expr_val >= 0)
     {
       *is_positive = true;
     }
     else
     {
-      *is_positive = false;
+      *is_positive  = false;
       hash_expr_val = -hash_expr_val;
     }
     reverse_rotate(hash_expr_val, &amount, &imm);
-    result.shift_reg.Rm = 0;
+    result.shift_reg.Rm   = 0;
     result.rot_imm.amount = amount;
     result.rot_imm.imm    = imm;
     *is_imm               = true;
@@ -264,7 +293,8 @@ reg_or_imm_t e_operand2(AST operand2, bool *is_imm, bool *is_positive)
 }
 
 /*!
- * @return an encoded pre insex.
+ * encode pre index has offset AST into address_t
+ * @return
  */
 address_t e_pre_index_has_offset(AST pre_index, bool *is_imm, bool *is_up)
 {
@@ -278,15 +308,19 @@ address_t e_pre_index_has_offset(AST pre_index, bool *is_imm, bool *is_up)
 }
 
 /*!
- * @return a parser combinator of pre index.
+ *
+ * @return a parser combinator of pre index without offset
  */
 Parsec p_pre_index_no_offset(void)
 {
-  Parsec seqs[3]
-      = { match(NULL, "["), p_reg_i("Rn"), match(NULL, "]\n") };
+  Parsec seqs[3] = { match(NULL, "["), p_reg_i("Rn"), match(NULL, "]\n") };
   return seq("pre index no offset", seqs, 3);
 }
 
+/*!
+ *
+ * @return a parser combinator of pre index has offset
+ */
 Parsec p_pre_index_has_offset(void)
 {
   Parsec seqs[4]
@@ -294,32 +328,41 @@ Parsec p_pre_index_has_offset(void)
   return seq("pre index has offset", seqs, 4);
 }
 
+/*!
+ * a pre index parser combinator either has a offset or without offset
+ * @return
+ */
 Parsec p_pre_index(void)
 {
-  Parsec alts[2] = {p_pre_index_no_offset(), p_pre_index_has_offset()};
+  Parsec alts[2] = { p_pre_index_no_offset(), p_pre_index_has_offset() };
   return alt("pre index", alts, 2);
 }
 
 /*!
- * @return an encoded pre insex.
+ * encode pre index no offset to address t
+ * @return
  */
 address_t e_pre_index_no_offset(AST pre_index, bool *is_imm, bool *is_up)
 {
   address_t result;
-  result.is_post     = false;
-  result.is_eq_expr  = false;
-  result.eq_expr_val = 0;
-  result.operand2.shift_reg.Rm = 0;
+  result.is_post                 = false;
+  result.is_eq_expr              = false;
+  result.eq_expr_val             = 0;
+  result.operand2.shift_reg.Rm   = 0;
   result.operand2.shift_reg.type = 0;
-  result.operand2.shift_reg.val = 0;
-  result.Rn          = e_reg($G(pre_index, "Rn"));
-  *is_imm = true;
+  result.operand2.shift_reg.val  = 0;
+  result.Rn                      = e_reg($G(pre_index, "Rn"));
+  *is_imm                        = true;
   return result;
 }
 
-address_t e_pre_index(AST pre_index, bool* is_imm, bool* is_up)
+/*!
+ * encode pre index to address t
+ * @return
+ */
+address_t e_pre_index(AST pre_index, bool *is_imm, bool *is_up)
 {
-    *is_up = true;
+  *is_up        = true;
   AST no_offset = $G(pre_index, "pre index no offset");
   if (no_offset)
   {
@@ -334,6 +377,7 @@ address_t e_pre_index(AST pre_index, bool* is_imm, bool* is_up)
 }
 
 /*!
+ * a post index is a [ Rn ], + operand2
  * @return a parser combinator of pos index.
  */
 Parsec p_post_index(void)
@@ -346,7 +390,7 @@ Parsec p_post_index(void)
 /*!
  * @return an encode pos index.
  */
-address_t e_post_index(AST post_index, bool *is_imm, bool* is_up)
+address_t e_post_index(AST post_index, bool *is_imm, bool *is_up)
 {
   address_t result;
   result.is_eq_expr  = false;
@@ -358,11 +402,12 @@ address_t e_post_index(AST post_index, bool *is_imm, bool* is_up)
 }
 
 /*!
- * @return a parser combinator of address.
+ * an address is either a eq expr a pre index or a post index
+ * @return
  */
 Parsec p_address(void)
 {
-  Parsec alts[3] = { p_eq_expr("eq expr"), p_pre_index(), p_post_index()};
+  Parsec alts[3] = { p_eq_expr("eq expr"), p_pre_index(), p_post_index() };
   return alt("address", alts, 3);
 }
 
@@ -372,17 +417,18 @@ Parsec p_address(void)
 address_t e_eq_expr(AST imm)
 {
   address_t result;
-  result.is_eq_expr        = true;
-  result.is_post           = false;
-  result.eq_expr_val       = e_eq_hash_expr(imm);
-  result.Rn                = 0xf;
+  result.is_eq_expr  = true;
+  result.is_post     = false;
+  result.eq_expr_val = e_eq_hash_expr(imm);
+  result.Rn          = 0xf;
   return result;
 }
 
 /*!
+ * encode address AST to address t
  * @return an encoded address.
  */
-address_t e_address(AST address, bool* is_imm, bool* is_up)
+address_t e_address(AST address, bool *is_imm, bool *is_up)
 {
   AST imm = $G(address, "eq expr");
   if (imm)
