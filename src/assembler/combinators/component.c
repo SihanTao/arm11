@@ -75,7 +75,7 @@ bool is_space(char target)
  */
 Parsec p_number(char *name)
 {
-  return take_while(name, isnumber);
+  return take_while(name, isdigit);
 }
 
 /*!
