@@ -26,14 +26,14 @@ void reg_imm_helper(bool is_imm, reg_or_imm_t reg_or_imm, uint32_t *target)
 {
   if (is_imm)
   {
-    set_bit_range(target, reg_or_imm.rot_imm.imm, 0, 7);
-    set_bit_range(target, reg_or_imm.rot_imm.amount, 8, 11);
+    set_bit_range(target, reg_or_imm.rot_imm.imm, IMM_START, IMM_END);
+    set_bit_range(target, reg_or_imm.rot_imm.amount, ROTATE_START, ROTATE_END);
   }
   else
   {
-    set_bit_range(target, reg_or_imm.shift_reg.Rm, 0, 3);
-    set_bit_range(target, reg_or_imm.shift_reg.type, 5, 6);
-    set_bit_range(target, reg_or_imm.shift_reg.val, 7, 11);
+    set_bit_range(target, reg_or_imm.shift_reg.Rm, RM_START, RM_END);
+    set_bit_range(target, reg_or_imm.shift_reg.type, SHIFT_TYPE_START, SHIFT_TYPE_END);
+    set_bit_range(target, reg_or_imm.shift_reg.val, SHIFT_CONST_START, SHIFT_CONST_END);
   }
 }
 
