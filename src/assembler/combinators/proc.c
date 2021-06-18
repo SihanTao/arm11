@@ -92,7 +92,7 @@ Parsec p_mov(void)
 Parsec p_cmp_tst(void)
 {
   Parsec alts[6]
-      = { match("tst", "tst "), match("teq", "teq "), match("cmp", "cmp ") };
+      = { match("tst", "tst "), match("teq", "teq  "), match("cmp", "cmp ") };
   Parsec sequence[4] = { alt("opcode", alts, 6), p_reg_i("Rn"), p_operand2(), match(NULL, "\n") };
   return seq("sub proc", sequence, 4);
 }

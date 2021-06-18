@@ -14,7 +14,7 @@
 
 /*!
  * @return a parser combinator condition part of a branch instruction.
-*/
+ */
 
 Parsec p_bran_cond(void)
 {
@@ -26,9 +26,9 @@ Parsec p_bran_cond(void)
 }
 
 /*!
- * @param bran_cond an AST type which is the condition of a branch instructio.
+ * @param bran_cond an AST type which is the condition of a branch instruction
  * @return the result of encoding.
-*/
+ */
 cond_type e_bran_cond(AST bran_cond)
 {
   AST cond = $G(bran_cond, "beq");
@@ -79,22 +79,23 @@ cond_type e_bran_cond(AST bran_cond)
  * @param symbol_table
  * @param current_address
  * @return the encoded branch insturction.
-*/
+ */
 instruction_t e_bran(AST bran, SymbolTable symbol_table, int current_address)
 {
   instruction_t result;
+
+  result.word.branch.offset
+      = (find_symbol_table($TG(bran, "label"), symbol_table) - current_address
+         - 2 * ADDRESS_SHIFT)
+        >> 2;
   result.cond = e_bran_cond($G(bran, "bran_cond"));
   result.tag  = BRAN;
-  printf("current_address :>> %d\n", current_address); //DELETE_MARK
-  result.word.branch.offset
-      = find_symbol_table($TG(bran, "label"), symbol_table) - current_address - 8;
-
-  printf("result.word.branch.offset :>> %d\n", result.word.branch.offset); //DELETE_MARK
   return result;
 }
 
 Parsec p_bran(void)
 {
-  Parsec seqs[3] = {p_bran_cond(), take_while("label", isalpha), match(NULL, "\n")};
+  Parsec seqs[3]
+      = { p_bran_cond(), take_while("label", isalpha), match(NULL, "\n") };
   return seq("bran", seqs, 3);
 }
