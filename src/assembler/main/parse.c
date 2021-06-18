@@ -38,6 +38,10 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
 
   while (fgets(buffer, MAX_LINE_LENGTH, f_handle))
   {
+    if (strcmp(buffer, "\n") == 0)
+    {
+      continue;
+    }
     char_stream = &buffer;
     AST result = perform_parse(char_stream, line_parser, NULL);
     print_ast(result,0);

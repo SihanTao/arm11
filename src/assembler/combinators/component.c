@@ -338,9 +338,9 @@ address_t e_pre_index(AST pre_index, bool* is_imm, bool* is_up)
  */
 Parsec p_post_index(void)
 {
-  Parsec seqs[4]
-      = { match(NULL, "["), p_reg_e("Rn"), match(NULL, "]"), p_operand2() };
-  return seq("post index", seqs, 3);
+  Parsec seqs[5]
+      = { match(NULL, "["), p_reg_e("Rn"), match(NULL, "],"), p_operand2() };
+  return seq("post index", seqs, 5);
 }
 
 /*!
