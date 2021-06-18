@@ -17,11 +17,11 @@
 #define MAX_LINE_LENGTH  (512)
 
 /*!
- * TODO
- * @param file_name
- * @param token_stream
- * @param symbol_table
- * @return
+ *
+ * @param file_name the file name to read from
+ * @param token_stream the token_stream to add to
+ * @param symbol_table the symbol table to add to
+ * @param end_address the pointer takes the address of last intruction
  */
 void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, int *end_address)
 {
@@ -42,8 +42,6 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
     AST result = perform_parse(char_stream, line_parser, NULL);
           print_ast(result,0);
 
-    printf("count!!");
-
     AST label = $G(result, "label");
     if (label)
     {
@@ -54,8 +52,7 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
     {
 
       AST      instruction = $G(result, "instruction");
-      print_ast(instruction,0);
-      printf("\n");
+      print_ast(instruction,0); // TODO : to delete
       token_t *token       = malloc(sizeof(token_t));
       token->ast           = instruction;
       token->address       = address;
@@ -71,5 +68,4 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
   free_parsec(line_parser);
   fclose(f_handle);
   *end_address = address;
-  printf("HERE 4\n"); //DELETE_MARK
 }
