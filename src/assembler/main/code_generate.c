@@ -138,16 +138,16 @@ uint32_t encode_MUL(instruction_t instruction)
 uint32_t encode_TRANS(instruction_t instruction)
 {
   uint32_t result = 0;
-  set_bit_range(&result, instruction.cond, 28, 31);
+  set_bit_range(&result, instruction.cond, CONDITION_START, CONDITION_END);
   set_bit_range(&result, 0x1, 26,27);
 
   trans_t trans = instruction.word.trans;
-  set_bit(&result, trans.is_reg, 25);
-  set_bit(&result, trans.is_pre, 24);
-  set_bit(&result, trans.is_up, 23);
-  set_bit(&result, trans.is_load, 20);
-  set_bit_range(&result, trans.Rn, 16, 19);
-  set_bit_range(&result, trans.Rd, 12, 15);
+  set_bit(&result, trans.is_reg, I_BIT);
+  set_bit(&result, trans.is_pre, PRE_POST_INDEXING_BIT);
+  set_bit(&result, trans.is_up, UP_BIT);
+  set_bit(&result, trans.is_load, LOAD_STORE_BIT);
+  set_bit_range(&result, trans.Rn, TRANS_RN_START, TRANS_RN_END);
+  set_bit_range(&result, trans.Rd, TRANS_RD_START, TRANS_RD_END);
   reg_imm_helper(!trans.is_reg, trans.offset, &result);
   return result;
 }
