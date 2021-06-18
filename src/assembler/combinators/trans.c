@@ -147,7 +147,7 @@ instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
 }
 
 /*!
- * @return a parser combinator of sigle data transfer insturction.
+ * @return a parser combinator of single data transfer instruction.
  */
 Parsec p_trans(void)
 {

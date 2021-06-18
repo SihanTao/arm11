@@ -128,7 +128,6 @@ instruction_t e_proc(AST proc_ast)
     proc.set_cond = true;
   }
 
-
   result.cond      = AL;
   result.tag       = PROC;
   result.word.proc = proc;
