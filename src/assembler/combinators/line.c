@@ -104,7 +104,7 @@ Parsec p_instruction(void)
 }
 
 /*!
- * @return an encoded and equals.
+ * @return an encoded zero instruction
 */
 instruction_t e_andeq(AST anded)
 {
