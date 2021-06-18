@@ -108,13 +108,13 @@ uint32_t to_bcode(instruction_t ins)
 uint32_t encode_DP(instruction_t instruction)
 {
   uint32_t result = 0;
-  set_bit_range(&result, instruction.cond, 28, 31);
+  set_bit_range(&result, instruction.cond, CONDITION_START, CONDITION_END);
   proc_t proc = instruction.word.proc;
-  set_bit(&result, proc.is_imm, 25);
-  set_bit_range(&result, proc.opcode, 21, 24);
-  set_bit(&result, proc.set_cond, 20);
-  set_bit_range(&result, proc.Rn, 16, 19);
-  set_bit_range(&result, proc.Rd, 12, 15);
+  set_bit(&result, proc.is_imm, I_BIT);
+  set_bit_range(&result, proc.opcode, OPCODE_START, OPCODE_END);
+  set_bit(&result, proc.set_cond, SET_CONDITION_CODES_BIT);
+  set_bit_range(&result, proc.Rn, DP_RN_START, DP_RN_END);
+  set_bit_range(&result, proc.Rd, DP_RD_START, DP_RD_END);
   reg_imm_helper(proc.is_imm, proc.operand2, &result);
   return result;
 }
