@@ -79,7 +79,6 @@ typedef uint32_t bitfield;
 #define MUL_RM_END 3
 
 // trans macros
-#define
 #define PRE_POST_INDEXING_BIT 24
 #define UP_BIT 23
 #define LOAD_STORE_BIT 20
