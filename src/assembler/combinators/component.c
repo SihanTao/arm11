@@ -204,9 +204,9 @@ Parsec p_shift_reg(void)
 reg_or_imm_t e_shift_reg(AST shift_reg)
 {
   reg_or_imm_t result;
-  result.shift_reg.Rm = e_reg($G(shift_reg, "Rm"));
+  result.shift_reg.Rm   = e_reg($G(shift_reg, "Rm"));
   result.shift_reg.type = e_shift_name($G(shift_reg, "shift name"));
-  result.shift_reg.val = e_eq_hash_expr($G(shift_reg, "shift amount"));
+  result.shift_reg.val  = e_eq_hash_expr($G(shift_reg, "shift amount"));
   return result;
 }
 
@@ -223,7 +223,7 @@ Parsec p_operand2(void)
  * encode operand2 AST to reg_or_imm_t
  * @return
  */
-reg_or_imm_t e_operand2(AST operand2, bool *is_imm)
+reg_or_imm_t e_operand2(AST operand2, bool *is_imm, bool *is_positive)
 {
   reg_or_imm_t result;
   AST          hash_ast = $G(operand2, "imm val");
@@ -231,7 +231,17 @@ reg_or_imm_t e_operand2(AST operand2, bool *is_imm)
   {
     int      amount;
     uint32_t imm;
-    reverse_rotate(e_eq_hash_expr(hash_ast), &amount, &imm);
+    int hash_expr_val = e_eq_hash_expr(hash_ast);
+    if (hash_expr_val >= 0)
+    {
+      *is_positive = true;
+    }
+    else
+    {
+      *is_positive = false;
+      hash_expr_val = -hash_expr_val;
+    }
+    reverse_rotate(hash_expr_val, &amount, &imm);
     result.rot_imm.amount = amount;
     result.rot_imm.imm    = imm;
     *is_imm               = true;
@@ -253,73 +263,69 @@ reg_or_imm_t e_operand2(AST operand2, bool *is_imm)
 }
 
 /*!
- * @return a parser combinator of no offset.
+ * @return an encoded pre insex.
  */
-Parsec p_no_offset(void)
-{
-  Parsec seqs[3] = { match(NULL, "["), p_reg_e("Rn"), match(NULL, "]") };
-  return seq("no offset", seqs, 3);
-}
-
-/*!
- * @return an encoded no offset.
- */
-address_t e_no_offset(AST no_offset)
+address_t e_pre_index_has_offset(AST pre_index, bool *is_imm, bool *is_up)
 {
   address_t result;
-  result.is_post           = false;
-  result.is_eq_expr        = false;
-  result.Rn                = e_reg($G(no_offset, "Rn"));
-  result.offset_or_eq_expr = 0;
-  return result;
-}
-
-/*!
- * @return a parser combinator of has offset.
- */
-Parsec p_has_offset(void)
-{
-  Parsec seqs[4] = { match(NULL, "["), p_reg_i("Rn"), p_hash_expr("offset"),
-                     match(NULL, "]") };
-  return seq("has offset", seqs, 4);
-}
-
-/*!
- * @return an encoded has offset.
- */
-address_t e_has_offset(AST has_offset)
-{
-  address_t result;
-  result.is_post           = false;
-  result.is_eq_expr        = false;
-  result.Rn                = e_reg($G(has_offset, "Rn"));
-  result.offset_or_eq_expr = e_eq_hash_expr($G(has_offset, "offset"));
+  result.is_post     = false;
+  result.is_eq_expr  = false;
+  result.eq_expr_val = 0;
+  result.operand2    = e_operand2($G(pre_index, "operand2"), is_imm, is_up);
+  result.Rn          = e_reg($G(pre_index, "Rn"));
   return result;
 }
 
 /*!
  * @return a parser combinator of pre index.
  */
+Parsec p_pre_index_no_offset(void)
+{
+  Parsec seqs[3]
+      = { match(NULL, "["), p_reg_i("Rn"), match(NULL, "]\n") };
+  return seq("pre index no offset", seqs, 3);
+}
+
+Parsec p_pre_index_has_offset(void)
+{
+  Parsec seqs[4]
+      = { match(NULL, "["), p_reg_i("Rn"), p_operand2(), match(NULL, "]\n") };
+  return seq("pre index has offset", seqs, 4);
+}
+
 Parsec p_pre_index(void)
 {
-  return make_or("pre index", p_no_offset(), p_has_offset());
+  Parsec alts[2] = {p_pre_index_no_offset(), p_pre_index_has_offset()};
+  return alt("pre index", alts, 2);
 }
 
 /*!
  * @return an encoded pre insex.
  */
-address_t e_pre_index(AST pre_index)
+address_t e_pre_index_no_offset(AST pre_index, bool *is_imm, bool *is_up)
 {
-  AST no_offset = $G(pre_index, "no offset");
+  address_t result;
+  result.is_post     = false;
+  result.is_eq_expr  = false;
+  result.eq_expr_val = 0;
+  result.operand2.rot_imm.imm = 0;
+  result.operand2.rot_imm.amount = 0;
+  result.Rn          = e_reg($G(pre_index, "Rn"));
+  return result;
+}
+
+address_t e_pre_index(AST pre_index, bool* is_imm, bool* is_up)
+{
+  AST no_offset = $G(pre_index, "pre index no offset");
   if (no_offset)
   {
-    return e_no_offset(no_offset);
+    return e_pre_index_no_offset(no_offset, is_imm, is_up);
   }
 
-  AST has_offset = $G(pre_index, "has offset");
+  AST has_offset = $G(pre_index, "pre index has offset");
   if (has_offset)
   {
-    return e_has_offset(has_offset);
+    return e_pre_index_has_offset(has_offset, is_imm, is_up);
   }
 }
 
@@ -328,19 +334,22 @@ address_t e_pre_index(AST pre_index)
  */
 Parsec p_post_index(void)
 {
-  Parsec seqs[3] = { p_no_offset(), match(NULL, ","), p_hash_expr("offset") };
+  Parsec seqs[4]
+      = { match(NULL, "["), p_reg_e("Rn"), match(NULL, "]"), p_operand2() };
   return seq("post index", seqs, 3);
 }
 
 /*!
  * @return an encode pos index.
  */
-address_t e_post_index(AST post_index)
+address_t e_post_index(AST post_index, bool *is_imm, bool* is_up)
 {
-  address_t result         = e_no_offset($G(post_index, "no offset"));
-  result.is_eq_expr        = true;
-  result.is_post           = true;
-  result.offset_or_eq_expr = e_eq_hash_expr($G(post_index, "offset"));
+  address_t result;
+  result.is_eq_expr  = false;
+  result.is_post     = true;
+  result.eq_expr_val = 0;
+  result.Rn          = e_reg($G(post_index, "Rn"));
+  result.operand2    = e_operand2($G(post_index, "operand2"), is_imm, is_up);
   return result;
 }
 
@@ -349,7 +358,7 @@ address_t e_post_index(AST post_index)
  */
 Parsec p_address(void)
 {
-  Parsec alts[3] = { p_eq_expr("eq expr"), p_post_index(), p_pre_index() };
+  Parsec alts[3] = { p_eq_expr("eq expr"), p_pre_index(), p_post_index()};
   return alt("address", alts, 3);
 }
 
@@ -361,7 +370,7 @@ address_t e_eq_expr(AST imm)
   address_t result;
   result.is_eq_expr        = true;
   result.is_post           = false;
-  result.offset_or_eq_expr = e_eq_hash_expr(imm);
+  result.eq_expr_val       = e_eq_hash_expr(imm);
   result.Rn                = 0xf;
   return result;
 }
@@ -369,7 +378,7 @@ address_t e_eq_expr(AST imm)
 /*!
  * @return an encoded address.
  */
-address_t e_address(AST address)
+address_t e_address(AST address, bool* is_imm, bool* is_up)
 {
   AST imm = $G(address, "eq expr");
   if (imm)
@@ -380,12 +389,12 @@ address_t e_address(AST address)
   AST post_index = $G(address, "post index");
   if (post_index)
   {
-    return e_post_index(post_index);
+    return e_post_index(post_index, is_imm, is_up);
   }
 
   AST pre_index = $G(address, "pre index");
   if (pre_index)
   {
-    return e_pre_index(pre_index);
+    return e_pre_index(pre_index, is_imm, is_up);
   }
 }

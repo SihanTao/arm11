@@ -120,7 +120,8 @@ instruction_t e_proc(AST proc_ast)
   proc.Rn                = Rn ? e_reg(Rn) : 0;
 
   bool *is_imm  = &proc.is_imm;
-  proc.operand2 = e_operand2($G(sub_proc, "operand2"), is_imm);
+  bool is_positive;
+  proc.operand2 = e_operand2($G(sub_proc, "operand2"), is_imm, &is_positive);
   proc.opcode   = e_opcode($G(sub_proc, "opcode"));
   proc.set_cond = false;
   if (proc.opcode == CMP || proc.opcode == TST || proc.opcode == TEQ)

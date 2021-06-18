@@ -20,11 +20,13 @@ instruction_t e_ldr_as_mov(AST trans)
 {
   instruction_t result;
   proc_t        proc;
-  address_t     address = e_address($G(trans, "address"));
+  bool is_imm;
+  bool is_up;
+  address_t     address = e_address($G(trans, "address"), &is_imm, &is_up);
   reg_or_imm_t  operand2;
 
   operand2.rot_imm.amount = 0;
-  operand2.rot_imm.imm    = address.offset_or_eq_expr;
+  operand2.rot_imm.imm    = address.eq_expr_val;
 
   proc.is_imm   = true;
   proc.Rd       = e_reg($G(trans, "Rd"));
@@ -46,12 +48,14 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
                         int *end_address)
 {
   instruction_t result;
-  address_t     address = e_address($G(trans, "address"));
+  bool is_imm;
+  bool is_up;
+  address_t     address = e_address($G(trans, "address"), &is_imm, &is_up);
   trans_t       trans_ins;
   reg_or_imm_t  offset;
 
   token_t *token = malloc(sizeof(token_t));
-  token->imm_val = address.offset_or_eq_expr;
+  token->imm_val = address.eq_expr_val;
   token->ast     = NULL;
   token->address = end_address;
   token->next = NULL;
@@ -83,38 +87,21 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
 instruction_t e_trans_h(AST trans)
 {
   instruction_t result;
-  address_t     address = e_address($G(trans, "address"));
   trans_t       trans_ins;
-  reg_or_imm_t  offset;
-  bool          is_up = address.offset_or_eq_expr >= 0;
-  int           offset_unsigned
-      = is_up ? address.offset_or_eq_expr : -address.offset_or_eq_expr;
-  int amount;
-  int imm;
-
-  if (address.offset_or_eq_expr != 0)
-  {
-    reverse_rotate(offset_unsigned, &amount, &imm);
-    offset.rot_imm.amount = amount;
-    offset.rot_imm.imm    = imm;
-  }
-  else
-  {
-    offset.shift_reg.Rm   = 0;
-    offset.shift_reg.type = LSL;
-    offset.shift_reg.val  = 0;
-  }
+  bool is_imm;
+  bool is_up;
+  address_t     address = e_address($G(trans, "address"), &is_imm, &is_up);
 
   AST opcode = $G(trans, "opcode");
-
-  // DO NOT REMOVE THE !! OPERATOR
   trans_ins.is_load = !!$G(opcode, "ldr");
-  trans_ins.is_pre  = !address.is_post;
-  trans_ins.is_reg  = false;
-  trans_ins.is_up   = is_up;
-  trans_ins.offset  = offset;
-  trans_ins.Rd      = e_reg($G(trans, "Rd"));
-  trans_ins.Rn      = address.Rn;
+  trans_ins.Rd = e_reg($G(trans, "Rd"));
+
+  trans_ins.is_reg = !is_imm;
+  trans_ins.is_up = is_up;
+  trans_ins.is_pre = !address.is_post;
+  reg_or_imm_t  offset = address.operand2;
+  trans_ins.Rn = address.Rn;
+  trans_ins.is_up = is_up;
 
   result.cond       = AL;
   result.tag        = TRANS;
@@ -130,9 +117,11 @@ instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
                       int *end_address)
 {
   instruction_t result;
-  address_t     address = e_address($G(trans, "address"));
+  bool is_imm;
+  bool is_up;
+  address_t     address = e_address($G(trans, "address"), &is_imm, &is_up);
 
-  if (address.is_eq_expr && address.offset_or_eq_expr < 0xFF)
+  if (address.is_eq_expr && address.eq_expr_val < 0xFF)
   {
     return e_ldr_as_mov(trans);
   }
