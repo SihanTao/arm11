@@ -28,21 +28,6 @@ TokenStream init_token_stream()
   return malloc(sizeof(token_stream_t));
 }
 
-/*!
- *
- * @param stream
- * @return the head of the token stream
- */
-Token pop_token_stream(TokenStream stream)
-{
-  Token result = stream->head;
-  if (result == NULL)
-  {
-    return NULL;
-  }
-  stream->head = result->next;
-  return result;
-}
 
 void free_token_stream(TokenStream stream)
 {
