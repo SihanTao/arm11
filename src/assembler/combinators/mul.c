@@ -15,13 +15,10 @@
 */
 mul_t e_mul_h(AST ast)
 {
-  printf("HERE 2\n"); //DELETE_MARK
   mul_t result;
   result.Rd       = e_reg($G(ast, "Rd"));
-  printf("HERE 4\n"); //DELETE_MARK
   result.Rm       = e_reg($G(ast, "Rm"));
   result.Rs       = e_reg($G(ast, "Rs"));
-  printf("HERE 3\n"); //DELETE_MARK
   AST Rn_ast      = $G(ast, "Rn");
   result.Rn       = Rn_ast ? e_reg(Rn_ast) : 0;
   result.set_cond = false;
