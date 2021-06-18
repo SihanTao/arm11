@@ -4,6 +4,8 @@
 
 #include "ast.h"
 
+static AST get_brother_by_name(AST ast, char * name);
+
 /*!
  *
  * @param self
@@ -32,7 +34,7 @@ AST add_brother(AST self, AST brother)
  *
  * @param self
  * @param brother_parent
- * @return : merge brother_parent into self
+ * @return : merge two tree's child
  */
 AST merge(AST self, AST brother_parent)
 {
