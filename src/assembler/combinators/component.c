@@ -18,14 +18,7 @@
 static bool is_valid_imm(uint32_t target)
 {
   uint32_t mask = 0X000000FF;
-  if ((target & mask) == target)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  return (target & mask) == target;
 }
 
 /*!
@@ -85,6 +78,7 @@ int e_deci(AST number)
  */
 Parsec p_hexa(char *name)
 {
+  // a hexadecimal number can be either positive or negative
   return make_or(
       name, make_and("pos", match(NULL, "0x"), take_while("hexa", isalnum)),
       make_and("neg", match(NULL, "-0x"), take_while("hexa", isalnum)) );
@@ -108,7 +102,8 @@ int e_hexa(AST hexa)
 }
 
 /*!
- * @return a parser combinator of hash expression.
+ * a hash expression is '#' + (decimal number | hexa number)
+ * @return
  */
 Parsec p_hash_expr(char *name)
 {
@@ -117,7 +112,8 @@ Parsec p_hash_expr(char *name)
 }
 
 /*!
- * @return a parser combinator of '=' expression
+ * a hash expression is '=' + (decimal number | hexa number)
+ * @return
  */
 Parsec p_eq_expr(char *name)
 {
@@ -126,7 +122,8 @@ Parsec p_eq_expr(char *name)
 }
 
 /*!
- * @return an encoded '=' or hash expression
+ * encode # or = expr to int
+ * @return
  */
 int e_eq_hash_expr(AST hash_expr)
 {
@@ -138,6 +135,10 @@ int e_eq_hash_expr(AST hash_expr)
   return e_hexa(hexa);
 }
 
+/*!
+ * a not end register is 'r'+ number + ','
+ * @return
+ */
 Parsec p_reg_i(char *name)
 {
   Parsec alts[3] = { match(NULL, ", "), match(NULL, ","), match(NULL, ",  ") };
@@ -145,16 +146,20 @@ Parsec p_reg_i(char *name)
       = { match(NULL, "r"), p_number("reg_num"), alt(NULL, alts, 3) };
   return seq(name, seq1, 3);
 }
-
+/*!
+ * an end register is 'r'+ number
+ * @return
+ */
 Parsec p_reg_e(char *name)
 {
   return make_and(name, match(NULL, "r"), p_number("reg_num"));
 }
 
 /*!
- * @return an encoded register.
+ * encode register to no_reg_t
+ * @return
  */
-int e_reg(AST reg)
+no_reg_t e_reg(AST reg)
 {
   return atoi($TG(reg, "reg_num"));
 }
@@ -168,7 +173,8 @@ Parsec p_operand2(void)
 }
 
 /*!
- * @return an encoded operand2.
+ * encode operand2 AST to reg_or_imm_t
+ * @return
  */
 reg_or_imm_t e_operand2(AST operand2, bool *is_imm)
 {

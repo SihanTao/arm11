@@ -271,6 +271,9 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
       add_brother(matched1, matched2);
       return add_child(new_ast, matched1);
     }
+    free_ast(new_ast);
+    free_ast(matched1);
+    free_ast(matched2);
     do_trace_back(s, record_point);
     return NULL;
   }
@@ -291,7 +294,10 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
         add_brother(matched1, matched2);
         return add_child(new_ast, matched1);
       }
+      free_ast(matched2);
     }
+    free_ast(new_ast);
+    free_ast(matched1);
     do_trace_back(s, record_point);
     return NULL;
   }
@@ -303,6 +309,7 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
     {
       return matched;
     }
+    free_ast(matched);
     do_trace_back(s, record_point);
     return NULL;
   }
@@ -366,7 +373,6 @@ AST parse_match(Parsec p, CharStream s)
     }
     buffer[i] = p->matching_string[i];
   }
-
   return make_atom(p->name, buffer);
 }
 

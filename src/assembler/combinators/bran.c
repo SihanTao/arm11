@@ -13,9 +13,9 @@
 #include "bran.h"
 
 /*!
- * @return a parser combinator condition part of a branch instruction.
+ * branch condition can be (beq | bne | bge | blt | bgt | ble | bal | b)
+ * @return
  */
-
 Parsec p_bran_cond(void)
 {
   Parsec alts[8]
@@ -75,9 +75,10 @@ cond_type e_bran_cond(AST bran_cond)
 }
 
 /*!
+ * convert branch AST to instruction_t
  * @param bran
- * @param symbol_table
- * @param current_address
+ * @param symbol_table to retrieve the stored address of label
+ * @param current_address to calculate offset
  * @return the encoded branch insturction.
  */
 instruction_t e_bran(AST bran, SymbolTable symbol_table, int current_address)
@@ -93,6 +94,10 @@ instruction_t e_bran(AST bran, SymbolTable symbol_table, int current_address)
   return result;
 }
 
+/*!
+ * a branch instruction is a (branch condition + a label)
+ * @return the encoded branch insturction.
+ */
 Parsec p_bran(void)
 {
   Parsec seqs[3]

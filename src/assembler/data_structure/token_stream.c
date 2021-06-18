@@ -32,6 +32,7 @@ TokenStream init_token_stream()
 void free_token_stream(TokenStream stream)
 {
   free_token(stream->head);
+  free(stream);
 }
 
 void free_token(Token token)
