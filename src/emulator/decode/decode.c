@@ -91,7 +91,7 @@ instruction_t decode_mul(bitfield fetched)
   result.cond = get_bit_range(fetched, CONDITION_START, CONDITION_END);
   result.word.mul.is_mla = get_bit(fetched, ACCUMULATE_BIT);
   result.word.mul.set_cond = get_bit(fetched, SET_CONDITION_CODES_BIT);
-  result.word.mul.Rd = get_bit_range(fetched, MUL_RD_START, MUL_RN_END);
+  result.word.mul.Rd = get_bit_range(fetched, MUL_RD_START, MUL_RD_END);
   result.word.mul.Rn = get_bit_range(fetched, MUL_RN_START, MUL_RN_END);
   result.word.mul.Rs = get_bit_range(fetched, MUL_RS_START, MUL_RS_END);
   result.word.mul.Rm = get_bit_range(fetched, MUL_RM_START, MUL_RM_END);
