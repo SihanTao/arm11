@@ -25,14 +25,14 @@ int main(void)
   print_ast(ast, 0);
   printf("\n");
   ins = e_mul(ast);
-  printf("ins.tag :>> %d\n", ins.tag);   // DELETE_MARK
-  printf("ins.cond :>> %d\n", ins.cond); // DELETE_MARK
+  printf("ins.tag :>> %d\n", ins.tag);
+  printf("ins.cond :>> %d\n", ins.cond);
   mul = ins.word.mul;
-  printf("mul.Rn :>> %d\n", mul.Rn);         // DELETE_MARK
-  printf("mul.Rd :>> %d\n", mul.Rd);         // DELETE_MARK
-  printf("mul.Rm :>> %d\n", mul.Rm);         // DELETE_MARK
-  printf("mul.is_mla :>> %d\n", mul.is_mla); // DELETE_MARK
-  printf("mul.Rs :>> %d\n", mul.Rs);         // DELETE_MARK
+  printf("mul.Rn :>> %d\n", mul.Rn);
+  printf("mul.Rd :>> %d\n", mul.Rd);
+  printf("mul.Rm :>> %d\n", mul.Rm);
+  printf("mul.is_mla :>> %d\n", mul.is_mla);
+  printf("mul.Rs :>> %d\n", mul.Rs);
 
   string      = "mla r12,r2,r3,r4\n";
   char_stream = &string;
@@ -41,12 +41,12 @@ int main(void)
 
   print_ast(ast, 0);
   ins = e_mul(ast);
-  printf("ins.tag :>> %d\n", ins.tag);   // DELETE_MARK
-  printf("ins.cond :>> %d\n", ins.cond); // DELETE_MARK
+  printf("ins.tag :>> %d\n", ins.tag);
+  printf("ins.cond :>> %d\n", ins.cond);
   mul = ins.word.mul;
-  printf("mul.Rn :>> %d\n", mul.Rn);         // DELETE_MARK
-  printf("mul.Rd :>> %d\n", mul.Rd);         // DELETE_MARK
-  printf("mul.Rm :>> %d\n", mul.Rm);         // DELETE_MARK
-  printf("mul.is_mla :>> %d\n", mul.is_mla); // DELETE_MARK
-  printf("mul.Rs :>> %d\n", mul.Rs);         // DELETE_MARK
+  printf("mul.Rn :>> %d\n", mul.Rn);
+  printf("mul.Rd :>> %d\n", mul.Rd);
+  printf("mul.Rm :>> %d\n", mul.Rm);
+  printf("mul.is_mla :>> %d\n", mul.is_mla);
+  printf("mul.Rs :>> %d\n", mul.Rs);
 }

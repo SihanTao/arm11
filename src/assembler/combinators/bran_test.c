@@ -27,33 +27,28 @@ int main(void)
   ast         = perform_parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
   printf("\n");
-  bran_ins = e_bran(ast, symbol_table);
-  printf("bran_ins.tag :>> %d\n", bran_ins.tag);   // DELETE_MARK
-  printf("bran_ins.cond :>> %d\n", bran_ins.cond); // DELETE_MARK
-  printf("bran_ins.word.branch.offset :>> %d\n",
-         bran_ins.word.branch.offset); // DELETE_MARK
+  bran_ins = e_bran(ast, symbol_table, 0);
+  printf("bran_ins.tag :>> %d\n", bran_ins.tag);
+  printf("bran_ins.cond :>> %d\n", bran_ins.cond);
+  printf("bran_ins.word.branch.offset :>> %d\n", bran_ins.word.branch.offset);
 
   string      = "bal wait";
   char_stream = &string;
   ast         = perform_parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
   printf("\n");
-  bran_ins = e_bran(ast, symbol_table);
-
-  printf("bran_ins.tag :>> %d\n", bran_ins.tag);   // DELETE_MARK
-  printf("bran_ins.cond :>> %d\n", bran_ins.cond); // DELETE_MARK
-  printf("bran_ins.word.branch.offset :>> %d\n",
-         bran_ins.word.branch.offset); // DELETE_MARK
+  bran_ins = e_bran(ast, symbol_table, 0);
+  printf("bran_ins.tag :>> %d\n", bran_ins.tag);
+  printf("bran_ins.cond :>> %d\n", bran_ins.cond);
+  printf("bran_ins.word.branch.offset :>> %d\n", bran_ins.word.branch.offset);
 
   string      = "beq wait";
   char_stream = &string;
   ast         = perform_parse(char_stream, p_bran(), NULL);
   print_ast(ast, 0);
-  bran_ins = e_bran(ast, symbol_table);
-
+  bran_ins = e_bran(ast, symbol_table, 0);
   printf("\n");
-  printf("bran_ins.tag :>> %d\n", bran_ins.tag);   // DELETE_MARK
-  printf("bran_ins.cond :>> %d\n", bran_ins.cond); // DELETE_MARK
-  printf("bran_ins.word.branch.offset :>> %d\n",
-         bran_ins.word.branch.offset); // DELETE_MARK
+  printf("bran_ins.tag :>> %d\n", bran_ins.tag);
+  printf("bran_ins.cond :>> %d\n", bran_ins.cond);
+  printf("bran_ins.word.branch.offset :>> %d\n", bran_ins.word.branch.offset);
 }
