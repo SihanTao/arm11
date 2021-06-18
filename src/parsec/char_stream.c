@@ -1,9 +1,8 @@
 #include "char_stream.h"
 
 /*!
- *
+ *  the move the char stream pointer forward
  * @param char_stream
- * @return the next char in char_stream
  */
 void next_char(CharStream char_stream)
 {
@@ -13,7 +12,7 @@ void next_char(CharStream char_stream)
 /*!
  *
  * @param char_stream
- * @return the char in char_stream
+ * @return the current char in char_stream
  */
 char get_char(CharStream char_stream)
 {
@@ -23,18 +22,18 @@ char get_char(CharStream char_stream)
 /*!
  *
  * @param char_stream
- * @return char_stream in the type of RecordPoint
+ * @return generate a record point to trace back
  */
-RecordPoint get_trace_back(CharStream char_stream)
+RecordPoint get_record_point(CharStream char_stream)
 {
   return *char_stream;
 }
 
 /*!
  *
+ * trace back to record point
  * @param char_stream
  * @param record_point
- * @return : let char_stream = record_point
  */
 void do_trace_back(CharStream char_stream, RecordPoint record_point)
 {
