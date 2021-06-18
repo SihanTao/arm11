@@ -57,5 +57,5 @@ void set_bit_range(uint32_t *dest, int src, int start, int end)
   assert(start < end);
   int      length   = end - start + 1;
   uint32_t selector = ~((ALL_ONE >> (NUM_OF_BIT_IN_WORD - length)) << start);
-  *dest             = (*dest & selector) | (src << start);
+  *dest = (*dest & selector) | (get_bit_range(src, start, end) << start);
 }
