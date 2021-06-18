@@ -23,7 +23,7 @@ int main(void)
       .is_imm    = false, // op2 is a register
       0,
     };
-    arm_state         = init_state();
+
     arm_state->reg[1] = 0x0000000B; // Rm = 0b1011
     arm_state->reg[2] = 0;          // Rd
     arm_state->reg[3] = 2;          // Rn = 0b10
