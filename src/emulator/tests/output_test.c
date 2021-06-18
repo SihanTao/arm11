@@ -27,7 +27,8 @@ int main(void)
     arm_state->ovflw = 0;
     arm_state->zero  = 1;
 
-    output("target_file", arm_state);
+    output(arm_state);
+    
   }
   end_all_tests();
   return 0;

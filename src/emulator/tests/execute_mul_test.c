@@ -19,7 +19,7 @@ int main(void)
                        .Rn       = 3,
                        .Rd       = 4,
                        .set_cond = true,
-                       .is_mla      = false,
+                       .is_mla   = false,
                        0,
                        };
 
@@ -47,7 +47,7 @@ int main(void)
                        .Rn       = 3,
                        .Rd       = 4,
                        .set_cond = true,
-                       .is_mla      = false,
+                       .is_mla   = false,
                        01,
                        };
 

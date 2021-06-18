@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <machine/endian.h> // include endian for both Linux and macOS
 
 #include "../../global_utils/types_and_macros.h"
 
