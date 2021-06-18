@@ -269,7 +269,7 @@ void execute_trans(trans_t instruction, ArmState arm_state)
 {
   bitfield *reg = arm_state->reg;
   uint32_t  Rn_val
-      = instruction.Rn == PC ? arm_state->pc + 8 : reg[instruction.Rn];
+      = instruction.Rn == PC ? arm_state->pc : reg[instruction.Rn];
 
   uint32_t offset;
 

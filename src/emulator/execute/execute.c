@@ -31,7 +31,7 @@ exit_type execute(instruction_t decoded, ArmState arm_state)
       execute_bran(decoded.word.branch, arm_state);
       return RESTART_PIPELINE;
     default:
-      perror("Internal Error! Unknown instruction!");
+      perror("Error! Unknown instruction!");
       exit(EXIT_FAILURE);
     }
   }
