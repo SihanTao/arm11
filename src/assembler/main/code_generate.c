@@ -39,9 +39,10 @@ void reg_imm_helper(bool is_imm, reg_or_imm_t reg_or_imm, uint32_t *target)
 
 /*!
  * TODO
+ * @param file_name the file name to output
  * @param token_stream
  * @param symbol_table
- *
+ * @param end_address the address of last instruction
  */
 void code_generate(char *file_name, TokenStream token_stream,
                    SymbolTable symbol_table, int *end_address)
@@ -56,27 +57,20 @@ void code_generate(char *file_name, TokenStream token_stream,
     perror("cannot open file");
     exit(EXIT_FAILURE);
   }
-  printf("HERE 5\n"); //DELETE_MARK
 
   for (token_t *cur_token = token_stream->head; cur_token != NULL;
        cur_token          = cur_token->next)
   {
-    printf("HERE 9\n"); //DELETE_MARK
     if (cur_token->ast == NULL)
     {
-      printf("HERE 10\n"); //DELETE_MARK
       fwrite(&cur_token->imm_val, sizeof(binary_code), 1, f_handle);
       continue;
     }
-
-    printf("asdf!!!");
 
     ast     = cur_token->ast;
     address = cur_token->address;
     ins = e_instruction(ast, address, token_stream, symbol_table, end_address);
     binary_code = to_bcode(ins);
-    printf("*end_address :>> %d\n", *end_address); //DELETE_MARK
-    printf("%p", binary_code);
 
     fwrite(&binary_code, sizeof(binary_code), 1, f_handle);
   }
@@ -161,10 +155,10 @@ uint32_t encode_TRANS(instruction_t instruction)
 uint32_t encode_BRANCH(instruction_t instruction)
 {
   uint32_t result = 0;
+  branch_t bran = instruction.word.branch;
+  set_bit_range(&result, bran.offset, 0, 23);
   set_bit_range(&result, instruction.cond, 28, 31);
   set_bit_range(&result,0xa,24,27);
 
-  branch_t bran = instruction.word.branch;
-  set_bit_range(&result, bran.offset, 0, 23);
   return result;
 }
