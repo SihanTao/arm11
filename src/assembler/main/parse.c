@@ -13,17 +13,19 @@
 
 #include "../combinators/line.h"
 
-#define ADDRESS_INTERVAL (4)
-#define MAX_LINE_LENGTH  (512)
+#include "parse.h"
 
 /*!
- *
+ * The first pass is `parse` which convert instructions into ASTs and add them
+ * into token stream, and make a map between label and address which is stored
+ * in symbol table.
  * @param file_name the file name to read from
  * @param token_stream the token_stream to add to
  * @param symbol_table the symbol table to add to
  * @param end_address the pointer takes the address of last intruction
  */
-void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, int *end_address)
+void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table,
+           int *end_address)
 {
   FILE *f_handle = fopen(file_name, "r");
   if (!f_handle)
@@ -31,10 +33,10 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
     perror("cannot open file");
     exit(EXIT_FAILURE);
   }
-  int  address;
-  char * buffer = malloc(MAX_LINE_LENGTH);
+  int        address;
+  char *     buffer = malloc(MAX_LINE_LENGTH);
   CharStream char_stream;
-  Parsec line_parser = p_line();
+  Parsec     line_parser = p_line();
 
   while (fgets(buffer, MAX_LINE_LENGTH, f_handle))
   {
@@ -43,13 +45,13 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
       continue;
     }
     char_stream = &buffer;
-    AST result = perform_parse(char_stream, line_parser, NULL);
-    print_ast(result,0);
+
+    AST result  = perform_parse(char_stream, line_parser, NULL);
     AST label = $G(result, "label");
+
     if (label)
     {
-      add_symbol_table(e_label(label), address,
-                       symbol_table);
+      add_symbol_table(e_label(label), address, symbol_table);
     }
     else // is instruction
     {
