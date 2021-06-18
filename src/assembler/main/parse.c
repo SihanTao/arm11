@@ -40,6 +40,7 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
   {
     char_stream = &buffer;
     AST result = perform_parse(char_stream, line_parser, NULL);
+    print_ast(result,0);
     AST label = $G(result, "label");
     if (label)
     {
