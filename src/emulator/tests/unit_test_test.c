@@ -22,22 +22,5 @@ int main (void)
     test_eq (hello2, hello, sizeof hello);
     // test_eq("hello_world", "hello", sizeof hello);
   }
-
-  add_test ("success_test");
-  {
-    struct My_struct
-    {
-      int int_value;
-      long long long_long_value;
-      char char_value;
-    };
-    //struct My_struct target_struct = { 12, 13241234, 'a' };
-    struct My_struct expect_struct = { 13, 1232341, 'a' };
-    struct My_struct target_struct2 = { 13, 1232341, 'a' };
-
-    // test_eq(&target_struct, &expect_struct, sizeof expect_struct);
-    test_eq (&target_struct2, &expect_struct, sizeof expect_struct);
-  }
-
   end_all_tests ();
 }
