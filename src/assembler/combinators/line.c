@@ -74,7 +74,7 @@ instruction_t e_instruction(AST ins_ast, int cur_address,
 */
 Parsec p_label(void)
 {
-  Parsec seqs[3] = {take_while("label string", isalpha),
+  Parsec seqs[3] = {take_while("label string", isalnum),
                   match(NULL, ":"), match(NULL, "\n")};
   return seq("label", seqs, 3);
 }

@@ -267,12 +267,10 @@ uint32_t dp_carried_result(pd_opcode_type opcode, uint32_t operand1,
  */
 void execute_trans(trans_t instruction, ArmState arm_state)
 {
-  bitfield *reg    = arm_state->reg;
-  uint32_t  Rn_val = reg[instruction.Rn];
-  if (instruction.Rn == PC)
-  {
-    Rn_val = Rn_val + 8;
-  }
+  bitfield *reg = arm_state->reg;
+  uint32_t  Rn_val
+      = instruction.Rn == PC ? arm_state->pc : reg[instruction.Rn];
+
   uint32_t offset;
 
   // if i bit is set to 0, is immediate value else is shifted register

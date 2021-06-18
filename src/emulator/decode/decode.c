@@ -34,9 +34,15 @@ instruction_t decode(bitfield fetched)
   {
     return decode_mul(fetched_val);
   }
-  else
+  else if (get_bit_range(fetched_val, 26, 27) == 0)
   {
     return decode_dp(fetched_val);
+  }
+  else
+  {
+    instruction_t result;
+    result.tag = UNDEFINED;
+    return result;
   }
 }
 

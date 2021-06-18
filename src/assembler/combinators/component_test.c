@@ -25,7 +25,7 @@ int main(void)
   printf("\n");
   printf("e_hash_expr(ast) :>> %d\n", e_eq_hash_expr(ast)); // DELETE_MARK
 
-  string      = "#0x10";
+  string      = "#-0x10";
   char_stream = &string;
   ast         = perform_parse(char_stream,
                  p_hash_expr("hash_expr"), NULL);
@@ -128,9 +128,4 @@ int main(void)
   printf("address.is_post :>> %d\n", address.is_post);      // DELETE_MARK
 }
 
-
-Parsec p_term(void)
-{return make_or("term",
-          p_number("number"),
-          p_brack_expr());}
 

@@ -96,6 +96,6 @@ instruction_t e_bran(AST bran, SymbolTable symbol_table, int current_address)
 Parsec p_bran(void)
 {
   Parsec seqs[3]
-      = { p_bran_cond(), take_while("label", isalpha), match(NULL, "\n") };
+      = { p_bran_cond(), take_while("label", isalnum), match(NULL, "\n") };
   return seq("bran", seqs, 3);
 }
