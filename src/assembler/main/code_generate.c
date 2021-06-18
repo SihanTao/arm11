@@ -122,16 +122,16 @@ uint32_t encode_DP(instruction_t instruction)
 uint32_t encode_MUL(instruction_t instruction)
 {
   uint32_t result = 0;
-  set_bit_range(&result, instruction.cond, 28, 31);
-  set_bit_range(&result, 0x9, 4, 7);
+  set_bit_range(&result, instruction.cond, CONDITION_START, CONDITION_END);
+  set_bit_range(&result, 0x9, 4, 7); // 0B1001
 
   mul_t mul = instruction.word.mul;
-  set_bit(&result, mul.is_mla, 21);
-  set_bit(&result, mul.set_cond, 20);
-  set_bit_range(&result, mul.Rd, 16, 19);
-  set_bit_range(&result, mul.Rn, 12, 15);
-  set_bit_range(&result, mul.Rs, 8, 11);
-  set_bit_range(&result, mul.Rm, 0, 3);
+  set_bit(&result, mul.is_mla, ACCUMULATE_BIT);
+  set_bit(&result, mul.set_cond, SET_CONDITION_CODES_BIT);
+  set_bit_range(&result, mul.Rd, MUL_RD_START, MUL_RD_END);
+  set_bit_range(&result, mul.Rn, MUL_RM_START, MUL_RN_END);
+  set_bit_range(&result, mul.Rs, MUL_RS_START, MUL_RS_END);
+  set_bit_range(&result, mul.Rm, MUL_RM_START, MUL_RM_END);
   return result;
 }
 
