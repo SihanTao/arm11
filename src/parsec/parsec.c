@@ -9,6 +9,13 @@
 
 #include "parsec.h"
 
+static AST    parse_h(CharStream s, Parsec p, ast_mapper map);
+static AST    parse_match(Parsec p, CharStream s);
+static AST    parse_prop(Parsec p, CharStream s, bool(decorator)(bool));
+static Parsec end();
+bool          identity(bool in);
+bool          negate(bool in);
+
 void print_indent(int indent)
 {
   for (int i = 0; i < indent; i++)
@@ -42,9 +49,9 @@ void print_pc(Parsec p, int indent)
 }
 
 /*!
- *
+ * this is a decorator function for take while
  * @param in
- * @return a bool value of whether in is true
+ * @return doesn't change the value
  */
 bool identity(bool in)
 {
@@ -52,9 +59,9 @@ bool identity(bool in)
 }
 
 /*!
- *
+ * this is a decorator function for take until
  * @param in
- * @return a bool value of whether in is false
+ * @return invert the value
  */
 bool negate(bool in)
 {
@@ -66,8 +73,8 @@ bool negate(bool in)
  * @param char_stream
  * @param parserc
  * @param map_while_build
- * @return an AST and it depends on parserc.type (PARSERC_OR, PARSERC_AND, PARSERC_MATCH, 
- *                                          PARSERC_TAKE, PARSERC_UNTIL, PARSERC_UNIT)
+ * @return an AST and it depends on parserc.type (PARSERC_OR, PARSERC_AND,
+ * PARSERC_MATCH, PARSERC_TAKE, PARSERC_UNTIL, PARSERC_UNIT)
  */
 AST perform_parse(CharStream char_stream, Parsec parserc,
                   ast_mapper map_while_build)
@@ -76,7 +83,7 @@ AST perform_parse(CharStream char_stream, Parsec parserc,
 }
 
 /*!
- *
+ * helper combinator to end 'or chain' or 'and chain'
  * @return a parsec with type = PARSERC_UNIT
  */
 Parsec end()
@@ -89,8 +96,9 @@ Parsec end()
 /*!
  *
  * @param name
- * @param accepts
- * @return a parsec with type = PARSERC_TAKE, name = name, prop = accepts
+ * @param accepts proposition function pointer
+ * @return an atomic parser combinator to match string as long as the accepts
+ * proposition is satisfied
  */
 Parsec take_while(char *name, proposition accepts)
 {
@@ -104,8 +112,9 @@ Parsec take_while(char *name, proposition accepts)
 /*!
  *
  * @param name
- * @param until
- * @return a parsec with type = PARSERC_UNTIL, name = name, prop = until
+ * @param until proposition function pointer
+ * @return an atomic parser combinator to match string as long as the until
+ * proposition is not satisfied
  */
 Parsec take_until(char *name, proposition until)
 {
@@ -121,7 +130,7 @@ Parsec take_until(char *name, proposition until)
  * @param name
  * @param left
  * @param right
- * @return a parsec with type = PARSERC_OR, name = name, curr = left, next = right
+ * @return a parser combinator matches either `left` or `right`
  */
 Parsec make_or(char *name, Parsec left, Parsec right)
 {
@@ -138,7 +147,7 @@ Parsec make_or(char *name, Parsec left, Parsec right)
  * @param name
  * @param left
  * @param right
- * @return a parsec with type = PARSERC_AND, name = name, curr = left, next = right
+ * @return a parser combinator matches `left` then `right`
  */
 Parsec make_and(char *name, Parsec left, Parsec right)
 {
@@ -151,11 +160,10 @@ Parsec make_and(char *name, Parsec left, Parsec right)
 }
 
 /*!
- *
+ * helper function for alts
  * @param choices
  * @param num
- * @return a parsec with type = PARSERC_OR, name = NULL, curr = choices[0],
- *         next = end() if num = 1 else next = alt_h(choices + 1, num - 1)
+ * @return
  */
 Parsec alt_h(Parsec *choices, size_t num)
 {
@@ -171,8 +179,7 @@ Parsec alt_h(Parsec *choices, size_t num)
  * @param name
  * @param choices
  * @param num
- * @return a parsec with type = PARSERC_OR, name = name, curr = choices[0],
- *         next = end() if num = 1 else next = alt_h(choices + 1, num - 1)
+ * @return a parser combinator matches any of the choices (test from left to right)
  */
 Parsec alt(char *name, Parsec *choices, size_t num)
 {
@@ -183,11 +190,10 @@ Parsec alt(char *name, Parsec *choices, size_t num)
 }
 
 /*!
- *
+ * helper for seq
  * @param sequence
  * @param num
- * @return a parsec with type = PARSERC_AND, name = NULL, curr = sequence[0], 
- *         next = end() if num = 1 else next = seq_h(sequence + 1, num - 1)
+ * @return
  */
 Parsec seq_h(Parsec *sequence, size_t num)
 {
@@ -203,8 +209,7 @@ Parsec seq_h(Parsec *sequence, size_t num)
  * @param name
  * @param sequence
  * @param num
- * @return a parsec with type = PARSERC_AND, name = name, curr = sequence[0], 
- *         next = end() if num = 1 else next = seq_h(sequence + 1, num - 1)
+ * @return a parser combinator matches a sequence of parser combinators
  */
 Parsec seq(char *name, Parsec *sequence, size_t num)
 {
@@ -217,8 +222,8 @@ Parsec seq(char *name, Parsec *sequence, size_t num)
 /*!
  *
  * @param name
- * @param template
- * @return a parsec with name = name, type = PARSERC_MATCH, matching_string = template
+ * @param template matches string exactly the same as template
+ * @return an atomic parser combinator, matches a certain string
  */
 Parsec match(char *name, char *template)
 {
@@ -230,12 +235,11 @@ Parsec match(char *name, char *template)
 }
 
 /*!
- *
+ * dispatcher for perform parse
  * @param s
  * @param p
  * @param map
- * @return an AST and it depends on p.type (PARSERC_OR, PARSERC_AND, PARSERC_MATCH, 
- *                                          PARSERC_TAKE, PARSERC_UNTIL, PARSERC_UNIT)
+ * @return
  */
 AST parse_h(CharStream s, Parsec p, ast_mapper map)
 {
@@ -248,9 +252,9 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
   {
   case PARSERC_OR:
   {
-    RecordPoint record_point = get_trace_back(s);
-    AST new_ast  = make_atom(p->name, NULL);
-    AST matched1 = parse_h(s, p->curr, map);
+    RecordPoint record_point = get_record_point(s);
+    AST         new_ast      = make_atom(p->name, NULL);
+    AST         matched1     = parse_h(s, p->curr, map);
     if (matched1 != NULL)
     {
       return add_child(new_ast, matched1);
@@ -267,12 +271,12 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
       add_brother(matched1, matched2);
       return add_child(new_ast, matched1);
     }
-        do_trace_back(s, record_point);
+    do_trace_back(s, record_point);
     return NULL;
   }
   case PARSERC_AND:
   {
-    RecordPoint record_point = get_trace_back(s);
+    RecordPoint record_point = get_record_point(s);
     AST         new_ast      = make_atom(p->name, NULL);
     AST         matched1     = parse_h(s, p->curr, map);
     if (matched1 != NULL)
@@ -293,7 +297,7 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
   }
   case PARSERC_MATCH:
   {
-    RecordPoint record_point = get_trace_back(s);
+    RecordPoint record_point = get_record_point(s);
     AST         matched      = parse_match(p, s);
     if (matched)
     {
@@ -324,7 +328,7 @@ AST parse_h(CharStream s, Parsec p, ast_mapper map)
  * @param p
  * @param s
  * @param decorator
- * @return an AST with key = p.name and matched = buffer
+ * @return the result of take while or take until parser combinator
  */
 AST parse_prop(Parsec p, CharStream s, bool(decorator)(bool))
 {
@@ -349,7 +353,7 @@ AST parse_prop(Parsec p, CharStream s, bool(decorator)(bool))
  *
  * @param p
  * @param s
- * @return an AST with key = p.name and matched = buffer
+ * @return the result of match parser combinator
  */
 AST parse_match(Parsec p, CharStream s)
 {

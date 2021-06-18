@@ -30,19 +30,15 @@ typedef struct parsec_t
 
 void print_pc(Parsec p, int ident);
 
-AST perform_parse(CharStream char_stream, Parsec parserc, ast_mapper map_while_build);
+AST perform_parse(CharStream char_stream, Parsec parserc,
+                  ast_mapper map_while_build);
 Parsec make_and(char* name, Parsec left, Parsec right);
 Parsec make_or(char* name, Parsec left, Parsec right);
 Parsec match(char *name, char *template);
-AST parse_h(CharStream s, Parsec p, ast_mapper map);
-AST parse_match(Parsec p, CharStream s);
 Parsec seq(char* name, Parsec *sequence, size_t num);
 Parsec alt(char* name, Parsec *choices, size_t num);
 Parsec take_while(char *name, proposition accepts);
 Parsec take_until(char *name, proposition until);
-AST parse_prop(Parsec p, CharStream s, bool(decorator)(bool));
-Parsec end();
-
 void free_parsec(Parsec parsec);
 
 #endif // PARSERC
