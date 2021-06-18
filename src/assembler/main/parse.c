@@ -43,7 +43,7 @@ void parse(char *file_name, TokenStream token_stream, SymbolTable symbol_table, 
     AST label = $G(result, "label");
     if (label)
     {
-      add_symbol_table(strdup(e_label(label)), address,
+      add_symbol_table(e_label(label), address,
                        symbol_table);
     }
     else // is instruction
