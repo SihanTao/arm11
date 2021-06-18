@@ -81,7 +81,7 @@ Parsec p_hexa(char *name)
   // a hexadecimal number can be either positive or negative
   return make_or(
       name, make_and("pos", match(NULL, "0x"), take_while("hexa", isalnum)),
-      make_and("neg", match(NULL, "-0x"), take_while("hexa", isalnum)) );
+      make_and("neg", match(NULL, "-0x"), take_while("hexa", isalnum)));
 }
 
 /*!
@@ -92,12 +92,12 @@ int e_hexa(AST hexa)
   AST pos = $G(hexa, "pos");
   if (pos)
   {
-    char * val = $TG(pos, "hexa");
+    char *val = $TG(pos, "hexa");
     return strtol(val, NULL, 16);
   }
 
-  AST neg = $G(hexa, "neg");
-  char * val = $TG(neg, "hexa");
+  AST   neg = $G(hexa, "neg");
+  char *val = $TG(neg, "hexa");
   return -strtol(val, NULL, 16);
 }
 
@@ -164,12 +164,59 @@ no_reg_t e_reg(AST reg)
   return atoi($TG(reg, "reg_num"));
 }
 
+Parsec p_shift_name(void)
+{
+  Parsec alts[4] = { match("lsl", "lsl "), match("lsr", "lsr "),
+                     match("ror", "ror "), match("asr", "asr ") };
+  return alt("shift name", alts, 4);
+}
+
+shift_type e_shift_name(AST shift)
+{
+  if ($G(shift, "lsl"))
+  {
+    return LSL;
+  }
+
+  if ($G(shift, "lsr"))
+  {
+    return LSR;
+  }
+
+  if ($G(shift, "ror"))
+  {
+    return ROR;
+  }
+
+  if ($G(shift, "asr"))
+  {
+    return ASR;
+  }
+}
+
+Parsec p_shift_reg(void)
+{
+  Parsec seqs[3]
+      = { p_reg_i("Rm"), p_shift_name(), p_hash_expr("shift amount") };
+  return seq("shift reg", seqs, 3);
+}
+
+reg_or_imm_t e_shift_reg(AST shift_reg)
+{
+  reg_or_imm_t result;
+  result.shift_reg.Rm = e_reg($G(shift_reg, "Rm"));
+  result.shift_reg.type = e_shift_name($G(shift_reg, "shift name"));
+  result.shift_reg.val = e_eq_hash_expr($G(shift_reg, "shift amount"));
+  return result;
+}
+
 /*!
  * @return a parser combinator of operand2.
  */
 Parsec p_operand2(void)
 {
-  return make_or("operand2", p_hash_expr("imm val"), p_reg_e("Rm"));
+  Parsec alts[3] = { p_hash_expr("imm val"), p_shift_reg(), p_reg_e("Rm") };
+  return alt("operand2", alts, 3);
 }
 
 /*!
@@ -184,8 +231,6 @@ reg_or_imm_t e_operand2(AST operand2, bool *is_imm)
   {
     int      amount;
     uint32_t imm;
-    printf("e_eq_hash_expr(hash_ast) :>> %d\n",
-           e_eq_hash_expr(hash_ast)); // DELETE_MARK
     reverse_rotate(e_eq_hash_expr(hash_ast), &amount, &imm);
     result.rot_imm.amount = amount;
     result.rot_imm.imm    = imm;
@@ -202,6 +247,9 @@ reg_or_imm_t e_operand2(AST operand2, bool *is_imm)
     result.shift_reg.type = LSL;
     return result;
   }
+
+  AST shift_reg = $G(operand2, "shift reg");
+  return e_shift_reg(shift_reg);
 }
 
 /*!
