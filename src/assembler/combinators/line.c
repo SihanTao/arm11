@@ -23,14 +23,15 @@ static instruction_t e_andeq(AST anded);
 static Parsec        p_andeq(void);
 static Parsec        p_lsl(void);
 static instruction_t e_lsl(AST lsl);
-static Parsec p_instruction(void);
+static Parsec        p_instruction(void);
 
 /*!
- * @return an encoded instruction.
-*/
+ * convert instruction AST into intruction_t
+ * @return
+ */
 instruction_t e_instruction(AST ins_ast, int cur_address,
                             TokenStream token_stream, SymbolTable symbol_table,
-                            int* end_address)
+                            int *end_address)
 {
   AST andeq = $G(ins_ast, "andeq");
   if (andeq)
@@ -70,32 +71,39 @@ instruction_t e_instruction(AST ins_ast, int cur_address,
 }
 
 /*!
- * @return a parser combinator of label.
-*/
+ * a label is (take while alnum + ':')
+ * @return
+ */
 Parsec p_label(void)
 {
-  Parsec seqs[3] = {take_while("label string", isalnum),
-                  match(NULL, ":"), match(NULL, "\n")};
+  Parsec seqs[3] = { take_while("label string", isalnum), match(NULL, ":"),
+                     match(NULL, "\n") };
   return seq("label", seqs, 3);
 }
 
+/*!
+ * encode label to the content of label
+ * @return
+ */
 char *e_label(AST label)
 {
   return $TG(label, "label string");
 }
 
 /*!
- * @return a parser combinator of line.
-*/
+ * a line is either a instruction or a label
+ * @return
+ */
 Parsec p_line(void)
 {
-  Parsec alts[2] = {p_label(), p_instruction()};
+  Parsec alts[2] = { p_label(), p_instruction() };
   return alt("line", alts, 2);
 }
 
 /*!
- * @return a parser combinator of instruction.
-*/
+ * a instruction is either special instruction or normal instrution
+ * @return
+ */
 Parsec p_instruction(void)
 {
   Parsec alts[6]
@@ -105,16 +113,17 @@ Parsec p_instruction(void)
 
 /*!
  * @return an encoded zero instruction
-*/
+ */
 instruction_t e_andeq(AST anded)
 {
   instruction_t result;
   result.tag = ZERO;
   return result;
 }
+
 /*!
  * @return a parser combinator of and equals.
-*/
+ */
 Parsec p_andeq(void)
 {
   return match("andeq", "andeq");
@@ -122,7 +131,7 @@ Parsec p_andeq(void)
 
 /*!
  * @return a parser combinator of lsl.
-*/
+ */
 Parsec p_lsl(void)
 {
   Parsec seqs[3]
@@ -132,7 +141,7 @@ Parsec p_lsl(void)
 
 /*!
  * @return an encoded lsl.
-*/
+ */
 instruction_t e_lsl(AST lsl)
 {
   int Rm           = e_reg($G(lsl, "Rm"));

@@ -12,7 +12,7 @@
 
 /*!
  * @return an encoded multiply instruction.
-*/
+ */
 mul_t e_mul_h(AST ast)
 {
   mul_t result;
@@ -27,7 +27,7 @@ mul_t e_mul_h(AST ast)
 
 /*!
  * @return an encoded multiply instruction.
-*/
+ */
 instruction_t e_mul(AST ast)
 {
   instruction_t result;
@@ -52,8 +52,9 @@ instruction_t e_mul(AST ast)
 }
 
 /*!
- * @return a parser combinator of multiply instruction.
-*/
+ * mul instruction is either mul or mla
+ * @return
+ */
 Parsec p_mul()
 {
   Parsec sequence1[4]

@@ -13,6 +13,11 @@
 #include "component.h"
 #include "trans.h"
 
+static instruction_t e_ldr_as_mov(AST trans);
+static instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
+                         int *end_address);
+static instruction_t e_trans_h(AST trans);
+
 /*!
  * @return an encoded instruction in the case ldr as mov.
  */
@@ -20,8 +25,8 @@ instruction_t e_ldr_as_mov(AST trans)
 {
   instruction_t result;
   proc_t        proc;
-  bool is_imm;
-  bool is_up;
+  bool          is_imm;
+  bool          is_up;
   address_t     address = e_address($G(trans, "address"), &is_imm, &is_up);
   reg_or_imm_t  operand2;
 
@@ -48,8 +53,8 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
                         int *end_address)
 {
   instruction_t result;
-  bool is_imm;
-  bool is_up;
+  bool          is_imm;
+  bool          is_up;
   address_t     address = e_address($G(trans, "address"), &is_imm, &is_up);
   trans_t       trans_ins;
   reg_or_imm_t  offset;
@@ -58,7 +63,7 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
   token->imm_val = address.eq_expr_val;
   token->ast     = NULL;
   token->address = end_address;
-  token->next = NULL;
+  token->next    = NULL;
   add_token_stream(token, token_stream);
 
   offset.rot_imm.amount = 0;
@@ -82,26 +87,26 @@ instruction_t e_ldr_imm(AST trans, int cur_address, TokenStream token_stream,
 }
 
 /*!
- * @return an encoded sigle data transfer instruction.
+ * @return an encoded single data transfer instruction.
  */
 instruction_t e_trans_h(AST trans)
 {
   instruction_t result;
   trans_t       trans_ins;
-  bool is_imm;
-  bool is_up;
+  bool          is_imm;
+  bool          is_up;
   address_t     address = e_address($G(trans, "address"), &is_imm, &is_up);
 
-  AST opcode = $G(trans, "opcode");
+  AST opcode        = $G(trans, "opcode");
   trans_ins.is_load = !!$G(opcode, "ldr");
-  trans_ins.Rd = e_reg($G(trans, "Rd"));
+  trans_ins.Rd      = e_reg($G(trans, "Rd"));
 
   trans_ins.is_reg = !is_imm;
-  trans_ins.is_up = is_up;
+  trans_ins.is_up  = is_up;
   trans_ins.is_pre = !address.is_post;
   trans_ins.offset = address.operand2;
-  trans_ins.Rn = address.Rn;
-  trans_ins.is_up = is_up;
+  trans_ins.Rn     = address.Rn;
+  trans_ins.is_up  = is_up;
 
   result.cond       = AL;
   result.tag        = TRANS;
@@ -111,14 +116,14 @@ instruction_t e_trans_h(AST trans)
 }
 
 /*!
- * @return an encoded sigle data transfer instruction.
+ * @return an encoded single data transfer instruction.
  */
 instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
                       int *end_address)
 {
   instruction_t result;
-  bool is_imm;
-  bool is_up;
+  bool          is_imm;
+  bool          is_up;
   address_t     address = e_address($G(trans, "address"), &is_imm, &is_up);
 
   if (address.is_eq_expr && address.eq_expr_val < 0xFF)
@@ -136,7 +141,8 @@ instruction_t e_trans(AST trans, int cur_address, TokenStream token_stream,
 }
 
 /*!
- * @return a parser combinator of single data transfer instruction.
+ * a trans instruction is (ldr | str) + Rd + address
+ * @return
  */
 Parsec p_trans(void)
 {

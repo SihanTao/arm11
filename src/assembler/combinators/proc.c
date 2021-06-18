@@ -11,22 +11,29 @@
 #include "component.h"
 #include "proc.h"
 
+static Parsec p_arith(void);
+static Parsec p_mov(void);
+static Parsec p_cmp_tst(void);
+
 /*!
- * @return a parser combinator of arith.
-*/
+ * arithemtic operation is (and | eor | sub | rsb | add | orr) + Rd + Rn +
+ * operand2
+ * @return
+ */
 Parsec p_arith(void)
 {
   Parsec alts[6]
       = { match("and", "and "), match("eor", "eor "), match("sub", "sub "),
           match("rsb", "rsb "), match("add", "add "), match("orr", "orr ") };
-  Parsec sequence[5]
-      = { alt("opcode", alts, 6), p_reg_i("Rd"), p_reg_i("Rn"), p_operand2(), match(NULL, "\n")};
+  Parsec sequence[5] = { alt("opcode", alts, 6), p_reg_i("Rd"), p_reg_i("Rn"),
+                         p_operand2(), match(NULL, "\n") };
   return seq("sub proc", sequence, 5);
 }
 
 /*!
- * @return an encoded opcode.
-*/
+ * encode opcode into enum
+ * @return
+ */
 pd_opcode_type e_opcode(AST opcode)
 {
   if ($G(opcode, "and"))
@@ -79,27 +86,31 @@ pd_opcode_type e_opcode(AST opcode)
 
 /*!
  * @return a parser combinator of move.
-*/
+ */
 Parsec p_mov(void)
 {
-  Parsec seqs[4] = { match("opcode", "mov "),p_reg_i("Rd"), p_operand2(), match(NULL, "\n")};
+  Parsec seqs[4] = { match("opcode", "mov "), p_reg_i("Rd"), p_operand2(),
+                     match(NULL, "\n") };
   return seq("sub proc", seqs, 4);
 }
 
 /*!
+ * tst cmp is one of (tst | teq | cmp) + Rn + operand2
  * @return a parser combinator of cmp.
-*/
+ */
 Parsec p_cmp_tst(void)
 {
   Parsec alts[6]
       = { match("tst", "tst "), match("teq", "teq  "), match("cmp", "cmp ") };
-  Parsec sequence[4] = { alt("opcode", alts, 6), p_reg_i("Rn"), p_operand2(), match(NULL, "\n") };
+  Parsec sequence[4] = { alt("opcode", alts, 6), p_reg_i("Rn"), p_operand2(),
+                         match(NULL, "\n") };
   return seq("sub proc", sequence, 4);
 }
 
 /*!
- * @return a parser combinator of data processing insturction.
-*/
+ * a data process is (mov | arith | cmp tst)
+ * @return
+ */
 Parsec p_proc(void)
 {
   Parsec alts[3] = { p_mov(), p_arith(), p_cmp_tst() };
@@ -107,8 +118,9 @@ Parsec p_proc(void)
 }
 
 /*!
+ * encode AST into instruction_t
  * @return an encoded data processing instruction.
-*/
+ */
 instruction_t e_proc(AST proc_ast)
 {
   instruction_t result;
@@ -119,8 +131,8 @@ instruction_t e_proc(AST proc_ast)
   proc.Rd                = Rd ? e_reg(Rd) : 0;
   proc.Rn                = Rn ? e_reg(Rn) : 0;
 
-  bool *is_imm  = &proc.is_imm;
-  bool is_positive;
+  bool *is_imm = &proc.is_imm;
+  bool  is_positive;
   proc.operand2 = e_operand2($G(sub_proc, "operand2"), is_imm, &is_positive);
   proc.opcode   = e_opcode($G(sub_proc, "opcode"));
   proc.set_cond = false;

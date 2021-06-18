@@ -30,8 +30,6 @@ int main(void)
 
     execute_proc(dp_ins1, arm_state);
 
-    printf("arm_state->reg[2] :>> %p\n", arm_state->reg[2]); // DELETE_MARK
-
     test_int_v(arm_state->reg[2],
                2, // 0b10
                "Rm = 1011, Rn = 10, 1011 becomes 10110, 10110 AND 10, so Rd = "
