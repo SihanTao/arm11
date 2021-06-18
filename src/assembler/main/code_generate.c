@@ -156,8 +156,8 @@ uint32_t encode_BRANCH(instruction_t instruction)
 {
   uint32_t result = 0;
   branch_t bran = instruction.word.branch;
-  set_bit_range(&result, bran.offset, 0, 23);
-  set_bit_range(&result, instruction.cond, 28, 31);
+  set_bit_range(&result, bran.offset, BRANCH_OFFSET_START, BRANCH_OFFSET_START);
+  set_bit_range(&result, instruction.cond, CONDITION_START, CONDITION_END);
   set_bit_range(&result,0xa,24,27);
 
   return result;
