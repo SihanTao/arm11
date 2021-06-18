@@ -58,6 +58,11 @@ bool reverse_rotate(uint32_t target, int *rotation_amount, uint32_t *imm)
   return false;
 }
 
+bool is_space(char target)
+{
+  return (target == ' ');
+}
+
 /*!
  * @param name
  * @return a parser combinator of number;
@@ -125,8 +130,9 @@ int e_eq_hash_expr(AST hash_expr)
 
 Parsec p_reg_i(char *name)
 {
+  Parsec alts[3] = {match(NULL, ", "), match(NULL, ","), match(NULL, ",  ")};
   Parsec seq1[3] = { match(NULL, "r"), p_number("reg_num"),
-                     make_or(NULL, match(NULL, ", "), match(NULL, ",")) };
+                     alt(NULL, alts, 3) };
   return seq(name, seq1, 3);
 }
 
